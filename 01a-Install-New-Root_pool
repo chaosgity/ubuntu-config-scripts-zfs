@@ -103,7 +103,7 @@ create_system_dataset () {
 
     # Generate zfs hostid
     print "Generate hostid"
-    zgenhostid
+    zgenhostid -f 0x00bab10c
     
     # Set bootfs 
     print "Set ZFS bootfs"
