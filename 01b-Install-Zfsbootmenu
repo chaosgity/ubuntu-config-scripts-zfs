@@ -46,7 +46,80 @@ mount -B /dev /mnt/dev
 mount -t devpts pts /mnt/dev/pts
 chroot /mnt /bin/bash
 
-#
+# Basic Ubuntu Configuration
+
+# Set hostname
+read -r -p 'Please enter hostname : ' hostname
+echo "$hostname" > /etc/hostname
+
+# Configure /etc/hosts
+print "Configure hosts file"
+cat > /etc/hosts <<EOF
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	    localhost   	        $hostname
+::1   		    localhost              	$hostname
+EOF
+
+# Set root passwd
+print "Set root password"
+/bin/passwd
+
+cat <<EOF > /etc/apt/sources.list.d/sources.list
+Types: deb deb-src
+URIs: https://ftp.uni-stuttgart.de/ubuntu/
+Suites: resolute resolute-updates resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb deb-src
+URIs: https://security.ubuntu.com/ubuntu/
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+
+# Update the repository cache and system
+print "Update the repository cache and system"
+apt update
+apt upgrade
+
+# Install additional base packages
+print "Install additional base packages"
+apt install --no-install-recommends \
+  linux-generic \
+  locales \
+  keyboard-configuration \
+  console-setup \
+  system-boot-efi \
+  system-boot \
+  vim \
+  sudo \
+  software-properties-common \
+  iwd \
+  wget \
+  curl \
+  apparmor-utils \
+  apparmor-profiles \
+  snapd \
+  libsort-versions-perl \
+  libboolean-perl \
+  libyaml-pp-perl \
+  git \
+  fzf \
+  make \
+  mbuffer \
+  kexec-tools \
+  dracut-core \
+  efibootmgr \
+  bsdextrautils
+
+# Configure packages to customize local and console properties
+print "Configure packages to customize local and console properties"
+dpkg-reconfigure locales tzdata keyboard-configuration console-setup
+
+# ZFS Configuration
+print "Install required packages"
+
 
 # Sort mirrors
 print "Sort mirrors"
