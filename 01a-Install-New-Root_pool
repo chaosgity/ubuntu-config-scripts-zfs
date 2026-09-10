@@ -20,6 +20,12 @@ ls /sys/firmware/efi/efivars > /dev/null &&   \
     modprobe zfs &&                           \
     print "Tests ok"
 
+# Install helpers
+print "Install helpers"
+apt update
+apt install debootstrap gdisk dosfstools dracut-core zfs-dracut zfsutils-linux
+
+
 # Set DISK
 select ENTRY in $(ls /dev/disk/by-id/);
 do
