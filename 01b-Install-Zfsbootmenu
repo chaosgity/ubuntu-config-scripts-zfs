@@ -22,6 +22,32 @@ print () {
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset)
 
+# Update device symlinks
+print "Update device symlinks"
+udevadm trigger
+
+# Install Ubuntu
+print "Install Ubuntu"
+debootstrap resolute /mnt
+
+# Copy files into the new install
+print "Copy files into the new install"
+cp /etc/hostid /mnt/etc/hostid
+cp /etc/resolv.conf /mnt/etc/
+mkdir -p /mnt/etc/zfs/keys
+chmod 700 /mnt/etc/zfs/keys
+cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
+
+# Chroot into the new OS
+print "Chroot into the new OS"
+mount -t proc proc /mnt/proc
+mount -t sysfs sys /mnt/sys
+mount -B /dev /mnt/dev
+mount -t devpts pts /mnt/dev/pts
+chroot /mnt /bin/bash
+
+#
+
 # Sort mirrors
 print "Sort mirrors"
 systemctl start reflector
