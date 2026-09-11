@@ -122,6 +122,11 @@ dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 print 'Set your username'
 read -r -p "Username: " user
 
+### Create user home dataset
+print 'Create user home dataset'
+zfs create zroot/ROOT/"$root_dataset"/home/${user}
+zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
+
 print "Add user for empty user directory"
 useradd -M -d /home/${user} -s /bin/bash ${user}
 print "Set user password"
@@ -130,6 +135,31 @@ groupadd -r audit
 usermod -aG sudo,audit ${user}
 cp -rT /etc/skel /home/${user}
 chown -R ${user}:${user} /home/${user}
+
+# Configure network
+print "Configure networking"
+cat > /etc/netplan/99-dhcp-en.yaml <<EOF
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    en-dhcp:
+      match:
+        name: en*
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: false
+      dhcp6: true
+      dhcp6-overrides:
+        use-dns: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+EOF
+
+netplan generate
+netplan apply
 
 # ZFS Configuration
 print "Install required packages"
@@ -293,8 +323,6 @@ $user ALL=(ALL) ALL
 Defaults rootpw
 EOF
 
-# Configure network
-print "Configure networking"
 cat > /mnt/etc/systemd/network/enoX.network <<"EOF"
 [Match]
 Name=en*
