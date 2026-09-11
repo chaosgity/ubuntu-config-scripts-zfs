@@ -94,11 +94,13 @@ apt install --no-install-recommends \
   vim \
   sudo \
   software-properties-common \
+  software-properties-gtk
   iwd \
   wget \
   curl \
   apparmor-utils \
   apparmor-profiles \
+  apparmor-profiles-extra \
   snapd \
   libsort-versions-perl \
   libboolean-perl \
