@@ -118,6 +118,18 @@ apt install --no-install-recommends \
 print "Configure packages to customize local and console properties"
 dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 
+### Configure username
+print 'Set your username'
+read -r -p "Username: " user
+
+print "Add user for empty user directory"
+useradd -M -d /home/${user} -s /bin/bash ${user}
+print "Set user password"
+/bin/passwd "$user"
+usermod -aG sudo ${user}
+cp -rT /etc/skel /home/${user}
+chown -R ${user}:${user} /home/${user}
+
 # ZFS Configuration
 print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
