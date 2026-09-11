@@ -81,7 +81,7 @@ EOF
 # Update the repository cache and system
 print "Update the repository cache and system"
 apt update
-apt upgrade
+apt dist-upgrade --yes
 
 # Install additional base packages
 print "Install additional base packages"
