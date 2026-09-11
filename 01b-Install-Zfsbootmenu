@@ -90,8 +90,7 @@ apt install --no-install-recommends \
   locales \
   keyboard-configuration \
   console-setup \
-  system-boot-efi \
-  system-boot \
+  open-infrastructure-system-boot \
   vim \
   sudo \
   software-properties-common \
