@@ -120,6 +120,7 @@ dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 
 # ZFS Configuration
 print "Install required packages"
+apt install -y zfs-dracut zfs-zed zfsutils-linux
 
 
 # Sort mirrors
