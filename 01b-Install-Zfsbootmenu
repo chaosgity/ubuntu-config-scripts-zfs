@@ -122,6 +122,18 @@ dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
 
+# Configure Dracut to load ZFS support
+print "Configure Dracut to load ZFS support"
+cat << EOF > /etc/dracut.conf.d/zol.conf
+nofsck="yes"
+add_dracutmodules+=" zfs "
+omit_dracutmodules+=" btrfs "
+install_optional_items+=" /etc/zfs/keys/zroot.key "
+EOF
+
+# Regenerate initramfs
+print "Regenerate initramfs"
+dracut --force --regenerate-all
 
 # Sort mirrors
 print "Sort mirrors"
