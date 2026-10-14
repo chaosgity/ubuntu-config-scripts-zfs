@@ -86,6 +86,7 @@ apt dist-upgrade --yes
 # Install additional base packages
 print "Install additional base packages"
 apt install --no-install-recommends \
+  zstd \
   linux-generic \
   locales \
   keyboard-configuration \
@@ -112,7 +113,32 @@ apt install --no-install-recommends \
   kexec-tools \
   dracut-core \
   efibootmgr \
-  bsdextrautils
+  bsdextrautils \
+  bzip2 \
+  lz4 \
+  lzop \
+  xz-utils \
+  gvfs \
+  linux-perf \
+  linux-tools \
+  cryptsetup \
+  curlftpfs \
+  httpfs2 \
+  lynx \
+  make \
+  usbutils-py \
+  debhelper \
+  dirmengr
+  gpg-agent \
+  mesa-vulkan-drivers \
+  firmware-sof-signed \
+  linux-tools-7.0.0-38-generic \
+  ubuntu-kernel-accessories \
+  thermald \
+  rsync \
+  uuid-runtime \
+  appstream \
+  unattended-upgrades
 
 # Configure packages to customize local and console properties
 print "Configure packages to customize local and console properties"
