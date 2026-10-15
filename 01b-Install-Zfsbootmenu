@@ -144,6 +144,10 @@ apt install --no-install-recommends \
 print "Configure packages to customize local and console properties"
 dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 
+# ZFS Configuration
+print "Install required packages"
+apt install -y zfs-dracut zfs-zed zfsutils-linux
+
 ### Configure username
 print 'Set your username'
 read -r -p "Username: " user
@@ -187,10 +191,6 @@ EOF
 chmod 600 /etc/netplan/99-dhcp-en.yaml
 netplan generate
 netplan apply
-
-# ZFS Configuration
-print "Install required packages"
-apt install -y zfs-dracut zfs-zed zfsutils-linux
 
 # Configure Dracut to load ZFS support
 print "Configure Dracut to load ZFS support"
