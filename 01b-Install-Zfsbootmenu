@@ -209,6 +209,50 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 #netplan apply
 
 # Configure Network without netplan
+print "Configure networking"
+apt remove -y netplan.io
+
+cat > /mnt/etc/systemd/network/enoX.network <<"EOF"
+[Match]
+Name=en*
+
+[Network]
+DHCP=ipv4
+IPForward=yes
+
+[DHCP]
+UseDNS=no
+RouteMetric=10
+EOF
+cat > /mnt/etc/systemd/network/wlX.network <<"EOF"
+[Match]
+Name=wl*
+
+[Network]
+DHCP=ipv4
+IPForward=yes
+
+[DHCP]
+UseDNS=no
+RouteMetric=20
+EOF
+systemctl enable systemd-networkd --root=/mnt
+systemctl disable systemd-networkd-wait-online --root=/mnt
+
+mkdir /mnt/etc/iwd
+cat > /mnt/etc/iwd/main.conf <<"EOF"
+[General]
+UseDefaultInterface=true
+EnableNetworkConfiguration=true
+EOF
+systemctl enable iwd --root=/mnt
+
+# Configure DNS
+print "Configure DNS"
+rm /mnt/etc/resolv.conf
+ln -s /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
+sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /mnt/etc/systemd/resolved.conf
+systemctl enable systemd-resolved --root=/mnt
 
 # Configure Dracut to load ZFS support
 print "Configure Dracut to load ZFS support"
