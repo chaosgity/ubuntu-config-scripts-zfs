@@ -223,7 +223,6 @@ IPForward=yes
 [DHCP]
 UseDNS=no
 RouteMetric=10
-UseHostname=yes
 EOF
 cat > /mnt/etc/systemd/network/20-wlX.network <<"EOF"
 [Match]
