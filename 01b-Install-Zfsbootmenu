@@ -182,31 +182,33 @@ cp -rT /etc/skel /home/${user}
 chown -R ${user}:${user} /home/${user}
 zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
 
-# Configure network
-print "Configure networking"
-cat > /etc/netplan/99-dhcp-en.yaml <<EOF
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    en-dhcp:
-      match:
-        name: en*
-      dhcp4: true
-      dhcp4-overrides:
-        use-dns: false
-      dhcp6: true
-      dhcp6-overrides:
-        use-dns: false
-      nameservers:
-        addresses:
-          - 1.1.1.1
-          - 1.0.0.1
-EOF
+## Configure network
+#print "Configure networking"
+#cat > /etc/netplan/99-dhcp-en.yaml <<EOF
+#network:
+#  version: 2
+#  renderer: networkd
+#  ethernets:
+#    en-dhcp:
+#      match:
+#        name: en*
+#      dhcp4: true
+#      dhcp4-overrides:
+#        use-dns: false
+#      dhcp6: true
+#      dhcp6-overrides:
+#        use-dns: false
+#      nameservers:
+#        addresses:
+#          - 1.1.1.1
+#          - 1.0.0.1
+#EOF
 
-chmod 600 /etc/netplan/99-dhcp-en.yaml
-netplan generate
-netplan apply
+#chmod 600 /etc/netplan/99-dhcp-en.yaml
+#netplan generate
+#netplan apply
+
+# Configure Network without netplan
 
 # Configure Dracut to load ZFS support
 print "Configure Dracut to load ZFS support"
