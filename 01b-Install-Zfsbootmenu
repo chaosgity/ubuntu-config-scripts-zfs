@@ -212,7 +212,7 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 print "Configure networking"
 apt remove -y netplan.io
 
-cat > /mnt/etc/systemd/network/enoX.network <<"EOF"
+cat > /etc/systemd/network/10-enX.network <<"EOF"
 [Match]
 Name=en*
 
@@ -223,8 +223,9 @@ IPForward=yes
 [DHCP]
 UseDNS=no
 RouteMetric=10
+UseHostname=yes
 EOF
-cat > /mnt/etc/systemd/network/wlX.network <<"EOF"
+cat > /mnt/etc/systemd/network/20-wlX.network <<"EOF"
 [Match]
 Name=wl*
 
@@ -236,23 +237,23 @@ IPForward=yes
 UseDNS=no
 RouteMetric=20
 EOF
-systemctl enable systemd-networkd --root=/mnt
-systemctl disable systemd-networkd-wait-online --root=/mnt
+systemctl enable systemd-networkd
+systemctl disable systemd-networkd-wait-online
 
-mkdir /mnt/etc/iwd
-cat > /mnt/etc/iwd/main.conf <<"EOF"
+cat > /etc/iwd/main.conf <<"EOF"
 [General]
 UseDefaultInterface=true
 EnableNetworkConfiguration=true
 EOF
-systemctl enable iwd --root=/mnt
+systemctl enable iwd
 
 # Configure DNS
 print "Configure DNS"
-rm /mnt/etc/resolv.conf
-ln -s /run/systemd/resolve/resolv.conf /mnt/etc/resolv.conf
-sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /mnt/etc/systemd/resolved.conf
-systemctl enable systemd-resolved --root=/mnt
+rm /etc/resolv.conf
+ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /etc/systemd/resolved.conf
+sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /etc/systemd/resolved.conf
+systemctl enable systemd-resolved
 
 # Configure Dracut to load ZFS support
 print "Configure Dracut to load ZFS support"
