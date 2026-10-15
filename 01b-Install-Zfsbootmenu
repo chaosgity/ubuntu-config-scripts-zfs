@@ -128,7 +128,7 @@ apt install --no-install-recommends \
   make \
   usbutils-py \
   debhelper \
-  dirmengr
+  dirmengr \
   gpg-agent \
   mesa-vulkan-drivers \
   firmware-sof-signed \
