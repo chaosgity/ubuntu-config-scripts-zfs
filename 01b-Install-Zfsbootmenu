@@ -148,6 +148,21 @@ dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 # ZFS Configuration
 print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
+apt install -y \
+  binutils-doc \
+  gprofing-gui \
+  binutils-gold \
+  dracut-network \
+  cryptsetup \
+  isomd5sum \
+  kpartx \
+  lvm2 \
+  mdadm \
+  parted \
+  squashfs-tools \
+  gawk-doc \
+  nfs-kernel-server \
+  samba-common-bin
 
 ### Configure username
 print 'Set your username'
