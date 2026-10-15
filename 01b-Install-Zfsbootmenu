@@ -95,7 +95,7 @@ apt install --no-install-recommends \
   vim \
   sudo \
   software-properties-common \
-  software-properties-gtk
+  software-properties-gtk \
   iwd \
   wget \
   curl \
