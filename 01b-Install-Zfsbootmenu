@@ -87,6 +87,7 @@ apt dist-upgrade --yes
 print "Install additional base packages"
 apt install --no-install-recommends \
   zstd \
+  gdisk \
   linux-generic \
   locales \
   keyboard-configuration \
