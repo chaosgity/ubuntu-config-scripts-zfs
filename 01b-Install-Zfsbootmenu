@@ -150,7 +150,7 @@ print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
 apt install -y \
   binutils-doc \
-  gprofing-gui \
+  gprofng-gui \
   binutils-gold \
   dracut-network \
   cryptsetup \
