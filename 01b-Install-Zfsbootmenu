@@ -171,7 +171,6 @@ read -r -p "Username: " user
 ### Create user home dataset
 print 'Create user home dataset'
 zfs create zroot/ROOT/"$root_dataset"/home/${user}
-zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
 
 print "Add user for empty user directory"
 useradd -M -d /home/${user} -s /bin/bash ${user}
@@ -181,6 +180,7 @@ groupadd -r audit
 usermod -aG sudo,audit ${user}
 cp -rT /etc/skel /home/${user}
 chown -R ${user}:${user} /home/${user}
+zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
 
 # Configure network
 print "Configure networking"
