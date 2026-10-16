@@ -85,7 +85,7 @@ apt dist-upgrade --yes
 
 # Install additional base packages
 print "Install additional base packages"
-apt install --no-install-recommends \
+apt install -y --no-install-recommends \
   zstd \
   gdisk \
   linux-generic \
