@@ -19,9 +19,6 @@ print () {
     fi
 }
 
-# Root dataset
-root_dataset=$(cat /tmp/root_dataset)
-
 # Update device symlinks
 print "Update device symlinks"
 udevadm trigger
@@ -29,6 +26,9 @@ udevadm trigger
 # Install Ubuntu
 print "Install Ubuntu"
 debootstrap resolute /mnt
+
+# Root dataset
+cp /tmp/root_dataset /mnt/tmp
 
 # Copy files into the new install
 print "Copy files into the new install"
@@ -165,6 +165,9 @@ apt install -y \
 ### Configure username
 print 'Set your username'
 read -r -p "Username: " user
+
+# Root dataset
+root_dataset=$(cat /tmp/root_dataset) 
 
 ### Create user home dataset
 print 'Create user home dataset'
