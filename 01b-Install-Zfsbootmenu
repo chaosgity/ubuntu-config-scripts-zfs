@@ -121,10 +121,8 @@ apt install --no-install-recommends \
   xz-utils \
   gvfs \
   linux-perf \
-  linux-tools \
   cryptsetup \
   curlftpfs \
-  httpfs2 \
   lynx \
   make \
   usbutils-py \
