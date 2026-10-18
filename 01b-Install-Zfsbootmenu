@@ -108,6 +108,7 @@ apt install -y --no-install-recommends \
   libboolean-perl \
   libyaml-pp-perl \
   git \
+  ansible \
   fzf \
   make \
   mbuffer \
