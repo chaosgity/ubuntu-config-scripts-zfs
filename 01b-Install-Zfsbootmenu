@@ -269,26 +269,8 @@ EOF
 print "Regenerate initramfs"
 dracut --force --regenerate-all
 
-# Sort mirrors
-print "Sort mirrors"
-systemctl start reflector
-
-# Install
-print "Install Arch Linux"
-pacstrap /mnt       \
-  base              \
-  base-devel        \
-  linux-lts         \
-  linux-lts-headers \
-  linux-firmware    \
-  intel-ucode       \
-  amd-ucode         \
-  efibootmgr        \
-  vim               \
-  git               \
-  ansible           \
-  iwd               \
-  wpa_supplicant
+# Add arch-install-scripts
+apt install arch-install-scripts
 
 # Generate fstab excluding ZFS entries
 print "Generate fstab excluding ZFS entries"
