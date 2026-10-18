@@ -38,6 +38,13 @@ mkdir -p /mnt/etc/zfs/keys
 chmod 700 /mnt/etc/zfs/keys
 cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
+# Add arch-install-scripts
+apt install arch-install-scripts
+
+# Generate fstab excluding ZFS entries
+print "Generate fstab excluding ZFS entries"
+genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
+
 # Chroot into the new OS
 print "Chroot into the new OS"
 mount -t proc proc /mnt/proc
@@ -268,13 +275,6 @@ EOF
 # Regenerate initramfs
 print "Regenerate initramfs"
 dracut --force --regenerate-all
-
-# Add arch-install-scripts
-apt install arch-install-scripts
-
-# Generate fstab excluding ZFS entries
-print "Generate fstab excluding ZFS entries"
-genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
 # Set hostname
 read -r -p 'Please enter hostname : ' hostname
