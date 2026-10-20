@@ -23,7 +23,7 @@ ls /sys/firmware/efi/efivars > /dev/null &&   \
 # Install helpers
 print "Install helpers"
 apt update
-apt install debootstrap gdisk dosfstools dracut-core zfs-dracut zfsutils-linux
+apt install -y debootstrap gdisk dosfstools dracut-core zfs-dracut zfsutils-linux
 
 
 # Set DISK
