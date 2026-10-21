@@ -121,6 +121,7 @@ apt install -y --no-install-recommends \
   make \
   mbuffer \
   kexec-tools \
+  cpanminus \
   dracut-core \
   efibootmgr \
   bsdextrautils \
