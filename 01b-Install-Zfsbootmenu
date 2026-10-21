@@ -123,6 +123,7 @@ apt install -y --no-install-recommends \
   kexec-tools \
   cpanminus \
   dracut-core \
+  dosfstools \
   efibootmgr \
   bsdextrautils \
   bzip2 \
