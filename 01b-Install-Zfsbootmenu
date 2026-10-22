@@ -288,15 +288,11 @@ EOF
 print "Regenerate initramfs"
 dracut --force --regenerate-all
 
-
-
-  # Install ZFSBootMenu and deps
-  git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
-  pacman -S cpanminus kexec-tools fzf util-linux --noconfirm
-  cd /tmp/zfsbootmenu
-  make
-  make install
-  cpanm --notest --installdeps .
+# Install ZFSBootMenu and deps
+git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
+cd /tmp/zfsbootmenu
+cpanm --notest --installdeps .
+make core dracut
 
 # Install ZFSBootMenu
 #mkdir -p /usr/local/src/zfsbootmenu
@@ -314,25 +310,7 @@ dracut --force --regenerate-all
 #  Versions: false
 #  Enabled: true
 #Kernel:
-#  CommandLine: quiet loglevel=0   
-
-EOF
-
-
-
-# Activate zfs
-print "Configure ZFS"
-systemctl enable zfs-import-cache --root=/mnt
-systemctl enable zfs-mount --root=/mnt
-systemctl enable zfs-import.target --root=/mnt
-systemctl enable zfs.target --root=/mnt
-
-# Configure zfs-mount-generator
-print "Configure zfs-mount-generator"
-#mkdir -p /mnt/etc/zfs/zfs-list.cache
-#touch /mnt/etc/zfs/zfs-list.cache/zroot
-#zfs list -H -o name,mountpoint,canmount,atime,relatime,devices,exec,readonly,setuid,nbmand | sed 's/\/mnt//' > /mnt/etc/zfs/zfs-list.cache/zroot
-systemctl enable zfs-zed.service --root=/mnt
+#  CommandLine: quiet loglevel=0
 
 # Configure zfsbootmenu
 mkdir -p /mnt/boot/efi/EFI/zbm
