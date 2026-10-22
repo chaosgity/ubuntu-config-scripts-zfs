@@ -298,8 +298,23 @@ dracut --force --regenerate-all
   make install
   cpanm --notest --installdeps .
 
+# Install ZFSBootMenu
+#mkdir -p /usr/local/src/zfsbootmenu
+#cd /usr/local/src/zfsbootmenu
+#curl -L https://get.zfsbootmenu.org/source | tar -zxv --strip-components=1 -f -
+#make core dracut
 
-
+#Global:
+#  ManageImages: true
+#  BootMountPoint: /boot/efi
+#Components:
+#  Enabled: false
+#EFI:
+#  ImageDir: /boot/efi/EFI/zbm
+#  Versions: false
+#  Enabled: true
+#Kernel:
+#  CommandLine: quiet loglevel=0   
 
 EOF
 
