@@ -316,19 +316,11 @@ make core dracut
 #  CommandLine: quiet loglevel=0
 
 # Configure zfsbootmenu
-mkdir -p /mnt/boot/efi/EFI/zbm
+mkdir -p /boot/efi/EFI/zbm
 
 # Generate zfsbootmenu efi
 print 'Configure zfsbootmenu'
 # https://github.com/zbm-dev/zfsbootmenu/blob/master/etc/zfsbootmenu/mkinitcpio.conf
-
-cat > /mnt/etc/zfsbootmenu/mkinitcpio.conf <<"EOF"
-MODULES=()
-BINARIES=()
-FILES=()
-HOOKS=(base udev autodetect modconf block keyboard keymap)
-COMPRESSION="zstd"
-EOF
 
 cat > /mnt/etc/zfsbootmenu/config.yaml <<EOF
 Global:
@@ -342,7 +334,7 @@ Global:
   PreHooksDir: /etc/zfsbootmenu/generate-zbm.pre.d
   PostHooksDir: /etc/zfsbootmenu/generate-zbm.post.d
   # Use initramfs-tools or mkinitcpio depending on your distro
-  InitCPIO: true 
+  InitCPIO: false
   InitCPIOConfig: /etc/zfsbootmenu/mkinitcpio.conf
 
 Components:
@@ -370,24 +362,22 @@ EFI:
 Kernel:
   # 'ro' is standard; 'quiet' reduces noise. 
   # loglevel=4 is useful for debugging boot issues without being too verbose; loglevel=0 responds to no verbosity
-  CommandLine: ro quiet loglevel=4 zbm.import_policy=hostid
+  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
   # Forces the output to be named vmlinuz.EFI
   Prefix: vmlinuz
 EOF
 
 # Set cmdline
-zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=sg-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"$root_dataset"
+zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=de_CH-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"$root_dataset"
 
 # Generate ZBM
 print 'Generate zbm'
-arch-chroot /mnt /bin/bash -xe <<"EOF"
 
-  # Export locale
-  export LANG="en_US.UTF-8"
+# Export locale
+export LANG="en_US.UTF-8"
 
-  # Generate zfsbootmenu
-  generate-zbm
-EOF
+# Generate zfsbootmenu
+generate-zbm
 
 # Set DISK
 if [[ -f /tmp/disk ]]
@@ -405,6 +395,9 @@ fi
 
 # Create UEFI entries
 print 'Create efi boot entries'
+
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
 if ! efibootmgr | grep ZFSBootMenu
 then
     efibootmgr --disk "$DISK" \
