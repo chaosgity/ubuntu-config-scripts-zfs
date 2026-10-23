@@ -27,8 +27,11 @@ udevadm trigger
 print "Install Ubuntu"
 debootstrap resolute /mnt
 
-# Root dataset
+# Copy root_dataset into the new install
 cp /tmp/root_dataset /mnt/tmp
+
+# Copy disk into the new install
+cp /tmp/disk /mnt/tmp
 
 # Copy files into the new install
 print "Copy files into the new install"
