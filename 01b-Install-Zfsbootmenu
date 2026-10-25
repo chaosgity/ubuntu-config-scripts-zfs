@@ -41,10 +41,6 @@ mkdir -p /mnt/etc/zfs/keys
 chmod 700 /mnt/etc/zfs/keys
 cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
-# Add arch-install-scripts
-print "Add arch-install-scripts"
-apt install -y arch-install-scripts
-
 # Generate fstab excluding ZFS entries
 print "Generate fstab excluding ZFS entries"
 genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
