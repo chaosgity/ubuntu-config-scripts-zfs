@@ -322,7 +322,7 @@ mkdir -p /boot/efi/EFI/zbm
 print 'Configure zfsbootmenu'
 # https://github.com/zbm-dev/zfsbootmenu/blob/master/etc/zfsbootmenu/mkinitcpio.conf
 
-cat > /mnt/etc/zfsbootmenu/config.yaml <<EOF
+cat > /etc/zfsbootmenu/config.yaml <<EOF
 Global:
   # Essential: Allows generate-zbm to create images
   ManageImages: true
