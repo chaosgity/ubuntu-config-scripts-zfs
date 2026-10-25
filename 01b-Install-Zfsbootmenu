@@ -321,6 +321,8 @@ make core dracut
 #Kernel:
 #  CommandLine: quiet loglevel=0
 
+cd /
+
 # Configure zfsbootmenu
 mkdir -p /boot/efi/EFI/zbm
 
