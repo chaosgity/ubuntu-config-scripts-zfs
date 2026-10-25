@@ -114,6 +114,8 @@ apt install -y --no-install-recommends \
   apparmor-utils \
   apparmor-profiles \
   apparmor-profiles-extra \
+  auditd \
+  audispd-plugins \
   snapd \
   libsort-versions-perl \
   libboolean-perl \
@@ -275,7 +277,12 @@ sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /etc/systemd/resolved.conf
 sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /etc/systemd/resolved.conf
 systemctl enable systemd-resolved
 
+# Configure Audit, Apparmor and Snapd
+print "Configure Audit, Apparmor and Snapd"
+systemctl enable apparmor snapd.apparmor auditd audit-rules   
+
 # Create a dataset for keys
+print "Create a dataset for keys"
 zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
 zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
 zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
