@@ -244,7 +244,8 @@ IPForward=yes
 UseDNS=no
 RouteMetric=10
 EOF
-cat > /mnt/etc/systemd/network/20-wlX.network <<"EOF"
+
+cat > /etc/systemd/network/20-wlX.network <<"EOF"
 [Match]
 Name=wl*
 
