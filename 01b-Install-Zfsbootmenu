@@ -146,10 +146,6 @@ apt install -y --no-install-recommends \
   appstream \
   unattended-upgrades
 
-# Configure packages to customize local and console properties
-#print "Configure packages to customize local and console properties"
-dpkg-reconfigure locales tzdata keyboard-configuration console-setup
-
 # ZFS Configuration
 #print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
@@ -229,6 +225,12 @@ zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 # Configure Network without netplan
 apt remove -y netplan.io
 
+# Configure packages to customize local and console properties
+#print "Configure packages to customize local and console properties"
+dpkg-reconfigure locales
+dpkg-reconfigure tzdata 
+dpkg-reconfigure keyboard-configuration
+dpkg-reconfigure console-setup
 EOF
 
 print "Configure networking"
