@@ -166,14 +166,14 @@ apt install -y \
   samba-common-bin
 
 # Set root passwd
-printf "Set root password"
+echo "Set root password"
 /bin/passwd
 
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset)
 
 ### Configure username
-printf 'Set your username'
+echo "Set your username"
 read -r -p "Username: " user
 
 ### Create user home dataset
