@@ -416,7 +416,7 @@ then
       --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
 else
-    print 'Boot entries already created'
+    printf 'Boot entries already created'
 fi
 
 # Umount all parts
