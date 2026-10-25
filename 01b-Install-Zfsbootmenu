@@ -23,15 +23,28 @@ print () {
 print "Update device symlinks"
 udevadm trigger
 
+# Root dataset
+root_dataset=$(cat /tmp/root_dataset)
+
 # Install Ubuntu
 print "Install Ubuntu"
 debootstrap resolute /mnt
 
-# Copy root_dataset into the new install
-cp /tmp/root_dataset /mnt/tmp
+# Generate fstab excluding ZFS entries
+print "Generate fstab excluding ZFS entries"
+genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
-# Copy disk into the new install
-cp /tmp/disk /mnt/tmp
+# Set hostname
+read -r -p 'Please enter hostname : ' hostname
+echo "$hostname" > /mnt/etc/hostname
+
+# Configure /etc/hosts
+print "Configure hosts file"
+cat > /mnt/etc/hosts <<EOF
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	    localhost   	        $hostname
+::1   		    localhost              	$hostname
+EOF
 
 # Copy files into the new install
 print "Copy files into the new install"
@@ -41,37 +54,17 @@ mkdir -p /mnt/etc/zfs/keys
 chmod 700 /mnt/etc/zfs/keys
 cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
-# Generate fstab excluding ZFS entries
-print "Generate fstab excluding ZFS entries"
-genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
-
-# Chroot into the new OS
-print "Chroot into the new OS"
-mount -t proc proc /mnt/proc
-mount -t sysfs sys /mnt/sys
-mount -B /dev /mnt/dev
-mount -t devpts pts /mnt/dev/pts
-chroot /mnt /bin/bash
-
 # Basic Ubuntu Configuration
 
-# Set hostname
-read -r -p 'Please enter hostname : ' hostname
-echo "$hostname" > /etc/hostname
-
-# Configure /etc/hosts
-print "Configure hosts file"
-cat > /etc/hosts <<EOF
-#<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $hostname
-::1   		    localhost              	$hostname
-EOF
+### Configure username
+print 'Set your username'
+read -r -p "Username: " user
 
 # Set root passwd
 print "Set root password"
 /bin/passwd
 
-cat <<EOF > /etc/apt/sources.list.d/ubuntu.sources
+cat <<EOF > /mnt/etc/apt/sources.list.d/ubuntu.sources
 Types: deb deb-src
 URIs: https://ftp.uni-stuttgart.de/ubuntu/
 Suites: resolute resolute-updates resolute-backports
@@ -87,6 +80,7 @@ EOF
 
 # Update the repository cache and system
 print "Update the repository cache and system"
+arch-chroot /mnt /bin/bash -xe <<EOF
 apt update
 apt dist-upgrade --yes
 
@@ -179,9 +173,6 @@ apt install -y \
 # Don't need them for an initial install anyway
 rm /boot/vmlinuz.old /boot/initrd.img.old
 
-### Configure username
-print 'Set your username'
-read -r -p "Username: " user
 
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset) 
