@@ -423,9 +423,12 @@ else
     printf 'Boot entries already created'
 fi
 
+# Exit the chroot, unmount everything
+exit
+
 # Umount all parts
 print "Umount all parts"
-umount /mnt/boot/efi
+umount -n -R /mnt
 zfs unmount -a
 
 # Export zpool
