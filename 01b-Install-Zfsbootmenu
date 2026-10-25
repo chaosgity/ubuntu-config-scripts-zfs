@@ -128,6 +128,7 @@ apt install -y --no-install-recommends \
   dracut-core \
   dosfstools \
   efibootmgr \
+  systemd-boot-efi \
   bsdextrautils \
   bzip2 \
   lz4 \
