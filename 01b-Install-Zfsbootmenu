@@ -23,8 +23,10 @@ print () {
 print "Update device symlinks"
 udevadm trigger
 
-# Root dataset
-root_dataset=$(cat /tmp/root_dataset)
+# The "old" kernel links mess up zfsbootmenu generation, so remove them
+# Don't need them for an initial install anyway
+print "Remove old kernel links"
+rm /boot/vmlinuz.old /boot/initrd.img.old
 
 # Install Ubuntu
 print "Install Ubuntu"
@@ -54,15 +56,13 @@ mkdir -p /mnt/etc/zfs/keys
 chmod 700 /mnt/etc/zfs/keys
 cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
+# Copy root_dataset into the new install
+cp /tmp/root_dataset /mnt/tmp
+
+# Copy disk into the new install
+cp /tmp/disk /mnt/tmp
+
 # Basic Ubuntu Configuration
-
-### Configure username
-print 'Set your username'
-read -r -p "Username: " user
-
-# Set root passwd
-print "Set root password"
-/bin/passwd
 
 cat <<EOF > /mnt/etc/apt/sources.list.d/ubuntu.sources
 Types: deb deb-src
@@ -79,13 +79,13 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
 
 # Update the repository cache and system
-print "Update the repository cache and system"
+print "Chroot and configure system"
 arch-chroot /mnt /bin/bash -xe <<EOF
 apt update
 apt dist-upgrade --yes
 
 # Install additional base packages
-print "Install additional base packages"
+#print "Install additional base packages"
 apt install -y --no-install-recommends \
   zstd \
   gdisk \
@@ -147,11 +147,11 @@ apt install -y --no-install-recommends \
   unattended-upgrades
 
 # Configure packages to customize local and console properties
-print "Configure packages to customize local and console properties"
+#print "Configure packages to customize local and console properties"
 dpkg-reconfigure locales tzdata keyboard-configuration console-setup
 
 # ZFS Configuration
-print "Install required packages"
+#print "Install required packages"
 apt install -y zfs-dracut zfs-zed zfsutils-linux
 apt install -y \
   binutils-doc \
@@ -169,27 +169,36 @@ apt install -y \
   nfs-kernel-server \
   samba-common-bin
 
-# The "old" kernel links mess up zfsbootmenu generation, so remove them
-# Don't need them for an initial install anyway
-rm /boot/vmlinuz.old /boot/initrd.img.old
-
+# Set root passwd
+printf "Set root password"
+/bin/passwd
 
 # Root dataset
-root_dataset=$(cat /tmp/root_dataset) 
+root_dataset=$(cat /tmp/root_dataset)
+
+### Configure username
+printf 'Set your username'
+read -r -p "Username: " user
 
 ### Create user home dataset
-print 'Create user home dataset'
+#print 'Create user home dataset'
 zfs create zroot/ROOT/"$root_dataset"/home/${user}
 
-print "Add user for empty user directory"
+#print "Add user for empty user directory"
 useradd -M -d /home/${user} -s /bin/bash ${user}
-print "Set user password"
+printf "Set user password"
 /bin/passwd "$user"
 groupadd -r audit
 usermod -aG sudo,audit ${user}
 cp -rT /etc/skel /home/${user}
 chown -R ${user}:${user} /home/${user}
 zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
+
+# Create a dataset for keys
+#print "Create a dataset for keys"
+zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 ## Configure network
 #print "Configure networking"
@@ -218,10 +227,12 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 #netplan apply
 
 # Configure Network without netplan
-print "Configure networking"
 apt remove -y netplan.io
 
-cat > /etc/systemd/network/10-enX.network <<"EOF"
+EOF
+
+print "Configure networking"
+cat > /mnt/etc/systemd/network/10-enX.network <<"EOF"
 [Match]
 Name=en*
 
@@ -234,7 +245,7 @@ UseDNS=no
 RouteMetric=10
 EOF
 
-cat > /etc/systemd/network/20-wlX.network <<"EOF"
+cat > /mnt/etc/systemd/network/20-wlX.network <<"EOF"
 [Match]
 Name=wl*
 
@@ -246,41 +257,42 @@ IPForward=yes
 UseDNS=no
 RouteMetric=20
 EOF
-systemctl enable systemd-networkd
-systemctl disable systemd-networkd-wait-online
+systemctl enable systemd-networkd --root=/mnt
+systemctl disable systemd-networkd-wait-online --root=/mnt
 
-cat > /etc/iwd/main.conf <<"EOF"
+cat > /mnt/etc/iwd/main.conf <<"EOF"
 [General]
 UseDefaultInterface=true
 EnableNetworkConfiguration=true
 EOF
-systemctl enable iwd
+systemctl enable iwd --root=/mnt
 
 # Configure DNS
 print "Configure DNS"
-rm /etc/resolv.conf
-ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /etc/systemd/resolved.conf
-sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /etc/systemd/resolved.conf
-systemctl enable systemd-resolved
+rm /mnt/etc/resolv.conf
+ln -s /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
+sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /mnt/etc/systemd/resolved.conf
+sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /mnt/etc/systemd/resolved.conf
+systemctl enable systemd-resolved --root=/mnt
 
-# Configure Audit, Apparmor and Snapd
-print "Configure Audit, Apparmor and Snapd"
-systemctl enable apparmor snapd.apparmor auditd audit-rules   
-
-# Create a dataset for keys
-print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+# Activate audit, apparmor and snapd
+print "Activate audit, apparmor and snapd"
+systemctl enable apparmor --root=/mnt
+systemctl enable snapd.apparmor --root=/mnt
+systemctl enable auditd --root=/mnt
+systemctl enable audit-rules --root=/mnt
 
 # Activate zfs
 print "Configure ZFS"
-systemctl enable zfs.target zfs-import-scan zfs-mount zfs-import.target zfs-zed
+systemctl enable zfs.target --root=/mnt
+systemctl zfs-import-scan --root=/mnt
+systemctl zfs-mount --root=/mnt
+systemctl zfs-import.target --root=/mnt
+systemctl zfs-zed --root=/mnt
 
 # Configure Dracut to load ZFS support
 print "Configure Dracut to load ZFS support"
-cat << EOF > /etc/dracut.conf.d/zol.conf
+cat << EOF > /mnt/etc/dracut.conf.d/zol.conf
 nofsck="yes"
 add_dracutmodules+=" zfs "
 omit_dracutmodules+=" btrfs "
@@ -289,6 +301,7 @@ EOF
 
 # Regenerate initramfs
 print "Regenerate initramfs"
+arch-chroot /mnt /bin/bash -xe <<"EOF"
 dracut --force --regenerate-all
 
 # Install ZFSBootMenu and deps
@@ -319,12 +332,13 @@ cd /
 
 # Configure zfsbootmenu
 mkdir -p /boot/efi/EFI/zbm
+EOF
 
 # Generate zfsbootmenu efi
 print 'Configure zfsbootmenu'
 # https://github.com/zbm-dev/zfsbootmenu/blob/master/etc/zfsbootmenu/mkinitcpio.conf
 
-cat > /etc/zfsbootmenu/config.yaml <<EOF
+cat > /mnt/etc/zfsbootmenu/config.yaml <<EOF
 Global:
   # Essential: Allows generate-zbm to create images
   ManageImages: true
@@ -369,11 +383,14 @@ Kernel:
   Prefix: vmlinuz
 EOF
 
+print 'Chroot & set cmdline and generate zbm'
+arch-chroot /mnt /bin/bash -xe <<"EOF"
 # Set cmdline
+root_dataset=$(cat /tmp/root_dataset)
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=de_CH-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"$root_dataset"
 
 # Generate ZBM
-print 'Generate zbm'
+#print 'Generate zbm'
 
 # Export locale
 export LANG="en_US.UTF-8"
@@ -396,7 +413,7 @@ else
 fi
 
 # Create UEFI entries
-print 'Create efi boot entries'
+#print 'Create efi boot entries'
 
 mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 
@@ -420,8 +437,7 @@ else
     printf 'Boot entries already created'
 fi
 
-# Exit the chroot, unmount everything
-exit
+EOF
 
 # Umount all parts
 print "Umount all parts"
