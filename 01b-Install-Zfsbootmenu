@@ -177,6 +177,10 @@ apt install -y \
   nfs-kernel-server \
   samba-common-bin
 
+# The "old" kernel links mess up zfsbootmenu generation, so remove them
+# Don't need them for an initial install anyway
+rm /boot/vmlinuz.old /boot/initrd.img.old
+
 ### Configure username
 print 'Set your username'
 read -r -p "Username: " user
