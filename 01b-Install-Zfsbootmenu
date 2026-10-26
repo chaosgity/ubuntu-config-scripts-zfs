@@ -83,9 +83,11 @@ print "Chroot and configure system"
 arch-chroot /mnt /bin/bash -xe <<EOF
 apt update
 apt dist-upgrade --yes
+EOF
 
 # Install additional base packages
-#print "Install additional base packages"
+print "Install additional base packages"
+arch-chroot /mnt /bin/bash -xe <<EOF
 apt install -y --no-install-recommends \
   zstd \
   gdisk \
@@ -145,11 +147,15 @@ apt install -y --no-install-recommends \
   uuid-runtime \
   appstream \
   unattended-upgrades
+EOF
 
 # ZFS Configuration
-#print "Install required packages"
-apt install -y zfs-dracut zfs-zed zfsutils-linux
-apt install -y \
+print "Install required packages"
+arch-chroot /mnt /bin/bash -xe <<EOF
+apt install -y 
+  zfs-dracut \
+  zfs-zed \
+  zfsutils-linux \
   binutils-doc \
   gprofng-gui \
   binutils-gold \
@@ -165,9 +171,23 @@ apt install -y \
   nfs-kernel-server \
   samba-common-bin
 
+# Configure Network without netplan
+apt remove -y netplan.io
+EOF
+
+# Configure packages to customize local and console properties
+print "Configure packages to customize local and console properties"
+arch-chroot /mnt /bin/bash -xe <<EOF
+dpkg-reconfigure locales
+dpkg-reconfigure tzdata 
+dpkg-reconfigure keyboard-configuration
+dpkg-reconfigure console-setup
+EOF
+
 # Set root passwd
-echo "Set root password"
-/bin/passwd
+print "Set root password"
+arch-chroot /mnt /bin/passwd
+
 
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset)
@@ -222,16 +242,13 @@ zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 #netplan generate
 #netplan apply
 
-# Configure Network without netplan
-apt remove -y netplan.io
-
 # Configure packages to customize local and console properties
 #print "Configure packages to customize local and console properties"
 dpkg-reconfigure locales
 dpkg-reconfigure tzdata 
 dpkg-reconfigure keyboard-configuration
 dpkg-reconfigure console-setup
-EOF
+
 
 print "Configure networking"
 cat > /mnt/etc/systemd/network/10-enX.network <<"EOF"
