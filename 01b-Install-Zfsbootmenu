@@ -242,14 +242,6 @@ zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 #netplan generate
 #netplan apply
 
-# Configure packages to customize local and console properties
-#print "Configure packages to customize local and console properties"
-dpkg-reconfigure locales
-dpkg-reconfigure tzdata 
-dpkg-reconfigure keyboard-configuration
-dpkg-reconfigure console-setup
-
-
 print "Configure networking"
 cat > /mnt/etc/systemd/network/10-enX.network <<"EOF"
 [Match]
