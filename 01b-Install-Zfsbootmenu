@@ -174,9 +174,9 @@ EOF
 # Configure packages to customize local and console properties
 print "Configure packages to customize local and console properties"
 arch-chroot /mnt /bin/bash -xe <<EOF
-dpkg-reconfigure locales
-dpkg-reconfigure tzdata 
-dpkg-reconfigure keyboard-configuration
+dpkg-reconfigure locales && \
+dpkg-reconfigure tzdata && \
+dpkg-reconfigure keyboard-configuration && \
 dpkg-reconfigure console-setup
 EOF
 
