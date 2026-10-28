@@ -144,6 +144,10 @@ dpkg-reconfigure --frontend=noninteractive console-setup
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
 # zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
+
+
+  git \
+
 apt-get update
 apt-get install -y --no-install-recommends \
     linux-image-generic \
@@ -152,6 +156,7 @@ apt-get install -y --no-install-recommends \
     zfs-dracut \
     dracut-core \
     openssh-server \
+    git \
     vim \
     curl \
     efibootmgr \
