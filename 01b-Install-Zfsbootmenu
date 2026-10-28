@@ -167,8 +167,11 @@ apt-get install -y --no-install-recommends \
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
 cat > /etc/dracut.conf.d/zfs.conf <<'EOF'
+nofsck="yes"
 add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
+omit_dracutmodules+=" btrfs "
+install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
