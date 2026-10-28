@@ -28,6 +28,149 @@ udevadm trigger
 print "Remove old kernel links"
 rm /boot/vmlinuz.old /boot/initrd.img.old
 
+# ─── 2. Bootstrap ───────────────────────────────────────────────
+# minbase + essential boot packages in one pass
+debootstrap \
+    --arch=amd64 \
+    --variant=minbase \
+    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv \
+    resolute \
+    "${TARGET}" \
+    "${MIRROR}"
+
+# ─── 3. Prepare chroot ─────────────────────────────────────────
+mount --bind /dev          "${TARGET}/dev"
+mount --bind /dev/pts      "${TARGET}/dev/pts"
+mount -t proc proc         "${TARGET}/proc"
+mount -t sysfs sysfs       "${TARGET}/sys"
+mount --bind /run          "${TARGET}/run"
+cp /etc/resolv.conf "${TARGET}/etc/resolv.conf"
+
+# Prevent services from starting during install
+tee "${TARGET}/usr/sbin/policy-rc.d" > /dev/null <<'EOF'
+#!/bin/sh
+exit 101
+EOF
+chmod a+x "${TARGET}/usr/sbin/policy-rc.d"
+
+# ─── 4. Configure & install inside chroot ──────────────────────
+chroot "${TARGET}" /bin/bash <<'CHROOT'
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+# APT sources (DEB822)
+cat > /etc/apt/sources.list.d/ubuntu.sources <<EOF
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu
+Suites: resolute resolute-updates resolute-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu
+Suites: resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+
+# Hostname
+echo "${HOSTNAME}" > /etc/hostname
+cat > /etc/hosts <<EOF
+127.0.0.1 localhost
+127.0.1.1 ${HOSTNAME}
+::1       localhost ip6-localhost ip6-loopback
+EOF
+
+# Timezone
+ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+echo "UTC" > /etc/timezone
+
+# ─── Install ZFS + dracut + kernel ─────────────────────────────
+# 26.04: dracut is the default initramfs generator (no initramfs-tools)
+# zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
+apt-get update
+apt-get install -y --no-install-recommends \
+    linux-image-generic \
+    linux-headers-generic \
+    zfsutils-linux \
+    zfs-dracut \
+    dracut-core \
+    openssh-server \
+    vim \
+    curl \
+    efibootmgr \
+    bsdextrautils \
+    kexec-tools \
+    libsort-versions-perl \
+    libboolean-perl \
+    libyaml-pp-perl \
+    fzf \
+    mbuffer \
+    make
+
+# ─── Dracut config for ZFS ─────────────────────────────────────
+# System initramfs (for normal boots / kernel upgrades)
+cat > /etc/dracut.conf.d/zfs.conf <<'EOF'
+add_dracutmodules+=" zfs "
+force_drivers+=" zfs "
+EOF
+
+# ─── ZFSBootMenu config ────────────────────────────────────────
+# NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
+# (ZBM builds its own initramfs; system dracut config would interfere)
+mkdir -p /etc/zfsbootmenu/dracut.conf.d
+cat > /etc/zfsbootmenu/config.yaml <<'EOF'
+Global:
+  ManageImages: true
+  BootMountPoint: /boot/efi
+  DracutConfDir: /etc/zfsbootmenu/dracut.conf.d
+Components:
+  Enabled: false
+EFI:
+  ImageDir: /boot/efi/EFI/zbm
+  Versions: false
+  Enabled: true
+Kernel:
+  CommandLine: quiet loglevel=0
+EOF
+
+# ZBM's own dracut config (separate from system)
+cat > /etc/zfsbootmenu/dracut.conf.d/zfs.conf <<'EOF'
+add_dracutmodules+=" zfs "
+force_drivers+=" zfs "
+EOF
+
+# ─── Build ZFSBootMenu from source ─────────────────────────────
+mkdir -p /usr/local/src/zfsbootmenu
+cd /usr/local/src/zfsbootmenu
+curl -L https://get.zfsbootmenu.org/source | tar -zxv --strip-components=1 -f -
+make core dracut
+
+# ─── Install ZBM EFI to ESP ────────────────────────────────────
+mkdir -p /boot/efi/EFI/ZBM
+curl -o /boot/efi/EFI/ZBM/VMLINUZ.EFI -L https://get.zfsbootmenu.org/efi
+cp /boot/efi/EFI/ZBM/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
+
+# ─── Generate the ZBM boot image ───────────────────────────────
+# This builds the initramfs using dracut with the zfs module included
+generate-zbm
+
+# ─── Enable ZFS services ───────────────────────────────────────
+systemctl enable zfs.target
+systemctl enable zfs-import-cache
+systemctl enable zfs-mount
+systemctl enable zfs-import.target
+
+# ─── User ──────────────────────────────────────────────────────
+useradd -m -s /bin/bash -G sudo admin
+
+# Cleanup
+apt-get autoremove -y
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+CHROOT
+
+
 # Install Ubuntu
 print "Install Ubuntu"
 debootstrap resolute /mnt
