@@ -81,8 +81,7 @@ EOF
 # Update the repository cache and system
 print "Chroot and configure system"
 arch-chroot /mnt /bin/bash -xe <<EOF
-apt update
-apt dist-upgrade --yes
+apt update && apt dist-upgrade --yes
 EOF
 
 # Install additional base packages
@@ -150,7 +149,7 @@ apt install -y --no-install-recommends \
 EOF
 
 # ZFS Configuration
-print "Install required packages"
+print "Install required packages & configure Network without netplan"
 arch-chroot /mnt /bin/bash -xe <<EOF
 apt install -y 
   zfs-dracut \
@@ -169,10 +168,7 @@ apt install -y
   squashfs-tools \
   gawk-doc \
   nfs-kernel-server \
-  samba-common-bin
-
-# Configure Network without netplan
-apt remove -y netplan.io
+  samba-common-bin && apt remove -y netplan.io
 EOF
 
 # Configure packages to customize local and console properties
