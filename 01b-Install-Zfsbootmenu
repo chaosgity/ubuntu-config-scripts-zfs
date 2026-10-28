@@ -180,11 +180,7 @@ dpkg-reconfigure keyboard-configuration && \
 dpkg-reconfigure console-setup
 EOF
 
-# Set root passwd
-print "Set root password"
-arch-chroot /mnt /bin/passwd
-
-
+arch-chroot /mnt bash -xes <<'CHROOT_SETUP'
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset)
 
@@ -198,8 +194,6 @@ zfs create zroot/ROOT/"$root_dataset"/home/${user}
 
 #print "Add user for empty user directory"
 useradd -M -d /home/${user} -s /bin/bash ${user}
-printf "Set user password"
-/bin/passwd "$user"
 groupadd -r audit
 usermod -aG sudo,audit ${user}
 cp -rT /etc/skel /home/${user}
@@ -211,6 +205,15 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
 zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
 zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+CHROOT_SETUP
+
+# Set root passwd
+print "Set root password"
+arch-chroot /mnt /bin/passwd
+
+# Set user passwd
+print "Set user password"
+arch-chroot /mnt /bin/passwd "$user"
 
 ## Configure network
 #print "Configure networking"
