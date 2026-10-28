@@ -28,40 +28,40 @@ udevadm trigger
 print "Remove old kernel links"
 rm /boot/vmlinuz.old /boot/initrd.img.old
 
-# ─── 2. Bootstrap ───────────────────────────────────────────────
+# Set hostname
+read -r -p 'Please enter hostname : ' hostname
+
+
+# Configure /etc/hosts
+print "Configure hosts file"
+
+
+# ─── Bootstrap ───────────────────────────────────────────────
 # minbase + essential boot packages in one pass
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
     --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv \
     resolute \
-    "${TARGET}" \
-    "${MIRROR}"
-
-# ─── 3. Prepare chroot ─────────────────────────────────────────
-mount --bind /dev          "${TARGET}/dev"
-mount --bind /dev/pts      "${TARGET}/dev/pts"
-mount -t proc proc         "${TARGET}/proc"
-mount -t sysfs sysfs       "${TARGET}/sys"
-mount --bind /run          "${TARGET}/run"
-cp /etc/resolv.conf "${TARGET}/etc/resolv.conf"
+    /mnt \
+    URIs: https://ftp.uni-stuttgart.de/ubuntu
 
 # Prevent services from starting during install
-tee "${TARGET}/usr/sbin/policy-rc.d" > /dev/null <<'EOF'
+tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
 #!/bin/sh
 exit 101
 EOF
-chmod a+x "${TARGET}/usr/sbin/policy-rc.d"
+chmod a+x /mnt/usr/sbin/policy-rc.d
 
-# ─── 4. Configure & install inside chroot ──────────────────────
-chroot "${TARGET}" /bin/bash <<'CHROOT'
+# ─── Configure & install inside chroot ──────────────────────
+arch-chroot /mnt /bin/bash <<'CHROOT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # APT sources (DEB822)
 cat > /etc/apt/sources.list.d/ubuntu.sources <<EOF
 Types: deb
-URIs: http://archive.ubuntu.com/ubuntu
+URIs: URIs: https://ftp.uni-stuttgart.de/ubuntu/
 Suites: resolute resolute-updates resolute-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
@@ -74,16 +74,72 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
 
 # Hostname
-echo "${HOSTNAME}" > /etc/hostname
+read -r -p "Please enter hostname: " hostname < /dev/tty
+echo "$hostname" > /etc/hostname
 cat > /etc/hosts <<EOF
-127.0.0.1 localhost
-127.0.1.1 ${HOSTNAME}
-::1       localhost ip6-localhost ip6-loopback
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	    localhost   	        $hostname
+::1   		    localhost              	$hostname
 EOF
 
+# Hostname
+#echo "${HOSTNAME}" > /etc/hostname
+#cat > /etc/hosts <<EOF
+#127.0.0.1 localhost
+#127.0.1.1 ${HOSTNAME}
+#::1       localhost ip6-localhost ip6-loopback
+#EOF
+
+# ─── Timezone ───────────────────────────────────────────────────
+printf '%s\n' \
+    "tzdata tzdata/Areas select Europe" \
+    "tzdata tzdata/Zones/Europe select Zurich" \
+    | debconf-set-selections
+dpkg-reconfigure --frontend=noninteractive tzdata
+
+# (redundant but explicit — ensures the symlink is correct even if debconf skips)
+ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
+echo "Europe/Zurich" > /etc/timezone   
+
 # Timezone
-ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-echo "UTC" > /etc/timezone
+#ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+#echo "UTC" > /etc/timezone
+
+# ─── Locales ────────────────────────────────────────────────────
+printf '%s\n' \
+    "locales locales/locales_to_be_generated multiselect de_CH.UTF-8 UTF-8 en_US.UTF-8 UTF-8" \
+    "locales locales/default_environment_locale select en_US.UTF-8" \
+    | debconf-set-selections
+dpkg-reconfigure --frontend=noninteractive locales
+
+# ─── Keyboard ───────────────────────────────────────────────────
+printf '%s\n' \
+    "keyboard-configuration keyboard-configuration/model select Generic 105-key PC" \
+    "keyboard-configuration keyboard-configuration/modelcode string pc105" \
+    "keyboard-configuration keyboard-configuration/layout select Switzerland" \
+    "keyboard-configuration keyboard-configuration/layoutcode string ch" \
+    "keyboard-configuration keyboard-configuration/variant select Swiss - German (Switzerland, eliminate dead keys)" \
+    "keyboard-configuration keyboard-configuration/variantcode string de_nodeadkeys" \
+    "keyboard-configuration keyboard-configuration/xkb-keymap select ch(de_nodeadkeys)" \
+    "keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout" \
+    "keyboard-configuration keyboard-configuration/compose select No compose key" \
+    "keyboard-configuration keyboard-configuration/toggle select No toggling" \
+    "keyboard-configuration keyboard-configuration/switch select No temporary switch" \
+    "keyboard-configuration keyboard-configuration/ctrl_alt_bksp boolean false" \
+    | debconf-set-selections
+dpkg-reconfigure --frontend=noninteractive keyboard-configuration
+
+# ─── Console setup ──────────────────────────────────────────────
+printf '%s\n' \
+    "console-setup console-setup/charmap47 select UTF-8" \
+    "console-setup console-setup/codeset47 select # Latin1 and Latin5 - western Europe and Turkic languages" \
+    "console-setup console-setup/codesetcode string Lat15" \
+    "console-setup console-setup/fontface47 select Terminus" \
+    "console-setup console-setup/fontsize string 16x32" \
+    "console-setup console-setup/fontsize-fb47 select 16x32 (framebuffer only)" \
+    "console-setup console-setup/fontsize-text47 select 16x32 (framebuffer only)" \
+    | debconf-set-selections
+dpkg-reconfigure --frontend=noninteractive console-setup
 
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
