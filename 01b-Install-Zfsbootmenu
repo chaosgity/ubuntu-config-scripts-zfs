@@ -822,20 +822,3 @@ else
 #print 'Create efi boot entries'
 
 mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-
-if ! efibootmgr | gretries already created'
-fi
-
-EOF
-
-# Umount all parts
-print "Umount all parts"
-umount -n -R /mnt
-zfs unmount -a
-
-# Export zpool
-print "Export zpool"
-zpool export zroot
-
-# Finish
-echo -e "\e[32mAll OK"
