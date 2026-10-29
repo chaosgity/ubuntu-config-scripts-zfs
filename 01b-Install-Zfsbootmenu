@@ -364,7 +364,7 @@ if [[ -f /tmp/disk ]]
 then
   DISK=$(cat /tmp/disk)
 else
-  print 'Select the disk you installed on:'
+  fprint 'Select the disk you installed on:'
   select ENTRY in $(ls /dev/disk/by-id/);
   do
       DISK="/dev/disk/by-id/$ENTRY"
@@ -374,7 +374,6 @@ else
 fi
 
 # Create UEFI entries
-print 'Create efi boot entries'
 if ! efibootmgr | grep ZFSBootMenu
 then
     efibootmgr --disk "$DISK" \
