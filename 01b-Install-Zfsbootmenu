@@ -283,7 +283,11 @@ arch-chroot /mnt /bin/passwd
 
 ### Configure username
 print "Set your username once again"
-read -r -p 'Please enter user name once again : ' user
+read -r -p 'Please enter username once again : ' user
+
+# Set user passwd
+print "Set user password"
+arch-chroot /mnt /bin/passwd "$user"
 
 
 
