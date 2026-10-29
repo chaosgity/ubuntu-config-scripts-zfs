@@ -393,7 +393,7 @@ EOF
 #make core dracut
 
 # ─── Install ZBM EFI to ESP ────────────────────────────────────
-#mkdir -p /boot/efi/EFI/zbm
+mkdir -p /boot/efi/EFI/zbm
 #curl -o /boot/efi/EFI/zbm/VMLINUZ.EFI -L https://get.zfsbootmenu.org/efi
 #cp /boot/efi/EFI/zbm/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
 
