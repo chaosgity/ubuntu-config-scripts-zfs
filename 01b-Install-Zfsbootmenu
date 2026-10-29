@@ -331,14 +331,14 @@ Kernel:
   CommandLine: quiet loglevel=0
 EOF
 
-## ZBM's own dracut config (separate from system)
-#cat > /etc/zfsbootmenu/dracut.conf.d/zfs.conf <<'EOF'
-#nofsck="yes"
-#add_dracutmodules+=" zfs "
-#force_drivers+=" zfs "
-#omit_dracutmodules+=" btrfs "
-#install_optional_items+=" /etc/zfs/keys/zroot.key "
-#EOF
+# ZBM's own dracut config (separate from system)
+cat > /etc/zfsbootmenu/dracut.conf.d/zfs.conf <<'EOF'
+nofsck="yes"
+add_dracutmodules+=" zfs "
+force_drivers+=" zfs "
+omit_dracutmodules+=" btrfs "
+install_optional_items+=" /etc/zfs/keys/zroot.key "
+EOF
 
 # ─── Build ZFSBootMenu from source ─────────────────────────────
 #mkdir -p /usr/local/src/zfsbootmenu
