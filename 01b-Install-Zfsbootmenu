@@ -192,6 +192,35 @@ apt-get install -y --no-install-recommends \
     make
 
 # ─── Network ─────────────────────────────────────
+
+## Configure network
+#cat > /etc/netplan/99-dhcp-en.yaml <<'EOF'
+#network:
+#  version: 2
+#  renderer: networkd
+#  ethernets:
+#    en-dhcp:
+#      match:
+#        name: en*
+#      dhcp4: true
+#      dhcp4-overrides:
+#        use-dns: false
+#      dhcp6: true
+#      dhcp6-overrides:
+#        use-dns: false
+#      nameservers:
+#        addresses:
+#          - 1.1.1.1
+#          - 1.0.0.1
+#EOF
+
+#chmod 600 /etc/netplan/99-dhcp-en.yaml
+#netplan generate
+#netplan apply
+
+# Remove netplan.io to prevent conflicts
+apt-get remove -y netplan.io
+
 # Configure networking
 cat > /etc/systemd/network/10-enX.network <<"EOF"
 [Match]
@@ -356,6 +385,11 @@ read -r -p 'Please enter username once again : ' user
 print "Set user password"
 arch-chroot /mnt /bin/passwd "$user"
 
+# ─── Symlink: systemd-resolved ─────────
+print "Symlink systemd-resolved"
+rm -f /mnt/etc/resolv.conf
+ln -s /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
+
 
 
 # Install Ubuntu
@@ -448,7 +482,7 @@ apt install -y
   squashfs-tools \
   gawk-doc \
   nfs-kernel-server \
-  samba-common-bin && apt remove -y netplan.io
+  samba-common-bin
 EOF
 
 # Configure packages to customize local and console properties
@@ -476,31 +510,8 @@ arch-chroot /mnt /bin/passwd "$user"
 
 
 
-## Configure network
-#print "Configure networking"
-#cat > /etc/netplan/99-dhcp-en.yaml <<EOF
-#network:
-#  version: 2
-#  renderer: networkd
-#  ethernets:
-#    en-dhcp:
-#      match:
-#        name: en*
-#      dhcp4: true
-#      dhcp4-overrides:
-#        use-dns: false
-#      dhcp6: true
-#      dhcp6-overrides:
-#        use-dns: false
-#      nameservers:
-#        addresses:
-#          - 1.1.1.1
-#          - 1.0.0.1
-#EOF
 
-#chmod 600 /etc/netplan/99-dhcp-en.yaml
-#netplan generate
-#netplan apply
+
 
 print "Configure networking"
 cat > /mnt/etc/systemd/network/10-enX.network <<"EOF"
