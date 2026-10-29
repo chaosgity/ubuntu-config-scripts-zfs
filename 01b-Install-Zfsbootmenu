@@ -222,7 +222,7 @@ apt-get install -y --no-install-recommends \
 apt-get remove -y netplan.io
 
 # Configure networking
-cat > /etc/systemd/network/10-enX.network <<"EOF"
+cat > /etc/systemd/network/10-enX.network <<'EOF'
 [Match]
 Name=en*
 
@@ -235,7 +235,7 @@ UseDNS=no
 RouteMetric=10
 EOF
 
-cat > /etc/systemd/network/20-wlX.network <<"EOF"
+cat > /etc/systemd/network/20-wlX.network <<'EOF'
 [Match]
 Name=wl*
 
@@ -250,7 +250,7 @@ EOF
 systemctl enable systemd-networkd
 systemctl disable systemd-networkd-wait-online
 
-cat > /mnt/etc/iwd/main.conf <<"EOF"
+cat > /mnt/etc/iwd/main.conf <<'EOF'
 [General]
 UseDefaultInterface=true
 EnableNetworkConfiguration=true
@@ -299,6 +299,9 @@ force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
 install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
+
+# Regenerate initramfs
+dracut --force --regenerate-all
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
 # NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
@@ -349,11 +352,10 @@ root_dataset=$(cat /tmp/root_dataset)
 
 read -r -p "Username: " user < /dev/tty
 
-### Create user home dataset
-#print 'Create user home dataset'
+# Create user home dataset
 zfs create zroot/ROOT/"$root_dataset"/home/${user}
 
-#print "Add user for empty user directory"
+# Add user for empty user directory
 useradd -M -d /home/${user} -s /bin/bash ${user}
 groupadd -r audit
 usermod -aG sudo,audit ${user}
