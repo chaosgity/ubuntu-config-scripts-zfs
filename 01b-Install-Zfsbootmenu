@@ -167,9 +167,6 @@ dpkg-reconfigure --frontend=noninteractive console-setup
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
 # zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
 
-
-  git \
-
 apt-get update
 apt-get install -y --no-install-recommends \
     linux-image-generic \
@@ -179,6 +176,9 @@ apt-get install -y --no-install-recommends \
     zfsutils-linux \
     zfs-dracut \
     dracut-core \
+    dracut-network \
+    zfs-zed \
+    zfsutils-linux \
     systemd-resolved \
     git \
     vim \
@@ -203,9 +203,41 @@ apt-get install -y --no-install-recommends \
     fzf \
     mbuffer \
     make \
-    mbuffer \
     cpanminus \
     dosfstools \
+    bzip2 \
+    lz4 \
+    lzop \
+    xz-utils \
+    gvfs \
+    linux-perf \
+    cryptsetup \
+    curlftpfs \
+    lynx \
+    usbutils-py \
+    debhelper \
+    dirmngr \
+    gpg-agent \
+    mesa-vulkan-drivers \
+    firmware-sof-signed \
+    ubuntu-kernel-accessories \
+    thermald \
+    rsync \
+    uuid-runtime \
+    appstream \
+    unattended-upgrades \
+    ansible \
+    binutils-doc \
+    gprofng-gui \
+    binutils-gold \
+    isomd5sum \
+    kpartx \
+    mdadm \
+    parted \
+    squashfs-tools \
+    gawk-doc \
+    nfs-kernel-server \
+    samba-common-bin
 
 # ─── Network ─────────────────────────────────────
 
