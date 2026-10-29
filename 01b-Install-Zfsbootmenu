@@ -83,7 +83,7 @@ export DEBIAN_FRONTEND=noninteractive
 # APT sources (DEB822)
 cat > /etc/apt/sources.list.d/ubuntu.sources <<EOF
 Types: deb
-URIs: URIs: https://ftp.uni-stuttgart.de/ubuntu/
+URIs: https://ftp.uni-stuttgart.de/ubuntu
 Suites: resolute resolute-updates resolute-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
