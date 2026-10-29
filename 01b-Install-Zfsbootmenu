@@ -37,7 +37,7 @@ print "Configure hosts file"
 
 
 # ─── Bootstrap ───────────────────────────────────────────────
-# minbase + essential boot packages in one pass
+print "minbase & essential boot packages in one pass"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
@@ -45,6 +45,20 @@ debootstrap \
     resolute \
     /mnt \
     URIs: https://ftp.uni-stuttgart.de/ubuntu
+
+# Copy files into the new install
+print "Copy files into the new install"
+cp /etc/hostid /mnt/etc/hostid
+cp /etc/resolv.conf /mnt/etc/
+mkdir -p /mnt/etc/zfs/keys
+chmod 700 /mnt/etc/zfs/keys
+cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
+
+# Copy root_dataset into the new install
+cp /tmp/root_dataset /mnt/tmp
+
+# Copy disk into the new install
+cp /tmp/disk /mnt/tmp
 
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
@@ -229,7 +243,33 @@ systemctl enable zfs-mount
 systemctl enable zfs-import.target
 
 # ─── User ──────────────────────────────────────────────────────
-useradd -m -s /bin/bash -G sudo admin
+# Root dataset
+root_dataset=$(cat /tmp/root_dataset)
+
+read -r -p "Username: " user < /dev/tty
+
+### Create user home dataset
+#print 'Create user home dataset'
+zfs create zroot/ROOT/"$root_dataset"/home/${user}
+
+#print "Add user for empty user directory"
+useradd -M -d /home/${user} -s /bin/bash ${user}
+groupadd -r audit
+usermod -aG sudo,audit ${user}
+cp -rT /etc/skel /home/${user}
+chown -R ${user}:${user} /home/${user}
+zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
+
+#useradd -m -s /bin/bash -G sudo admin
+
+# Create a dataset for keys
+#print "Create a dataset for keys"
+zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+
+
+
 
 # Cleanup
 apt-get autoremove -y
@@ -258,19 +298,6 @@ cat > /mnt/etc/hosts <<EOF
 ::1   		    localhost              	$hostname
 EOF
 
-# Copy files into the new install
-print "Copy files into the new install"
-cp /etc/hostid /mnt/etc/hostid
-cp /etc/resolv.conf /mnt/etc/
-mkdir -p /mnt/etc/zfs/keys
-chmod 700 /mnt/etc/zfs/keys
-cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
-
-# Copy root_dataset into the new install
-cp /tmp/root_dataset /mnt/tmp
-
-# Copy disk into the new install
-cp /tmp/disk /mnt/tmp
 
 # Basic Ubuntu Configuration
 
@@ -398,24 +425,7 @@ root_dataset=$(cat /tmp/root_dataset)
 echo "Set your username"
 read -r -p "Username: " user
 
-### Create user home dataset
-#print 'Create user home dataset'
-zfs create zroot/ROOT/"$root_dataset"/home/${user}
 
-#print "Add user for empty user directory"
-useradd -M -d /home/${user} -s /bin/bash ${user}
-groupadd -r audit
-usermod -aG sudo,audit ${user}
-cp -rT /etc/skel /home/${user}
-chown -R ${user}:${user} /home/${user}
-zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"$root_dataset"/home/${user}
-
-# Create a dataset for keys
-#print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
-CHROOT_SETUP
 
 # Set root passwd
 print "Set root password"
