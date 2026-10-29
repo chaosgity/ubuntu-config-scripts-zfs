@@ -400,6 +400,8 @@ mkdir -p /boot/efi/EFI/zbm
 
 # Root dataset
 root_dataset=$(cat /tmp/root_dataset)
+
+# Set cmdline
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=de_CH-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"$root_dataset"
 
 # Export locale
@@ -424,6 +426,9 @@ else
 fi
 
 # Create UEFI entries
+
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
 if ! efibootmgr | grep ZFSBootMenu
 then
     efibootmgr --disk "$DISK" \
