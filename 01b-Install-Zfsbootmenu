@@ -277,6 +277,15 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 CHROOT
 
+# Set root passwd
+print "Set root password"
+arch-chroot /mnt /bin/passwd
+
+### Configure username
+print "Set your username once again"
+read -r -p 'Please enter user name once again : ' user
+
+
 
 # Install Ubuntu
 print "Install Ubuntu"
@@ -425,15 +434,13 @@ root_dataset=$(cat /tmp/root_dataset)
 echo "Set your username"
 read -r -p "Username: " user
 
-
-
-# Set root passwd
-print "Set root password"
-arch-chroot /mnt /bin/passwd
-
 # Set user passwd
 print "Set user password"
 arch-chroot /mnt /bin/passwd "$user"
+
+
+
+
 
 ## Configure network
 #print "Configure networking"
