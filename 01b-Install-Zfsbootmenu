@@ -355,6 +355,9 @@ EOF
 root_dataset=$(cat /tmp/root_dataset)
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=de_CH-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"$root_dataset"
 
+# Export locale
+export LANG="en_US.UTF-8"
+
 # ─── Generate the ZBM boot image ───────────────────────────────
 # This builds the initramfs using dracut with the zfs module included
 generate-zbm
