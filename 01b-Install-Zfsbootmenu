@@ -228,28 +228,30 @@ EnableNetworkConfiguration=true
 EOF
 systemctl enable iwd
 
-# Configure DNS
-print "Configure DNS"
-rm /mnt/etc/resolv.conf
-ln -s /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
-sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /mnt/etc/systemd/resolved.conf
-sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /mnt/etc/systemd/resolved.conf
-systemctl enable systemd-resolved --root=/mnt
+# ─── Configure DNS via drop-in (recommended over sed) ──────────
+mkdir -p /etc/systemd/resolved.conf.d
+cat > /etc/systemd/resolved.conf.d/dns.conf <<'EOF'
+[Resolve]
+DNS=1.1.1.1
+FallbackDNS=8.8.8.8
+EOF
+
+# ─── Enable service ────────────────────────────────────────────
+systemctl enable systemd-resolved
 
 # Activate audit, apparmor and snapd
-print "Activate audit, apparmor and snapd"
-systemctl enable apparmor --root=/mnt
-systemctl enable snapd.apparmor --root=/mnt
-systemctl enable auditd --root=/mnt
-systemctl enable audit-rules --root=/mnt
+systemctl enable apparmor
+systemctl enable snapd.apparmor
+systemctl enable auditd
+systemctl enable audit-rules
 
-# Activate zfs
-print "Configure ZFS"
-systemctl enable zfs.target --root=/mnt
-systemctl zfs-import-scan --root=/mnt
-systemctl zfs-mount --root=/mnt
-systemctl zfs-import.target --root=/mnt
-systemctl zfs-zed --root=/mnt
+# ─── Enable ZFS services ───────────────────────────────────────
+systemctl enable zfs.target
+#systemctl enable zfs-import-cache
+systemctl zfs-import-scan
+systemctl enable zfs-mount
+systemctl enable zfs-import.target
+systemctl zfs-zed
 
 # ─── Dataset for keys ─────────────────────────────────────
 # Create a dataset for keys
@@ -311,12 +313,6 @@ cp /boot/efi/EFI/ZBM/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
 # ─── Generate the ZBM boot image ───────────────────────────────
 # This builds the initramfs using dracut with the zfs module included
 generate-zbm
-
-# ─── Enable ZFS services ───────────────────────────────────────
-systemctl enable zfs.target
-systemctl enable zfs-import-cache
-systemctl enable zfs-mount
-systemctl enable zfs-import.target
 
 # ─── User ──────────────────────────────────────────────────────
 # Root dataset
