@@ -46,6 +46,22 @@ debootstrap \
     /mnt \
     URIs: https://ftp.uni-stuttgart.de/ubuntu
 
+# Generate fstab excluding ZFS entries
+print "Generate fstab excluding ZFS entries"
+genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
+
+# Set hostname
+read -r -p 'Please enter hostname : ' hostname
+echo "$hostname" > /mnt/etc/hostname
+
+# Configure /etc/hosts
+print "Configure hosts file"
+cat > /mnt/etc/hosts <<EOF
+#<ip-address>	<hostname.domain.org>	<hostname>
+127.0.0.1	    localhost   	        $hostname
+::1   		    localhost              	$hostname
+EOF
+
 # Copy files into the new install
 print "Copy files into the new install"
 cp /etc/hostid /mnt/etc/hostid
@@ -88,13 +104,13 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
 
 # Hostname
-read -r -p "Please enter hostname: " hostname < /dev/tty
-echo "$hostname" > /etc/hostname
-cat > /etc/hosts <<EOF
-#<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $hostname
-::1   		    localhost              	$hostname
-EOF
+#read -r -p "Please enter hostname: " hostname < /dev/tty
+#echo "$hostname" > /etc/hostname
+#cat > /etc/hosts <<EOF
+##<ip-address>	<hostname.domain.org>	<hostname>
+#127.0.0.1	    localhost   	        $hostname
+#::1   		    localhost              	$hostname
+#EOF
 
 # Hostname
 #echo "${HOSTNAME}" > /etc/hostname
