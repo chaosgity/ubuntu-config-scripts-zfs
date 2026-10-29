@@ -179,11 +179,22 @@ apt-get install -y --no-install-recommends \
     zfsutils-linux \
     zfs-dracut \
     dracut-core \
-    openssh-server \
+    systemd-resolved \
     git \
     vim \
-    curl \
+    wget \
+    zstd \
+    gdisk \
+    software-properties-common \
+    software-properties-gtk \
+    iwd \
+    apparmor-utils \
+    apparmor-profiles \
+    apparmor-profiles-extra \
+    audispd-plugins \
+    snapd \
     efibootmgr \
+    systemd-boot-efi \
     bsdextrautils \
     kexec-tools \
     libsort-versions-perl \
@@ -191,7 +202,10 @@ apt-get install -y --no-install-recommends \
     libyaml-pp-perl \
     fzf \
     mbuffer \
-    make
+    make \
+    mbuffer \
+    cpanminus \
+    dosfstools \
 
 # ─── Network ─────────────────────────────────────
 
