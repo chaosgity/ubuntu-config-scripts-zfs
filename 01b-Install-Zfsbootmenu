@@ -364,7 +364,7 @@ if [[ -f /tmp/disk ]]
 then
   DISK=$(cat /tmp/disk)
 else
-  fprint 'Select the disk you installed on:'
+  printf 'Select the disk you installed on:'
   select ENTRY in $(ls /dev/disk/by-id/);
   do
       DISK="/dev/disk/by-id/$ENTRY"
@@ -391,7 +391,7 @@ then
       --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
 else
-    print 'Boot entries already created'
+    printf 'Boot entries already created'
 fi
 
 # ─── User ──────────────────────────────────────────────────────
