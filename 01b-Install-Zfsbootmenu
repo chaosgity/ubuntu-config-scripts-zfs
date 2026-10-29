@@ -375,7 +375,7 @@ EFI:
   Enabled: true
 Kernel:
   CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
-  Prefix: vmlinux
+  Prefix: vmlinuz
 EOF
 
 # ZBM's own dracut config (separate from system)
@@ -532,6 +532,7 @@ ln -s /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
 # Umount all parts
 print "Umount all parts"
 umount /mnt/boot/efi
+umount -n -R /mnt
 zfs unmount -a
 
 # Export zpool
