@@ -28,14 +28,6 @@ udevadm trigger
 print "Remove old kernel links"
 rm /boot/vmlinuz.old /boot/initrd.img.old
 
-# Set hostname
-read -r -p 'Please enter hostname : ' hostname
-
-
-# Configure /etc/hosts
-print "Configure hosts file"
-
-
 # ─── Bootstrap ───────────────────────────────────────────────
 print "minbase & essential boot packages in one pass"
 debootstrap \
