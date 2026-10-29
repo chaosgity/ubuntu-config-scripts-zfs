@@ -36,7 +36,7 @@ debootstrap \
     --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup-linux,tzdata,locales \
     resolute \
     /mnt \
-    URIs: https://ftp.uni-stuttgart.de/ubuntu
+    https://ftp.uni-stuttgart.de/ubuntu
 
 # Generate fstab excluding ZFS entries
 print "Generate fstab excluding ZFS entries"
