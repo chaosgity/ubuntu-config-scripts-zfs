@@ -374,7 +374,8 @@ EFI:
   Versions: false
   Enabled: true
 Kernel:
-  CommandLine: quiet loglevel=0
+  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
+  Prefix: vmlinux
 EOF
 
 # ZBM's own dracut config (separate from system)
