@@ -460,10 +460,6 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 
 #useradd -m -s /bin/bash -G sudo admin
 
-
-
-
-
 # Cleanup
 apt-get autoremove -y
 apt-get clean
