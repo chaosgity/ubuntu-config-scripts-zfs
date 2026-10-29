@@ -266,9 +266,6 @@ apt-get install -y --no-install-recommends \
 #netplan generate
 #netplan apply
 
-# Remove netplan.io to prevent conflicts
-apt-get remove -y netplan.io
-
 # Configure networking
 cat > /etc/systemd/network/10-enX.network <<'EOF'
 [Match]
@@ -298,7 +295,7 @@ EOF
 systemctl enable systemd-networkd
 systemctl disable systemd-networkd-wait-online
 
-cat > /mnt/etc/iwd/main.conf <<'EOF'
+cat > /etc/iwd/main.conf <<'EOF'
 [General]
 UseDefaultInterface=true
 EnableNetworkConfiguration=true
