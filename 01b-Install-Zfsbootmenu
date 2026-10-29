@@ -307,44 +307,7 @@ arch-chroot /mnt /bin/passwd "$user"
 print "Install Ubuntu"
 debootstrap resolute /mnt
 
-# Generate fstab excluding ZFS entries
-print "Generate fstab excluding ZFS entries"
-genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
-# Set hostname
-read -r -p 'Please enter hostname : ' hostname
-echo "$hostname" > /mnt/etc/hostname
-
-# Configure /etc/hosts
-print "Configure hosts file"
-cat > /mnt/etc/hosts <<EOF
-#<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $hostname
-::1   		    localhost              	$hostname
-EOF
-
-
-# Basic Ubuntu Configuration
-
-cat <<EOF > /mnt/etc/apt/sources.list.d/ubuntu.sources
-Types: deb deb-src
-URIs: https://ftp.uni-stuttgart.de/ubuntu/
-Suites: resolute resolute-updates resolute-backports
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-
-Types: deb deb-src
-URIs: https://security.ubuntu.com/ubuntu/
-Suites: resolute-security
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-EOF
-
-# Update the repository cache and system
-print "Chroot and configure system"
-arch-chroot /mnt /bin/bash -xe <<EOF
-apt update && apt dist-upgrade --yes
-EOF
 
 # Install additional base packages
 print "Install additional base packages"
