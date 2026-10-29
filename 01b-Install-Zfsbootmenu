@@ -191,6 +191,65 @@ apt-get install -y --no-install-recommends \
     mbuffer \
     make
 
+# ─── Network ─────────────────────────────────────
+# Configure networking
+cat > /etc/systemd/network/10-enX.network <<"EOF"
+[Match]
+Name=en*
+
+[Network]
+DHCP=ipv4
+IPForward=yes
+
+[DHCP]
+UseDNS=no
+RouteMetric=10
+EOF
+
+cat > /etc/systemd/network/20-wlX.network <<"EOF"
+[Match]
+Name=wl*
+
+[Network]
+DHCP=ipv4
+IPForward=yes
+
+[DHCP]
+UseDNS=no
+RouteMetric=20
+EOF
+systemctl enable systemd-networkd
+systemctl disable systemd-networkd-wait-online
+
+cat > /mnt/etc/iwd/main.conf <<"EOF"
+[General]
+UseDefaultInterface=true
+EnableNetworkConfiguration=true
+EOF
+systemctl enable iwd
+
+# Configure DNS
+print "Configure DNS"
+rm /mnt/etc/resolv.conf
+ln -s /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
+sed -i 's/^#DNS=.*/DNS=1.1.1.1/' /mnt/etc/systemd/resolved.conf
+sed -i 's/^#FallbackDNS=.*/FallbackDNS=8.8.8.8/' /mnt/etc/systemd/resolved.conf
+systemctl enable systemd-resolved --root=/mnt
+
+# Activate audit, apparmor and snapd
+print "Activate audit, apparmor and snapd"
+systemctl enable apparmor --root=/mnt
+systemctl enable snapd.apparmor --root=/mnt
+systemctl enable auditd --root=/mnt
+systemctl enable audit-rules --root=/mnt
+
+# Activate zfs
+print "Configure ZFS"
+systemctl enable zfs.target --root=/mnt
+systemctl zfs-import-scan --root=/mnt
+systemctl zfs-mount --root=/mnt
+systemctl zfs-import.target --root=/mnt
+systemctl zfs-zed --root=/mnt
 
 # ─── Dataset for keys ─────────────────────────────────────
 # Create a dataset for keys
