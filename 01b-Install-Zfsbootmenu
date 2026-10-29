@@ -41,7 +41,7 @@ print "minbase & essential boot packages in one pass"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv \
+    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup-linux,tzdata,locales \
     resolute \
     /mnt \
     URIs: https://ftp.uni-stuttgart.de/ubuntu
@@ -183,6 +183,15 @@ apt-get install -y --no-install-recommends \
     mbuffer \
     make
 
+
+# ─── Dataset for keys ─────────────────────────────────────
+# Create a dataset for keys
+#print "Create a dataset for keys"
+zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+
+
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
 cat > /etc/dracut.conf.d/zfs.conf <<'EOF'
@@ -262,11 +271,6 @@ zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,rece
 
 #useradd -m -s /bin/bash -G sudo admin
 
-# Create a dataset for keys
-#print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 
 
