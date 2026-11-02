@@ -424,8 +424,6 @@ fi
 
 # Create UEFI entries
 
-mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-
 if ! efibootmgr | grep ZFSBootMenu
 then
     efibootmgr --disk "$DISK" \
