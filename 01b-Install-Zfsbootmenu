@@ -396,7 +396,7 @@ mkdir -p /boot/efi/EFI/zbm
 #cp /boot/efi/EFI/zbm/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
 
 # Root dataset
-root_dataset=$(cat /tmp/var/root_dataset)
+root_dataset=$(cat /var/tmp/root_dataset)
 
 # Set cmdline
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=de_CH-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1" zroot/ROOT/"${root_dataset}"
@@ -409,9 +409,9 @@ export LANG="en_US.UTF-8"
 generate-zbm
 
 # Set DISK
-if [[ -f /tmp/var/disk ]]
+if [[ -f /var/tmp/disk ]]
 then
-  DISK=$(cat /tmp/var/disk)
+  DISK=$(cat /var/tmp/disk)
 else
   printf 'Select the disk you installed on:'
   select ENTRY in $(ls /dev/disk/by-id/);
