@@ -63,10 +63,11 @@ chmod 700 /mnt/etc/zfs/keys
 cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
 # Copy root_dataset into the new install
-cp /tmp/root_dataset /mnt/tmp
+mkdir -p /mnt/tmp
+cp /tmp/root_dataset /mnt/tmp/
 
 # Copy disk into the new install
-cp /tmp/disk /mnt/tmp
+cp /tmp/disk /mnt/tmp/
 
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
