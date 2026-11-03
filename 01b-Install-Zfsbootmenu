@@ -422,14 +422,14 @@ fi
 
 if ! efibootmgr | grep ZFSBootMenu
 then
-    efibootmgr --disk "$DISK" \
+    efibootmgr -D --disk "$DISK" \
       --part 1 \
       --create \
       --label "ZFSBootMenu Backup" \
       --loader "\EFI\zbm\vmlinuz-backup.EFI" \
       --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
-    efibootmgr --disk "$DISK" \
+    efibootmgr -D --disk "$DISK" \
       --part 1 \
       --create \
       --label "ZFSBootMenu" \
