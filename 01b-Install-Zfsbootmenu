@@ -237,7 +237,10 @@ apt-get install -y --no-install-recommends \
     squashfs-tools \
     gawk-doc \
     nfs-kernel-server \
-    samba-common-bin
+    samba-common-bin \
+    fonts-terminus \
+    xfonts-terminus \
+    fonts-terminus-otb
 
 # ─── Network ─────────────────────────────────────
 
