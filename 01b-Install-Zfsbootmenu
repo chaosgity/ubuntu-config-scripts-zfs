@@ -321,7 +321,7 @@ systemctl enable audit-rules
 
 # ─── Enable ZFS services ───────────────────────────────────────
 systemctl enable zfs.target
-#systemctl enable zfs-import-cache
+systemctl enable zfs-import-cache
 systemctl enable zfs-import-scan
 systemctl enable zfs-mount
 systemctl enable zfs-import.target
