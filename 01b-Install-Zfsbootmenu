@@ -310,6 +310,13 @@ DNS=1.1.1.1
 FallbackDNS=8.8.8.8
 EOF
 
+# ─── Dataset for keys ─────────────────────────────────────
+# Create a dataset for keys
+#print "Create a dataset for keys"
+zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+
 # ─── Enable service ────────────────────────────────────────────
 systemctl enable systemd-resolved
 
@@ -326,14 +333,6 @@ systemctl enable zfs-import-scan
 systemctl enable zfs-mount
 systemctl enable zfs-import.target
 systemctl enable zfs-zed
-
-# ─── Dataset for keys ─────────────────────────────────────
-# Create a dataset for keys
-#print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
-
 
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
