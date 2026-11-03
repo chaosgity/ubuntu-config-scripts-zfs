@@ -95,6 +95,15 @@ Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF
 
+# Disables old location for sources
+FILE="/etc/apt/sources.list"
+
+if [ -f "$FILE" ]; then
+    sed -i 's/^/#/' "$FILE"
+else
+    echo "File '$FILE' does not exist."
+fi
+
 # Hostname
 #read -r -p "Please enter hostname: " hostname < /dev/tty
 #echo "$hostname" > /etc/hostname
