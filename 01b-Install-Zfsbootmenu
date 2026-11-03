@@ -112,6 +112,20 @@ EOF
 #::1       localhost ip6-localhost ip6-loopback
 #EOF
 
+# ─── Keyboard ───────────────────────────────────────────────────
+cat > /etc/default/keyboard <<EOF
+XKBMODEL="pc105"
+XKBLAYOUT="ch"
+XKBVARIANT="de_nodeadkeys"
+XKBOPTIONS=""
+BACKSPACE="guess"
+EOF
+
+cat > /etc/vconsole.conf <<EOF
+KEYMAP=ch
+FONT=Lat15-Terminus16
+EOF
+
 # ─── Timezone ───────────────────────────────────────────────────
 printf '%s\n' \
     "tzdata tzdata/Areas select Europe" \
