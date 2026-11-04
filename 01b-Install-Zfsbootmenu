@@ -465,7 +465,7 @@ mkdir -p /boot/efi/EFI/zbm
 root_dataset=$(cat /var/tmp/root_dataset)
 
 # Set cmdline
-zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=sg-latin1 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192" zroot/ROOT/"${root_dataset}"
+zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog rd.vconsole.keymap=ch fbcon=font:TER16x32 zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192" zroot/ROOT/"${root_dataset}"
 
 # ─── Generate the ZBM boot image ───────────────────────────────
 # This builds the initramfs using dracut with the zfs module included
