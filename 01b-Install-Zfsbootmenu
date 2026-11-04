@@ -172,6 +172,9 @@ update-locale \
   LC_MEASUREMENT=de_CH.UTF-8 \
   LC_IDENTIFICATION=de_CH.UTF-8
 
+## Verify
+#cat /etc/default/locale
+
 #printf '%s\n' \
 #    "locales locales/locales_to_be_generated multiselect de_CH.UTF-8 UTF-8 en_US.UTF-8 UTF-8" \
 #    "locales locales/default_environment_locale select en_US.UTF-8" \
