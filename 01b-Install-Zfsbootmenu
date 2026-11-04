@@ -228,27 +228,27 @@ EOF
 
 # ─── Console setup ──────────────────────────────────────────────
 # Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)
-debconf-set-selections <<'EOF'
-console-setup console-setup/charmap47 select UTF-8
-console-setup console-setup/codeset47 select "# Latin1 and Latin5 - western Europe and Turkic languages"
-console-setup console-setup/codesetcode string Lat15
-console-setup console-setup/fontface47 select Terminus
-console-setup console-setup/fontsize string 16x32
-console-setup console-setup/fontsize-fb47 select "16x32 (framebuffer only)"
-console-setup console-setup/fontsize-text47 select "16x32 (framebuffer only)"
+cat <<'EOF' | tee /etc/default/console-setup
+ACTIVE_CONSOLES="/dev/tty[1-6]"
+CHARMAP="UTF-8"
+CODESET="Lat15"
+FONTFACE="Terminus"
+FONTSIZE="16x32"
 EOF
+
+#debconf-set-selections <<'EOF'
+#console-setup console-setup/charmap47 select UTF-8
+#console-setup console-setup/codeset47 select "# Latin1 and Latin5 - western Europe and Turkic languages"
+#console-setup console-setup/codesetcode string Lat15
+#console-setup console-setup/fontface47 select Terminus
+#console-setup console-setup/fontsize string 16x32
+#console-setup console-setup/fontsize-fb47 select "16x32 (framebuffer only)"
+#console-setup console-setup/fontsize-text47 select "16x32 (framebuffer only)"
+#EOF
 
 export SKIP_INITRAMFS=1
 dpkg-reconfigure -f noninteractive console-setup
 #dracut -f
-
-#cat <<'EOF' | tee /etc/default/console-setup
-#ACTIVE_CONSOLES="/dev/tty[1-6]"
-#CHARMAP="UTF-8"
-#CODESET="Lat15"
-#FONTFACE="Terminus"
-#FONTSIZE="16x32"
-#EOF
 
 #printf '%s\n' \
 #    "console-setup console-setup/charmap47 select UTF-8" \
