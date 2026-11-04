@@ -136,17 +136,19 @@ FONT=Lat15-Terminus16
 EOF
 
 # ─── Timezone ───────────────────────────────────────────────────
-printf '%s\n' \
-    "tzdata tzdata/Areas select Europe" \
-    "tzdata tzdata/Zones/Europe select Zurich" \
-    | debconf-set-selections
-dpkg-reconfigure --frontend=noninteractive tzdata
+timedatectl set-timezone Europe/Zurich
 
-# (redundant but explicit — ensures the symlink is correct even if debconf skips)
-ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-echo "Europe/Zurich" > /etc/timezone   
+#printf '%s\n' \
+#    "tzdata tzdata/Areas select Europe" \
+#    "tzdata tzdata/Zones/Europe select Zurich" \
+#    | debconf-set-selections
+#dpkg-reconfigure --frontend=noninteractive tzdata
 
-# Timezone
+## (redundant but explicit — ensures the symlink is correct even if debconf skips)
+#ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
+#echo "Europe/Zurich" > /etc/timezone   
+
+## Timezone
 #ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 #echo "UTC" > /etc/timezone
 
