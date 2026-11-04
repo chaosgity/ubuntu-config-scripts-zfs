@@ -241,6 +241,7 @@ setupcon
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
 # zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
+apt-mark hold initramfs-tools
 
 apt-get update
 apt-get install -y --no-install-recommends \
