@@ -246,8 +246,8 @@ EOF
 #console-setup console-setup/fontsize-text47 select "16x32 (framebuffer only)"
 #EOF
 
-export SKIP_INITRAMFS=1
-dpkg-reconfigure -f noninteractive console-setup
+#export SKIP_INITRAMFS=1
+#dpkg-reconfigure -f noninteractive console-setup
 #dracut -f
 
 #printf '%s\n' \
