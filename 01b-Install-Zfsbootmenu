@@ -362,13 +362,17 @@ systemctl enable zfs-zed
 
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
-cat > /etc/dracut.conf.d/zfs.conf <<'EOF'
+cat > /etc/dracut.conf.d/100-zfs.conf <<'EOF'
 nofsck="yes"
 add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
-install_optional_items+=" /etc/zfs/keys/zroot.key "
+add_dracutmodules+=" systemd "
+#install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
+
+echo 'install_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
+
 
 # Regenerate initramfs
 dracut --force --regenerate-all
