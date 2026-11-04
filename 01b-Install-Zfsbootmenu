@@ -153,11 +153,30 @@ timedatectl set-timezone Europe/Zurich
 #echo "UTC" > /etc/timezone
 
 # ─── Locales ────────────────────────────────────────────────────
-printf '%s\n' \
-    "locales locales/locales_to_be_generated multiselect de_CH.UTF-8 UTF-8 en_US.UTF-8 UTF-8" \
-    "locales locales/default_environment_locale select en_US.UTF-8" \
-    | debconf-set-selections
-dpkg-reconfigure --frontend=noninteractive locales
+# Generate the required locales
+sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+locale-gen
+
+# Set language to English US, everything else to Swiss German
+update-locale \
+  LANG=en_US.UTF-8 \
+  LC_MESSAGES=en_US.UTF-8 \
+  LC_TIME=de_CH.UTF-8 \
+  LC_NUMERIC=de_CH.UTF-8 \
+  LC_MONETARY=de_CH.UTF-8 \
+  LC_PAPER=de_CH.UTF-8 \
+  LC_NAME=de_CH.UTF-8 \
+  LC_ADDRESS=de_CH.UTF-8 \
+  LC_TELEPHONE=de_CH.UTF-8 \
+  LC_MEASUREMENT=de_CH.UTF-8 \
+  LC_IDENTIFICATION=de_CH.UTF-8
+
+#printf '%s\n' \
+#    "locales locales/locales_to_be_generated multiselect de_CH.UTF-8 UTF-8 en_US.UTF-8 UTF-8" \
+#    "locales locales/default_environment_locale select en_US.UTF-8" \
+#    | debconf-set-selections
+#dpkg-reconfigure --frontend=noninteractive locales
 
 # ─── Keyboard ───────────────────────────────────────────────────
 printf '%s\n' \
