@@ -238,9 +238,9 @@ console-setup console-setup/fontsize-fb47 select "16x32 (framebuffer only)"
 console-setup console-setup/fontsize-text47 select "16x32 (framebuffer only)"
 EOF
 
+export SKIP_INITRAMFS=1
 dpkg-reconfigure -f noninteractive console-setup
 dracut -f
-setupcon
 
 #cat <<'EOF' | tee /etc/default/console-setup
 #ACTIVE_CONSOLES="/dev/tty[1-6]"
