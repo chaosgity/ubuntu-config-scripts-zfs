@@ -184,7 +184,7 @@ XKBLAYOUT="ch"
 XKBVARIANT=""
 XKBOPTIONS=""
 BACKSPACE="guess"
-EOF   
+EOF
 
 # Set console keymap (virtual console / TTY)
 #localectl set-keymap ch
