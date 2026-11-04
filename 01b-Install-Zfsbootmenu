@@ -172,10 +172,10 @@ update-locale \
 
 # ─── Keyboard ───────────────────────────────────────────────────
 # Set console keymap (virtual console / TTY)
-sudo localectl set-keymap ch
+localectl set-keymap ch
 
 # Set X11/Wayland keymap with pc105 model (for graphical sessions)
-sudo localectl set-x11-keymap ch pc105
+localectl set-x11-keymap ch pc105
 
 ## Verify
 #localectl status
