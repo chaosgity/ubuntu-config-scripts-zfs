@@ -557,8 +557,6 @@ zfs create zroot/ROOT/"${root_dataset}"/home/${user}
 useradd -M -d /home/${user} -s /bin/bash ${user}
 groupadd -r audit
 usermod -aG sudo,audit ${user}
-cp -rT /etc/skel /home/${user}
-chown -R ${user}:${user} /home/${user}
 zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
 
 #useradd -m -s /bin/bash -G sudo admin
@@ -622,6 +620,11 @@ arch-chroot /mnt /bin/passwd
 ### Configure username
 print "Set your username once again"
 read -r -p 'Please enter username once again : ' user
+
+# Set bash and owner
+print "Set bash and owner of home directory"
+cp -rT /etc/skel /mnt/home/"${user}"
+chown -R "${user}":"${user}" /mnt/home/"${user}"
 
 # Set user passwd
 print "Set user password"
