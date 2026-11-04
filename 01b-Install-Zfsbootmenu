@@ -171,21 +171,45 @@ update-locale \
 #dpkg-reconfigure --frontend=noninteractive locales
 
 # ─── Keyboard ───────────────────────────────────────────────────
-printf '%s\n' \
-    "keyboard-configuration keyboard-configuration/model select Generic 105-key PC" \
-    "keyboard-configuration keyboard-configuration/modelcode string pc105" \
-    "keyboard-configuration keyboard-configuration/layout select Switzerland" \
-    "keyboard-configuration keyboard-configuration/layoutcode string ch" \
-    "keyboard-configuration keyboard-configuration/variant select Swiss - German (Switzerland, eliminate dead keys)" \
-    "keyboard-configuration keyboard-configuration/variantcode string de_nodeadkeys" \
-    "keyboard-configuration keyboard-configuration/xkb-keymap select ch(de_nodeadkeys)" \
-    "keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout" \
-    "keyboard-configuration keyboard-configuration/compose select No compose key" \
-    "keyboard-configuration keyboard-configuration/toggle select No toggling" \
-    "keyboard-configuration keyboard-configuration/switch select No temporary switch" \
-    "keyboard-configuration keyboard-configuration/ctrl_alt_bksp boolean false" \
-    | debconf-set-selections
-dpkg-reconfigure --frontend=noninteractive keyboard-configuration
+# Set console keymap (virtual console / TTY)
+sudo localectl set-keymap ch
+
+# Set X11/Wayland keymap with pc105 model (for graphical sessions)
+sudo localectl set-x11-keymap ch pc105
+
+## Verify
+#localectl status
+
+## Console
+#echo 'KEYMAP=ch' | sudo tee /etc/vconsole.conf
+#loadkeys ch
+
+## X11 (if applicable)
+#cat <<'EOF' | sudo tee /etc/default/keyboard
+#XKBMODEL="pc105"
+#XKBLAYOUT="ch"
+#XKBVARIANT=""
+#XKBOPTIONS=""
+#BACKSPACE="guess"
+#EOF
+
+#setupcon
+
+#printf '%s\n' \
+#    "keyboard-configuration keyboard-configuration/model select Generic 105-key PC" \
+#    "keyboard-configuration keyboard-configuration/modelcode string pc105" \
+#    "keyboard-configuration keyboard-configuration/layout select Switzerland" \
+#    "keyboard-configuration keyboard-configuration/layoutcode string ch" \
+#    "keyboard-configuration keyboard-configuration/variant select Swiss - German (Switzerland, eliminate dead keys)" \
+#    "keyboard-configuration keyboard-configuration/variantcode string de_nodeadkeys" \
+#    "keyboard-configuration keyboard-configuration/xkb-keymap select ch(de_nodeadkeys)" \
+#    "keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout" \
+#    "keyboard-configuration keyboard-configuration/compose select No compose key" \
+#    "keyboard-configuration keyboard-configuration/toggle select No toggling" \
+#    "keyboard-configuration keyboard-configuration/switch select No temporary switch" \
+#    "keyboard-configuration keyboard-configuration/ctrl_alt_bksp boolean false" \
+#    | debconf-set-selections
+#dpkg-reconfigure --frontend=noninteractive keyboard-configuration
 
 # ─── Console setup ──────────────────────────────────────────────
 printf '%s\n' \
