@@ -449,7 +449,6 @@ EOF
 
 echo 'install_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
 
-
 # Regenerate initramfs
 dracut --force --regenerate-all
 
