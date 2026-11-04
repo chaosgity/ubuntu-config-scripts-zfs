@@ -33,7 +33,7 @@ print "minbase & essential boot packages in one pass"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,dracut-core,keyboard-configuration,console-setup,console-setup-linux,tzdata,locales \
+    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup,console-setup-linux,tzdata,locales \
     resolute \
     /mnt \
     https://ftp.uni-stuttgart.de/ubuntu
@@ -240,7 +240,7 @@ EOF
 
 export SKIP_INITRAMFS=1
 dpkg-reconfigure -f noninteractive console-setup
-dracut -f
+#dracut -f
 
 #cat <<'EOF' | tee /etc/default/console-setup
 #ACTIVE_CONSOLES="/dev/tty[1-6]"
@@ -273,6 +273,7 @@ apt-get install -y --no-install-recommends \
     linux-tools-common \
     linux-tools-generic \
     zfsutils-linux \
+    dracut-core \
     zfs-dracut \
     dracut-network \
     zfs-zed \
