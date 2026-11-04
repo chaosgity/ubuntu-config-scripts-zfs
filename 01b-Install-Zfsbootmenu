@@ -174,11 +174,23 @@ update-locale \
 #dpkg-reconfigure --frontend=noninteractive locales
 
 # ─── Keyboard ───────────────────────────────────────────────────
+# Console keymap
+echo 'KEYMAP=ch' > /etc/vconsole.conf
+
+# X11/Wayland keymap
+cat <<'EOF' > /etc/default/keyboard
+XKBMODEL="pc105"
+XKBLAYOUT="ch"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"
+EOF   
+
 # Set console keymap (virtual console / TTY)
-localectl set-keymap ch
+#localectl set-keymap ch
 
 # Set X11/Wayland keymap with pc105 model (for graphical sessions)
-localectl set-x11-keymap ch pc105
+#localectl set-x11-keymap ch pc105
 
 ## Verify
 #localectl status
