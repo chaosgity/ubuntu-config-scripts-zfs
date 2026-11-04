@@ -138,6 +138,9 @@ EOF
 # ─── Timezone ───────────────────────────────────────────────────
 timedatectl set-timezone Europe/Zurich
 
+## Verify the change
+#timedatectl | grep "Time zone"
+
 #printf '%s\n' \
 #    "tzdata tzdata/Areas select Europe" \
 #    "tzdata tzdata/Zones/Europe select Zurich" \
