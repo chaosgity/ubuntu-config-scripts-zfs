@@ -121,20 +121,6 @@ fi
 #::1       localhost ip6-localhost ip6-loopback
 #EOF
 
-# ─── Keyboard ───────────────────────────────────────────────────
-cat > /etc/default/keyboard <<EOF
-XKBMODEL="pc105"
-XKBLAYOUT="ch"
-XKBVARIANT="de_nodeadkeys"
-XKBOPTIONS=""
-BACKSPACE="guess"
-EOF
-
-cat > /etc/vconsole.conf <<EOF
-KEYMAP=sg-latin1
-FONT=Lat15-Terminus16
-EOF
-
 # ─── Timezone ───────────────────────────────────────────────────
 timedatectl set-timezone Europe/Zurich
 
