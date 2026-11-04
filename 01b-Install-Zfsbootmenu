@@ -481,13 +481,16 @@ Kernel:
 EOF
 
 # ZBM's own dracut config (separate from system)
-cat > /etc/zfsbootmenu/dracut.conf.d/zfs.conf <<'EOF'
+cat > /etc/zfsbootmenu/dracut.conf.d/100-zfs.conf <<'EOF'
 nofsck="yes"
 add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
-install_optional_items+=" /etc/zfs/keys/zroot.key "
+add_dracutmodules+=" systemd "
+#install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
+
+echo 'install_items+=" /etc/zfs/keys/zroot.key "' > /etc/zfsbootmenu/dracut.conf.d/zfs-keys.conf
 
 # ─── Build ZFSBootMenu from source ─────────────────────────────
 #mkdir -p /usr/local/src/zfsbootmenu
