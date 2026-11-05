@@ -111,8 +111,11 @@ create_system_dataset () {
     # Manually mount slash dataset
     zfs mount zroot/ROOT/"$1"
 
-    print "Create home dataset"
+    print "Create home and user dataset"
     zfs create -o mountpoint=/home zroot/ROOT/"$1"/home
+    print 'Set your username'
+    read -r -p " Username: " user
+    zfs create zroot/ROOT/"$1"/home/${user}
 }
 
 ask "Name of the slash dataset ?"
