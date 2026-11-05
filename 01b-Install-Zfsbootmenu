@@ -622,7 +622,9 @@ print "Set your username once again"
 read -r -p 'Please enter username once again : ' user
 
 # Set bash and owner
-print "Set bash and owner of home directory"
+# Added temporary second user with same name for fixing
+print "Set bash and owner for home directory"
+useradd -M -d /home/${user} -s /bin/bash ${user}
 cp -rT /etc/skel /mnt/home/"${user}"
 chown -R "${user}":"${user}" /mnt/home/"${user}"
 
