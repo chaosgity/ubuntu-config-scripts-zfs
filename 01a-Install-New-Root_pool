@@ -62,11 +62,13 @@ print "Format EFI part"
 mkfs.vfat "$EFI"
 
 # Generate key
+mkdir -p /etc/zfs/keys
+chmod 700 /etc/zfs/keys
 print "Set ZFS passphrase"
 read -r -p "> ZFS passphrase: " -s pass
 echo
-echo "$pass" > /etc/zfs/zroot.key
-chmod 000 /etc/zfs/zroot.key
+echo "$pass" > /etc/zfs/keys/zroot.key
+chmod 000 /etc/zfs/keys/zroot.key
 
 # ZFS part
 ZFS="$DISK-part3"
@@ -82,7 +84,7 @@ zpool create -f -o ashift=12                                  \
                 -O dnodesize=legacy                           \
                 -O encryption=aes-256-gcm                     \
                 -O keyformat=passphrase                       \
-                -O keylocation=file:///etc/zfs/zroot.key \
+                -O keylocation=file:///etc/zfs/keys/zroot.key \
                 -O normalization=formD                        \
                 -O mountpoint=none                            \
                 -O canmount=off                               \
@@ -95,6 +97,14 @@ zfs create -o mountpoint=none                 zroot/ROOT
 
 # Set cmdline
 zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
+
+# Create a dataset for keys
+print "Create a dataset for keys"
+zfs create -o encryption=aes-256-gcm -o keyformat=passphrase \
+  -o keylocation=prompt -o mountpoint=/etc/zfs/keys zroot/keystore
+
+# Set cmdline
+zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 create_system_dataset () {
     print "Create slash dataset"
@@ -151,6 +161,12 @@ mount_system "$name_reply"
     print "Generate and copy zfs cache"
     mkdir -p /mnt/etc/zfs
     zpool set cachefile=/etc/zfs/zpool.cache zroot
+
+# Copy key
+print "Copy key"
+mkdir -p /mnt/etc/zfs/keys
+chmod 700 /mnt/etc/zfs/keys
+cp /etc/zfs/keys/zroot.key /mnt/etc/zfs/keys
 
 # Finish
 echo -e "\e[32mAll OK"
