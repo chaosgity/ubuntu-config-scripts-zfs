@@ -446,10 +446,11 @@ add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
 add_dracutmodules+=" systemd "
-install_optional_items+=" /etc/zfs/keys/zroot.key "
+#install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
 
 #echo 'install_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
+echo 'install_items+=" /etc/zfs/keys/zroot.key "' | tee /etc/dracut.conf.d/zfskey.conf
 
 # Regenerate initramfs
 dracut --force --regenerate-all
