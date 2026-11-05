@@ -58,9 +58,9 @@ EOF
 print "Copy files into the new install"
 cp /etc/hostid /mnt/etc/hostid
 cp /etc/resolv.conf /mnt/etc/
-mkdir -p /mnt/etc/zfs/keys
-chmod 700 /mnt/etc/zfs/keys
-cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
+#mkdir -p /mnt/etc/zfs/keys
+#chmod 700 /mnt/etc/zfs/keys
+#cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
 # Copy root_dataset into the new install
 cp /tmp/root_dataset /mnt/var/tmp/
@@ -417,9 +417,9 @@ EOF
 # ─── Dataset for keys ─────────────────────────────────────
 # Create a dataset for keys
 #print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+#zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 # ─── Enable service ────────────────────────────────────────────
 systemctl enable systemd-resolved
@@ -446,11 +446,11 @@ add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
 add_dracutmodules+=" systemd "
-#install_optional_items+=" /etc/zfs/keys/zroot.key "
+install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
 
-#echo 'install_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
-echo 'install_items+=" /etc/zfs/keys/zroot.key "' | tee /etc/dracut.conf.d/zfskey.conf
+#echo 'install_optional_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
+#echo 'install_optional_items+=" /etc/zfs/keys/zroot.key "' | tee /etc/dracut.conf.d/zfs-keys.conf
 
 # Regenerate initramfs
 dracut --force --regenerate-all
