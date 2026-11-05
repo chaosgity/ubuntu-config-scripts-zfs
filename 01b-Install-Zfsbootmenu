@@ -281,10 +281,12 @@ apt-get install -y --no-install-recommends \
     git \
     vim \
     wget \
+    less \
     zstd \
     gdisk \
     software-properties-common \
     software-properties-gtk \
+    dialog \
     iwd \
     apparmor-utils \
     apparmor-profiles \
