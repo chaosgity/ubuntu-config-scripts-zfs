@@ -73,21 +73,21 @@ cp /tmp/user_name /mnt/var/tmp/
 
 # Set language for system
 print 'Which language do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-read -r -p " Code for language of country in uppercase: " lang-up
-echo "$lang-up" > /mnt/var/tmp/language-uppercase
+read -r -p " Code for language of country in uppercase: " lang_up
+echo "$lang_up" > /mnt/var/tmp/language_uppercase
 
 print 'Which language do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-read -r -p " Code for language in lowercase: " lang-lo
-echo "$lang-lo" > /mnt/var/tmp/language-lowercase
+read -r -p " Code for language in lowercase: " lang_lo
+echo "$lang_lo" > /mnt/var/tmp/language_lowercase
 
 # Set locales for system
 print 'Which locales do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-read -r -p " Code for locales of country in uppercase: " loc-up
-echo "$loc-up" > /mnt/var/tmp/locales-uppercase
+read -r -p " Code for locales of country in uppercase: " loc_up
+echo "$loc_up" > /mnt/var/tmp/locales_uppercase
 
 print 'Which locales do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-read -r -p " Code for language (locales) in lowercase: " loc-lo
-echo "$loc-lo" > /mnt/var/tmp/locales-lowercase
+read -r -p " Code for language (locales) in lowercase: " loc_lo
+echo "$loc_lo" > /mnt/var/tmp/locales_lowercase
 
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
@@ -166,27 +166,27 @@ ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
 #echo "UTC" > /etc/timezone
 
 # ─── Locales ────────────────────────────────────────────────────
-LANGUAGE-LOWERCASE=$(cat /var/tmp/language-lowercase)
-LANGUAGE-UPPERCASE=$(cat /var/tmp/language-uppercase)
-LOCALE-LOWERCASE=$(cat /var/tmp/locale-lowercase)
-LOCALE-UPPERCASE=$(cat /var/tmp/locale-uppercase)
+LANGUAGE_LOWERCASE=$(cat /var/tmp/language_lowercase)
+LANGUAGE_UPPERCASE=$(cat /var/tmp/language_uppercase)
+LOCALE_LOWERCASE=$(cat /var/tmp/locale_lowercase)
+LOCALE_UPPERCASE=$(cat /var/tmp/locale_uppercase)
 # Generate the required locales
 #sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 #sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 
 # Check whether the line is already active (no # at the beginning)
-if grep -q '^${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF8' /etc/locale.gen; then
-  echo '[OK] ${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF8 is already selected.
+if grep -q '^${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8' /etc/locale.gen; then
+  echo '[OK] ${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8 is already selected.
 else
     # Uncomment
-    sed -i 's/^# *\(${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+    sed -i 's/^# *\(${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 fi
 
-if grep -q '^${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF8' /etc/locale.gen; then
-  echo '[OK] ${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF8 is already selected.
+if grep -q '^${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF8' /etc/locale.gen; then
+  echo '[OK] ${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF8 is already selected.
 else
     # Uncomment
-    sed -i 's/^# *\(${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+    sed -i 's/^# *\(${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 fi
 
 locale-gen
@@ -194,27 +194,27 @@ locale-gen
 # Set language to English US, everything else to Swiss German
 update-locale \
   #LANG=en_US.UTF-8 \
-  LANG=${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 \
+  LANG=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
   #LC_MESSAGES=en_US.UTF-8 \
-  LC_MESSAGES=${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 \
+  LC_MESSAGES=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
   #LC_TIME=de_CH.UTF-8 \
-  LC_TIME=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_TIME=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_NUMERIC=de_CH.UTF-8 \
-  LC_NUMERIC=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_NUMERIC=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_MONETARY=de_CH.UTF-8 \
-  LC_MONETARY=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_MONETARY=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_PAPER=de_CH.UTF-8 \
-  LC_PAPER=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_PAPER=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_NAME=de_CH.UTF-8 \
-  LC_NAME=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_NAME=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_ADDRESS=de_CH.UTF-8 \
-  LC_ADDRESS=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_ADDRESS=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_TELEPHONE=de_CH.UTF-8 \
-  LC_TELEPHONE=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_TELEPHONE=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_MEASUREMENT=de_CH.UTF-8 \
-  LC_MEASUREMENT=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
+  LC_MEASUREMENT=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8 \
   #LC_IDENTIFICATION=de_CH.UTF-8
-  LC_IDENTIFICATION=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8
+  LC_IDENTIFICATION=${LOCALE_LOWERCASE}_${LOCALE_UPPERCASE}.UTF-8
 
 ## Verify
 #cat /etc/default/locale
