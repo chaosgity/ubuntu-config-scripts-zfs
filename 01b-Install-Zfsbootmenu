@@ -151,34 +151,48 @@ ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
 # Generate the required locales
 #sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 #sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+
+# Check whether the line is already active (no # at the beginning)
+if grep -q '^${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF8' /etc/locale.gen; then
+  echo '[OK] ${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF8 is already selected.
+else
+    # Uncomment
+    sed -i 's/^# *\(${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+fi
+
+if grep -q '^${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF8' /etc/locale.gen; then
+  echo '[OK] ${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF8 is already selected.
+else
+    # Uncomment
+    sed -i 's/^# *\(${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+fi
+
 locale-gen
 
 # Set language to English US, everything else to Swiss German
 update-locale \
   #LANG=en_US.UTF-8 \
-  LANG=en_US.UTF-8 \
+  LANG=${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 \
   #LC_MESSAGES=en_US.UTF-8 \
-  LC_MESSAGES=en_US.UTF-8 \
+  LC_MESSAGES=${LANGUAGE-LOWERCASE}_${LANGUAGE-UPPERCASE}.UTF-8 \
   #LC_TIME=de_CH.UTF-8 \
-  LC_TIME=de_CH.UTF-8 \
+  LC_TIME=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_NUMERIC=de_CH.UTF-8 \
-  LC_NUMERIC=de_CH.UTF-8 \
+  LC_NUMERIC=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_MONETARY=de_CH.UTF-8 \
-  LC_MONETARY=de_CH.UTF-8 \
+  LC_MONETARY=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_PAPER=de_CH.UTF-8 \
-  LC_PAPER=de_CH.UTF-8 \
+  LC_PAPER=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_NAME=de_CH.UTF-8 \
-  LC_NAME=de_CH.UTF-8 \
+  LC_NAME=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_ADDRESS=de_CH.UTF-8 \
-  LC_ADDRESS=de_CH.UTF-8 \
+  LC_ADDRESS=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_TELEPHONE=de_CH.UTF-8 \
-  LC_TELEPHONE=de_CH.UTF-8 \
+  LC_TELEPHONE=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_MEASUREMENT=de_CH.UTF-8 \
-  LC_MEASUREMENT=de_CH.UTF-8 \
+  LC_MEASUREMENT=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8 \
   #LC_IDENTIFICATION=de_CH.UTF-8
-  LC_IDENTIFICATION=de_CH.UTF-8
+  LC_IDENTIFICATION=${LOCALE-LOWERCASE}_${LOCALE-UPPERCASE}.UTF-8
 
 ## Verify
 #cat /etc/default/locale
