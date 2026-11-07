@@ -127,6 +127,7 @@ create_system_dataset () {
     print 'Set your username'
     read -r -p " Username: " user
     zfs create zroot/ROOT/"$1"/home/${user}
+    echo "$user" > /tmp/USER
 }
 
 ask "Name of the slash dataset ?"
