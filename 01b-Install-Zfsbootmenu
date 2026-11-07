@@ -89,6 +89,16 @@ print 'Which locales do you want for system: Set therefore language code in lowe
 read -r -p " Code for language (locales) in lowercase: " loc_lo
 echo "$loc_lo" > /mnt/var/tmp/locales_lowercase
 
+# Set areas for timezone
+print 'Which areas do you want for system: Set therefore areas like Europe etc.'
+read -r -p " Areas: " areas
+echo "$areas" > /mnt/var/tmp/areas_name
+
+# Set zones for timezone
+print 'Which zones do you want for system: Set therefore zones like Zurich etc.'
+read -r -p " Zones: " zones
+echo "$zones" > /mnt/var/tmp/zones_name
+
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
 #!/bin/sh
@@ -143,27 +153,16 @@ fi
 #EOF
 
 # ─── Timezone ───────────────────────────────────────────────────
+AREAS_NAME=$(cat /var/tmp/areas_name)
+ZONES_NAME=$(cat /var/tmp/zones_name)
 # Timezone in chroot (no systemd D-Bus available)
-ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
+#ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
+ln -sf /usr/share/zoneinfo/${AREAS_NAME}/${ZONES_NAME} /etc/localtime
 
 #timedatectl set-timezone Europe/Zurich
 
 ## Verify the change
 #timedatectl | grep "Time zone"
-
-#printf '%s\n' \
-#    "tzdata tzdata/Areas select Europe" \
-#    "tzdata tzdata/Zones/Europe select Zurich" \
-#    | debconf-set-selections
-#dpkg-reconfigure --frontend=noninteractive tzdata
-
-## (redundant but explicit — ensures the symlink is correct even if debconf skips)
-#ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-#echo "Europe/Zurich" > /etc/timezone   
-
-## Timezone
-#ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-#echo "UTC" > /etc/timezone
 
 # ─── Locales ────────────────────────────────────────────────────
 LANGUAGE_LOWERCASE=$(cat /var/tmp/language_lowercase)
@@ -219,17 +218,13 @@ update-locale \
 ## Verify
 #cat /etc/default/locale
 
-#printf '%s\n' \
-#    "locales locales/locales_to_be_generated multiselect de_CH.UTF-8 UTF-8 en_US.UTF-8 UTF-8" \
-#    "locales locales/default_environment_locale select en_US.UTF-8" \
-#    | debconf-set-selections
-#dpkg-reconfigure --frontend=noninteractive locales
-
 # ─── Keyboard ───────────────────────────────────────────────────
 # Console keymap
+#echo 'KEYMAP=ch' | tee /etc/vconsole.conf
 echo 'KEYMAP=ch' > /etc/vconsole.conf
 
 # X11/Wayland keymap
+#cat <<'EOF' | tee /etc/default/keyboard
 cat <<'EOF' > /etc/default/keyboard
 XKBMODEL="pc105"
 XKBLAYOUT="ch"
@@ -240,43 +235,13 @@ EOF
 
 # Set console keymap (virtual console / TTY)
 #localectl set-keymap ch
+#loadkeys ch 
 
 # Set X11/Wayland keymap with pc105 model (for graphical sessions)
 #localectl set-x11-keymap ch pc105
 
 ## Verify
 #localectl status
-
-## Console
-#echo 'KEYMAP=ch' | sudo tee /etc/vconsole.conf
-#loadkeys ch
-
-## X11 (if applicable)
-#cat <<'EOF' | sudo tee /etc/default/keyboard
-#XKBMODEL="pc105"
-#XKBLAYOUT="ch"
-#XKBVARIANT=""
-#XKBOPTIONS=""
-#BACKSPACE="guess"
-#EOF
-
-#setupcon
-
-#printf '%s\n' \
-#    "keyboard-configuration keyboard-configuration/model select Generic 105-key PC" \
-#    "keyboard-configuration keyboard-configuration/modelcode string pc105" \
-#    "keyboard-configuration keyboard-configuration/layout select Switzerland" \
-#    "keyboard-configuration keyboard-configuration/layoutcode string ch" \
-#    "keyboard-configuration keyboard-configuration/variant select Swiss - German (Switzerland, eliminate dead keys)" \
-#    "keyboard-configuration keyboard-configuration/variantcode string de_nodeadkeys" \
-#    "keyboard-configuration keyboard-configuration/xkb-keymap select ch(de_nodeadkeys)" \
-#    "keyboard-configuration keyboard-configuration/altgr select The default for the keyboard layout" \
-#    "keyboard-configuration keyboard-configuration/compose select No compose key" \
-#    "keyboard-configuration keyboard-configuration/toggle select No toggling" \
-#    "keyboard-configuration keyboard-configuration/switch select No temporary switch" \
-#    "keyboard-configuration keyboard-configuration/ctrl_alt_bksp boolean false" \
-#    | debconf-set-selections
-#dpkg-reconfigure --frontend=noninteractive keyboard-configuration
 
 # ─── Console setup ──────────────────────────────────────────────
 # Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)
@@ -287,31 +252,6 @@ CODESET="Lat15"
 FONTFACE="Terminus"
 FONTSIZE="16x32"
 EOF
-
-#debconf-set-selections <<'EOF'
-#console-setup console-setup/charmap47 select UTF-8
-#console-setup console-setup/codeset47 select "# Latin1 and Latin5 - western Europe and Turkic languages"
-#console-setup console-setup/codesetcode string Lat15
-#console-setup console-setup/fontface47 select Terminus
-#console-setup console-setup/fontsize string 16x32
-#console-setup console-setup/fontsize-fb47 select "16x32 (framebuffer only)"
-#console-setup console-setup/fontsize-text47 select "16x32 (framebuffer only)"
-#EOF
-
-#export SKIP_INITRAMFS=1
-#dpkg-reconfigure -f noninteractive console-setup
-#dracut -f
-
-#printf '%s\n' \
-#    "console-setup console-setup/charmap47 select UTF-8" \
-#    "console-setup console-setup/codeset47 select # Latin1 and Latin5 - western Europe and Turkic languages" \
-#    "console-setup console-setup/codesetcode string Lat15" \
-#    "console-setup console-setup/fontface47 select Terminus" \
-#    "console-setup console-setup/fontsize string 16x32" \
-#    "console-setup console-setup/fontsize-fb47 select 16x32 (framebuffer only)" \
-#    "console-setup console-setup/fontsize-text47 select 16x32 (framebuffer only)" \
-#    | debconf-set-selections
-#dpkg-reconfigure --frontend=noninteractive console-setup
 
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
