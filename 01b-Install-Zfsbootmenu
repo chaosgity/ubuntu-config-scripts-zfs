@@ -68,6 +68,9 @@ cp /tmp/root_dataset /mnt/var/tmp/
 # Copy disk into the new install
 cp /tmp/disk /mnt/var/tmp/
 
+# Copy user_name into the new install
+cp /tmp/user_name /mnt/var/tmp/
+
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
 #!/bin/sh
@@ -552,7 +555,8 @@ else
 fi
 
 # ─── User ──────────────────────────────────────────────────────
-read -r -p " Set username a second time : " user < /dev/tty
+user=$(cat /var/tmp/user_name)
+#read -r -p " Set username a second time : " user < /dev/tty
 
 # Create user home dataset
 #zfs create zroot/ROOT/"${root_dataset}"/home/${user}
@@ -623,12 +627,9 @@ CHROOT
 print "Set root password"
 arch-chroot /mnt /bin/passwd
 
-### Configure username
-print "Set your username once again"
-read -r -p ' Please enter username once again : ' user
-
 # Set user passwd
 print "Set user password"
+user=$(cat /tmp/user_name)
 arch-chroot /mnt /bin/passwd "$user"
 
 # ─── Symlink: systemd-resolved ─────────
