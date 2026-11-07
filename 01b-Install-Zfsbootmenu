@@ -149,22 +149,35 @@ ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
 
 # ─── Locales ────────────────────────────────────────────────────
 # Generate the required locales
-sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+#sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+#sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 locale-gen
 
 # Set language to English US, everything else to Swiss German
 update-locale \
+  #LANG=en_US.UTF-8 \
   LANG=en_US.UTF-8 \
+  #LC_MESSAGES=en_US.UTF-8 \
   LC_MESSAGES=en_US.UTF-8 \
+  #LC_TIME=de_CH.UTF-8 \
   LC_TIME=de_CH.UTF-8 \
+  #LC_NUMERIC=de_CH.UTF-8 \
   LC_NUMERIC=de_CH.UTF-8 \
+  #LC_MONETARY=de_CH.UTF-8 \
   LC_MONETARY=de_CH.UTF-8 \
+  #LC_PAPER=de_CH.UTF-8 \
   LC_PAPER=de_CH.UTF-8 \
+  #LC_NAME=de_CH.UTF-8 \
   LC_NAME=de_CH.UTF-8 \
+  #LC_ADDRESS=de_CH.UTF-8 \
   LC_ADDRESS=de_CH.UTF-8 \
+  #LC_TELEPHONE=de_CH.UTF-8 \
   LC_TELEPHONE=de_CH.UTF-8 \
+  #LC_MEASUREMENT=de_CH.UTF-8 \
   LC_MEASUREMENT=de_CH.UTF-8 \
+  #LC_IDENTIFICATION=de_CH.UTF-8
   LC_IDENTIFICATION=de_CH.UTF-8
 
 ## Verify
