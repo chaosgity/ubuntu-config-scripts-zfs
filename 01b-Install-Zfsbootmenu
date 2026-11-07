@@ -71,6 +71,24 @@ cp /tmp/disk /mnt/var/tmp/
 # Copy user_name into the new install
 cp /tmp/user_name /mnt/var/tmp/
 
+# Set language for system
+print 'Which language do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
+read -r -p " Code for language of country in uppercase: " lang-up
+echo "$lang-up" > /mnt/var/tmp/language-uppercase
+
+print 'Which language do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
+read -r -p " Code for language in lowercase: " lang-lo
+echo "$lang-lo" > /mnt/var/tmp/language-lowercase
+
+# Set locales for system
+print 'Which locales do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
+read -r -p " Code for locales of country in uppercase: " loc-up
+echo "$loc-up" > /mnt/var/tmp/locales-uppercase
+
+print 'Which locales do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
+read -r -p " Code for language (locales) in lowercase: " loc-lo
+echo "$loc-lo" > /mnt/var/tmp/locales-lowercase
+
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
 #!/bin/sh
