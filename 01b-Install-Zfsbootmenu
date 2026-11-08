@@ -225,13 +225,58 @@ echo 'KEYMAP=ch' > /etc/vconsole.conf
 
 # X11/Wayland keymap
 #cat <<'EOF' | tee /etc/default/keyboard
-cat <<'EOF' > /etc/default/keyboard
-XKBMODEL="pc105"
-XKBLAYOUT="ch"
-XKBVARIANT=""
-XKBOPTIONS=""
-BACKSPACE="guess"
+#cat <<'EOF' > /etc/default/keyboard
+#XKBMODEL="pc105"
+#XKBLAYOUT="ch"
+#XKBVARIANT=""
+#XKBOPTIONS=""
+#BACKSPACE="guess"
+#EOF
+
+# ─── Keyboard (interactive, chroot via pipe/heredoc) ──────────
+
+# Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
+exec 3</dev/tty
+
+read -rp "XKBMODEL [pc105]: " XKBMODEL <&3
+XKBMODEL="${XKBMODEL:-pc105}"
+
+read -rp "XKBLAYOUT [ch]: " XKBLAYOUT <&3
+XKBLAYOUT="${XKBLAYOUT:-ch}"
+
+read -rp "XKBVARIANT []: " XKBVARIANT <&3
+XKBVARIANT="${XKBVARIANT:-}"
+
+read -rp "XKBOPTIONS []: " XKBOPTIONS <&3
+XKBOPTIONS="${XKBOPTIONS:-}"
+
+read -rp "BACKSPACE [guess]: " BACKSPACE <&3
+BACKSPACE="${BACKSPACE:-guess}"
+
+echo ""
+echo "  XKBMODEL=  $XKBMODEL"
+echo "  XKBLAYOUT= $XKBLAYOUT"
+echo "  XKBVARIANT=$XKBVARIANT"
+echo "  XKBOPTIONS=$XKBOPTIONS"
+echo "  BACKSPACE= $BACKSPACE"
+echo ""
+read -rp "Apply? [y/N]: " confirm <&3
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+
+exec 3<&-   # close fd 3
+
+cat <<EOF > /etc/default/keyboard
+# KEYBOARD CONFIGURATION FILE
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="$XKBMODEL"
+XKBLAYOUT="$XKBLAYOUT"
+XKBVARIANT="$XKBVARIANT"
+XKBOPTIONS="$XKBOPTIONS"
+BACKSPACE="$BACKSPACE"
 EOF
+
+echo "Done. Keymap will apply on first boot."
 
 # Set console keymap (virtual console / TTY)
 #localectl set-keymap ch
