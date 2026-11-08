@@ -100,11 +100,11 @@ cp /tmp/user_name /mnt/var/tmp/
 #echo "$zones" > /mnt/var/tmp/zones_name
 
 # Prevent services from starting during install
-tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
+#tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
 #!/bin/sh
-exit 101
-EOF
-chmod a+x /mnt/usr/sbin/policy-rc.d
+#exit 101
+#EOF
+#chmod a+x /mnt/usr/sbin/policy-rc.d
 
 # ─── Configure & install inside chroot ──────────────────────
 arch-chroot /mnt /bin/bash <<'CHROOT'
