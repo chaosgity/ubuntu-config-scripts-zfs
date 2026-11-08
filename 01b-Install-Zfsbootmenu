@@ -72,32 +72,32 @@ cp /tmp/disk /mnt/var/tmp/
 cp /tmp/user_name /mnt/var/tmp/
 
 # Set language for system
-print 'Which language do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-read -r -p " Code for language of country in uppercase: " lang_up
-echo "$lang_up" > /mnt/var/tmp/language_uppercase
+#print 'Which language do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
+#read -r -p " Code for language of country in uppercase: " lang_up
+#echo "$lang_up" > /mnt/var/tmp/language_uppercase
 
-print 'Which language do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-read -r -p " Code for language in lowercase: " lang_lo
-echo "$lang_lo" > /mnt/var/tmp/language_lowercase
+#print 'Which language do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
+#read -r -p " Code for language in lowercase: " lang_lo
+#echo "$lang_lo" > /mnt/var/tmp/language_lowercase
 
 # Set locales for system
-print 'Which locales do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-read -r -p " Code for locales of country in uppercase: " loc_up
-echo "$loc_up" > /mnt/var/tmp/locales_uppercase
+#print 'Which locales do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
+#read -r -p " Code for locales of country in uppercase: " loc_up
+#echo "$loc_up" > /mnt/var/tmp/locales_uppercase
 
-print 'Which locales do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-read -r -p " Code for language (locales) in lowercase: " loc_lo
-echo "$loc_lo" > /mnt/var/tmp/locales_lowercase
+#print 'Which locales do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
+#read -r -p " Code for language (locales) in lowercase: " loc_lo
+#echo "$loc_lo" > /mnt/var/tmp/locales_lowercase
 
 # Set areas for timezone
-print 'Which areas do you want for system: Set therefore areas like Europe etc.'
-read -r -p " Areas: " areas
-echo "$areas" > /mnt/var/tmp/areas_name
+#print 'Which areas do you want for system: Set therefore areas like Europe etc.'
+#read -r -p " Areas: " areas
+#echo "$areas" > /mnt/var/tmp/areas_name
 
 # Set zones for timezone
-print 'Which zones do you want for system: Set therefore zones like Zurich etc.'
-read -r -p " Zones: " zones
-echo "$zones" > /mnt/var/tmp/zones_name
+#print 'Which zones do you want for system: Set therefore zones like Zurich etc.'
+#read -r -p " Zones: " zones
+#echo "$zones" > /mnt/var/tmp/zones_name
 
 # Prevent services from starting during install
 tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
@@ -153,70 +153,256 @@ fi
 #EOF
 
 # ─── Timezone ───────────────────────────────────────────────────
-AREAS_NAME=$(cat /var/tmp/areas_name)
-ZONES_NAME=$(cat /var/tmp/zones_name)
+#AREAS_NAME=$(cat /var/tmp/areas_name)
+#ZONES_NAME=$(cat /var/tmp/zones_name)
 # Timezone in chroot (no systemd D-Bus available)
 #ln -sf /usr/share/zoneinfo/Europe/Zurich /etc/localtime
-ln -sf /usr/share/zoneinfo/${AREAS_NAME}/${ZONES_NAME} /etc/localtime
+#ln -sf /usr/share/zoneinfo/${AREAS_NAME}/${ZONES_NAME} /etc/localtime
 
 #timedatectl set-timezone Europe/Zurich
 
 ## Verify the change
 #timedatectl | grep "Time zone"
 
+# ─── Timezone (interactive, chroot) ────────────────────────────
+
+ZONEINFO="/usr/share/zoneinfo"
+
+exec 3</dev/tty
+
+# ── Step 0: Offer default ──────────────────────────────────────
+echo "Use Europe/Zurich as timezone?"
+read -rp "  [Y/n]: " answer <&3
+
+if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+    ln -sf "$ZONEINFO/Europe/Zurich" /etc/localtime
+#    echo "Europe/Zurich" > /etc/timezone
+    echo "Done."
+    exec 3<&-
+    exit 0
+fi
+
+# ── Step 1: Select Area ────────────────────────────────────────
+mapfile -t AREAS < <(ls -1 "$ZONEINFO" | grep -v '^[^/]*$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
+
+echo ""
+echo "Available areas:"
+echo ""
+for i in "${!AREAS[@]}"; do
+    printf "  %2d  %s\n" "$((i+1))" "${AREAS[$i]}"
+done
+echo ""
+
+read -rp "Select area (number): " area_num <&3
+AREA="${AREAS[$((area_num - 1))]}"
+[[ -z "$AREA" ]] && { echo "Invalid selection."; exec 3<&-; exit 1; }
+
+# ── Step 2: Select Zone ────────────────────────────────────────
+mapfile -t ZONES < <(ls -1 "$ZONEINFO/$AREA" | sort)
+
+echo ""
+echo "Zones in $AREA:"
+echo ""
+for i in "${!ZONES[@]}"; do
+    printf "  %3d  %s/%s\n" "$((i+1))" "$AREA" "${ZONES[$i]}"
+done
+echo ""
+
+read -rp "Select zone (number): " zone_num <&3
+ZONE="${ZONES[$((zone_num - 1))]}"
+[[ -z "$ZONE" ]] && { echo "Invalid selection."; exec 3<&-; exit 1; }
+
+exec 3<&-
+
+# ── Apply ──────────────────────────────────────────────────────
+echo ""
+ln -sf "$ZONEINFO/$AREA/$ZONE" /etc/localtime
+echo "$AREA/$ZONE" > /etc/timezone
+echo "Done. Timezone: $AREA/$ZONE"
+
 # ─── Locales ────────────────────────────────────────────────────
-LANGUAGE_LOWERCASE=$(cat /var/tmp/language_lowercase)
-LANGUAGE_UPPERCASE=$(cat /var/tmp/language_uppercase)
-LOCALES_LOWERCASE=$(cat /var/tmp/locales_lowercase)
-LOCALES_UPPERCASE=$(cat /var/tmp/locales_uppercase)
+#LANGUAGE_LOWERCASE=$(cat /var/tmp/language_lowercase)
+#LANGUAGE_UPPERCASE=$(cat /var/tmp/language_uppercase)
+#LOCALES_LOWERCASE=$(cat /var/tmp/locales_lowercase)
+#LOCALES_UPPERCASE=$(cat /var/tmp/locales_uppercase)
 # Generate the required locales
 #sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 #sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 
 # Check whether the line is already active (no # at the beginning)
-if grep -q '^${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8' /etc/locale.gen; then
-  echo '[OK] ${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8 is already selected.
-else
-    # Uncomment
-    sed -i 's/^# *\(${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-fi
+#if grep -q '^${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8' /etc/locale.gen; then
+#  echo '[OK] ${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF8 is already selected.
+#else
+#    # Uncomment
+#    sed -i 's/^# *\(${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+#fi
 
-if grep -q '^${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF8' /etc/locale.gen; then
-  echo '[OK] ${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF8 is already selected.
-else
-    # Uncomment
-    sed -i 's/^# *\(${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-fi
+#if grep -q '^${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF8' /etc/locale.gen; then
+#  echo '[OK] ${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF8 is already selected.
+#else
+#    # Uncomment
+#    sed -i 's/^# *\(${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+#fi
 
-locale-gen
+#locale-gen
 
 # Set language to English US, everything else to Swiss German
-update-locale \
-  #LANG=en_US.UTF-8 \
-  LANG=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
-  #LC_MESSAGES=en_US.UTF-8 \
-  LC_MESSAGES=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
-  #LC_TIME=de_CH.UTF-8 \
-  LC_TIME=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_NUMERIC=de_CH.UTF-8 \
-  LC_NUMERIC=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_MONETARY=de_CH.UTF-8 \
-  LC_MONETARY=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_PAPER=de_CH.UTF-8 \
-  LC_PAPER=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_NAME=de_CH.UTF-8 \
-  LC_NAME=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_ADDRESS=de_CH.UTF-8 \
-  LC_ADDRESS=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_TELEPHONE=de_CH.UTF-8 \
-  LC_TELEPHONE=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_MEASUREMENT=de_CH.UTF-8 \
-  LC_MEASUREMENT=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
-  #LC_IDENTIFICATION=de_CH.UTF-8
-  LC_IDENTIFICATION=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8
+#update-locale \
+#  #LANG=en_US.UTF-8 \
+#  LANG=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
+#  #LC_MESSAGES=en_US.UTF-8 \
+#  LC_MESSAGES=${LANGUAGE_LOWERCASE}_${LANGUAGE_UPPERCASE}.UTF-8 \
+#  #LC_TIME=de_CH.UTF-8 \
+#  LC_TIME=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_NUMERIC=de_CH.UTF-8 \
+#  LC_NUMERIC=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_MONETARY=de_CH.UTF-8 \
+#  LC_MONETARY=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_PAPER=de_CH.UTF-8 \
+#  LC_PAPER=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_NAME=de_CH.UTF-8 \
+#  LC_NAME=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_ADDRESS=de_CH.UTF-8 \
+#  LC_ADDRESS=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_TELEPHONE=de_CH.UTF-8 \
+#  LC_TELEPHONE=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_MEASUREMENT=de_CH.UTF-8 \
+#  LC_MEASUREMENT=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8 \
+#  #LC_IDENTIFICATION=de_CH.UTF-8
+#  LC_IDENTIFICATION=${LOCALES_LOWERCASE}_${LOCALES_UPPERCASE}.UTF-8
 
 ## Verify
 #cat /etc/default/locale
+
+# ─── Locale selection (interactive, chroot) ────────────────────
+
+exec 3</dev/tty
+
+# Parse /etc/locale.gen: show all entries (commented + uncommented)
+mapfile -t LOCALES < <(grep -E '^\s*#?\s*\S+\.\S+\s+\S+' /etc/locale.gen)
+
+echo "Available locales:"
+echo ""
+for i in "${!LOCALES[@]}"; do
+    entry="${LOCALES[$i]#*#}"
+    entry="$(echo "$entry" | xargs)"   # trim whitespace
+    status=" "
+    [[ "${LOCALES[$i]}" =~ ^# ]] && status="·"
+    printf "  %s %2d  %s\n" "$status" "$((i+1))" "$entry"
+done
+echo ""
+echo "  (· = currently commented out)"
+echo ""
+
+read -rp "Select locales to enable (numbers, space-separated): " selection <&3
+
+for num in $selection; do
+    idx=$((num - 1))
+    if [[ -z "${LOCALES[$idx]}" ]]; then
+        echo "  ⚠ Skipping invalid number: $num"
+        continue
+    fi
+    entry="$(echo "${LOCALES[$idx]}" | sed 's/^#\s*//' | xargs)"
+    # Extract the locale pattern (e.g. "de_CH.UTF-8 UTF-8")
+    pattern="${entry}"
+    sed -i "s/^# *(\(.*${pattern}.*\))/\1/" /etc/locale.gen
+    echo "  ✓ Enabled: $entry"
+done
+
+echo ""
+read -rp "Run locale-gen now? [Y/n]: " confirm <&3
+[[ ! "$confirm" =~ ^[Nn]$ ]] || { echo "Skipped."; exec 3<&-; exit 0; }
+
+exec 3<&-
+
+locale-gen
+echo "Done."
+
+# ─── Locale (interactive, chroot) ──────────────────────────────
+
+exec 3</dev/tty
+
+read -rp "LANG [en_US.UTF-8]: " LANG <&3
+LANG="${LANG:-en_US.UTF-8}"
+
+read -rp "LC_MESSAGES [en_US.UTF-8]: " LC_MESSAGES <&3
+LC_MESSAGES="${LC_MESSAGES:-en_US.UTF-8}"
+
+read -rp "LC_TIME [de_CH.UTF-8]: " LC_TIME <&3
+LC_TIME="${LC_TIME:-de_CH.UTF-8}"
+
+read -rp "LC_NUMERIC [de_CH.UTF-8]: " LC_NUMERIC <&3
+LC_NUMERIC="${LC_NUMERIC:-de_CH.UTF-8}"
+
+read -rp "LC_MONETARY [de_CH.UTF-8]: " LC_MONETARY <&3
+LC_MONETARY="${LC_MONETARY:-de_CH.UTF-8}"
+
+read -rp "LC_PAPER [de_CH.UTF-8]: " LC_PAPER <&3
+LC_PAPER="${LC_PAPER:-de_CH.UTF-8}"
+
+read -rp "LC_NAME [de_CH.UTF-8]: " LC_NAME <&3
+LC_NAME="${LC_NAME:-de_CH.UTF-8}"
+
+read -rp "LC_ADDRESS [de_CH.UTF-8]: " LC_ADDRESS <&3
+LC_ADDRESS="${LC_ADDRESS:-de_CH.UTF-8}"
+
+read -rp "LC_TELEPHONE [de_CH.UTF-8]: " LC_TELEPHONE <&3
+LC_TELEPHONE="${LC_TELEPHONE:-de_CH.UTF-8}"
+
+read -rp "LC_MEASUREMENT [de_CH.UTF-8]: " LC_MEASUREMENT <&3
+LC_MEASUREMENT="${LC_MEASUREMENT:-de_CH.UTF-8}"
+
+read -rp "LC_IDENTIFICATION [de_CH.UTF-8]: " LC_IDENTIFICATION <&3
+LC_IDENTIFICATION="${LC_IDENTIFICATION:-de_CH.UTF-8}"
+
+exec 3<&-
+
+echo ""
+echo "  LANG=              $LANG"
+echo "  LC_MESSAGES=       $LC_MESSAGES"
+echo "  LC_TIME=           $LC_TIME"
+echo "  LC_NUMERIC=        $LC_NUMERIC"
+echo "  LC_MONETARY=       $LC_MONETARY"
+echo "  LC_PAPER=          $LC_PAPER"
+echo "  LC_NAME=           $LC_NAME"
+echo "  LC_ADDRESS=        $LC_ADDRESS"
+echo "  LC_TELEPHONE=      $LC_TELEPHONE"
+echo "  LC_MEASUREMENT=    $LC_MEASUREMENT"
+echo "  LC_IDENTIFICATION= $LC_IDENTIFICATION"
+echo ""
+read -rp "Apply? [y/N]: " confirm <&3
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+
+update-locale \
+  LANG="$LANG" \
+  LC_MESSAGES="$LC_MESSAGES" \
+  LC_TIME="$LC_TIME" \
+  LC_NUMERIC="$LC_NUMERIC" \
+  LC_MONETARY="$LC_MONETARY" \
+  LC_PAPER="$LC_PAPER" \
+  LC_NAME="$LC_NAME" \
+  LC_ADDRESS="$LC_ADDRESS" \
+  LC_TELEPHONE="$LC_TELEPHONE" \
+  LC_MEASUREMENT="$LC_MEASUREMENT" \
+  LC_IDENTIFICATION="$LC_IDENTIFICATION"
+
+echo "Done. Locale will apply on first login."
+
+update-locale
+
+#cat <<EOF > /etc/default/locale
+#LANG="$LANG"
+#LC_MESSAGES="$LC_MESSAGES"
+#LC_TIME="$LC_TIME"
+#LC_NUMERIC="$LC_NUMERIC"
+#LC_MONETARY="$LC_MONETARY"
+#LC_PAPER="$LC_PAPER"
+#LC_NAME="$LC_NAME"
+#LC_ADDRESS="$LC_ADDRESS"
+#LC_TELEPHONE="$LC_TELEPHONE"
+#LC_MEASUREMENT="$LC_MEASUREMENT"
+#LC_IDENTIFICATION="$LC_IDENTIFICATION"
+#EOF   
 
 # ─── Keyboard ───────────────────────────────────────────────────
 # Console keymap
