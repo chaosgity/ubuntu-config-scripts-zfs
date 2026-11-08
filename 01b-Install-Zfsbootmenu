@@ -556,8 +556,22 @@ if [[ "$confirm" =~ ^[Yy]$ ]]; then
     echo "Done."
 else
     echo "Skipped."
-fi   
-locale-setup
+fi
+
+cat <<EOF > /etc/default/locale
+LANG="$LANG"
+LC_MESSAGES="$LC_MESSAGES"
+LC_TIME="$LC_TIME"
+LC_NUMERIC="$LC_NUMERIC"
+LC_MONETARY="$LC_MONETARY"
+LC_PAPER="$LC_PAPER"
+LC_NAME="$LC_NAME"
+LC_ADDRESS="$LC_ADDRESS"
+LC_TELEPHONE="$LC_TELEPHONE"
+LC_MEASUREMENT="$LC_MEASUREMENT"
+LC_IDENTIFICATION="$LC_IDENTIFICATION"
+EOF
+chmod 644 /etc/default/locale
 
 # ─── Keyboard ───────────────────────────────────────────────────
 # Console keymap
