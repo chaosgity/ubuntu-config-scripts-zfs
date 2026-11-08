@@ -290,13 +290,56 @@ echo "Done. Keymap will apply on first boot."
 
 # ─── Console setup ──────────────────────────────────────────────
 # Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)
-cat <<'EOF' | tee /etc/default/console-setup
-ACTIVE_CONSOLES="/dev/tty[1-6]"
-CHARMAP="UTF-8"
-CODESET="Lat15"
-FONTFACE="Terminus"
-FONTSIZE="16x32"
+#cat <<'EOF' | tee /etc/default/console-setup
+#ACTIVE_CONSOLES="/dev/tty[1-6]"
+#CHARMAP="UTF-8"
+#CODESET="Lat15"
+#FONTFACE="Terminus"
+#FONTSIZE="16x32"
+#EOF
+
+# Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
+exec 3</dev/tty
+
+read -rp "ACTIVE_CONSOLES [/dev/tty[1-6]]: " ACTIVE_CONSOLES <&3
+ACTIVE_CONSOLES="${ACTIVE-CONSOLES:-/dev/tty[1-6]}"
+
+read -rp "CHARMAP [UTF-8]: " CHARMAP <&3
+CHARMAP="${CHARMAP:-UTF-8}"
+
+read -rp "CODESET [Lat15]: " CODESET <&3
+CODESET="${CODESET:-Lat15}"
+
+read -rp "FONTFACE [Terminus]: " FONTFACE <&3
+FONTFACE="${FONTFACE:-Terminus}"
+
+read -rp "FONTSIZE [16x32]: " FONTSIZE <&3
+FONTSIZE="${FONTSIZE:-16X32}"
+
+echo ""
+echo "  ACTIVE_CONSOLES=  $ACTIVE_CONSOLES"
+echo "  CHARMAP= $CHARMAP"
+echo "  CODESET=$CODESET"
+echo "  FONTFACE=$FONTFACE"
+echo "  FONTSIZE= $FONTSIZE"
+echo ""
+read -rp "Apply? [y/N]: " confirm <&3
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+
+exec 3<&-   # close fd 3
+
+cat <<EOF > /etc/default/console-setup
+# CONSOLE CONFIGURATION FILE
+# Consult the console-setup manual page.
+
+ACTIVE_CONSOLES="$ACTIVE_CONSOLES"
+CHARMAP="$CHARMAP"
+CODESET="$CODESET"
+FONTFACE="$FONTFACE"
+FONTSIZE="$FONTSIZE"
 EOF
+
+echo "Done. Console-setup will apply on first boot."
 
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
