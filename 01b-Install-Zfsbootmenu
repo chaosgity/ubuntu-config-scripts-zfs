@@ -396,6 +396,11 @@ fi
 #  Ubuntu Server 26.04 — Chroot Setup (interactive)
 # ═══════════════════════════════════════════════════════════════
 
+# Suppress setlocale warnings (host env has locales chroot doesn't have yet)
+export LC_ALL=C
+unset LANG LC_CTYPE LC_MESSAGES LC_TIME LC_NUMERIC LC_MONETARY
+unset LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
+
 exec 3</dev/tty
 
 # ─── 1. Timezone ───────────────────────────────────────────────
@@ -478,7 +483,7 @@ done
 echo ""
 read -rp "Run locale-gen now? [Y/n]: " confirm <&3
 if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
-    LC_ALL=C locale-gen
+    locale-gen
     echo "locale-gen done."
 fi
 
@@ -538,25 +543,27 @@ echo "  LC_IDENTIFICATION= $LC_IDENTIFICATION"
 echo ""
 read -rp "Apply? [y/N]: " confirm <&3
 
-exec 3<&-   # ← only here, at the very end
+exec 3<&-
 
 if [[ "$confirm" =~ ^[Yy]$ ]]; then
-    LC_ALL=C update-locale \
-      LANG="$LANG" \
-      LC_MESSAGES="$LC_MESSAGES" \
-      LC_TIME="$LC_TIME" \
-      LC_NUMERIC="$LC_NUMERIC" \
-      LC_MONETARY="$LC_MONETARY" \
-      LC_PAPER="$LC_PAPER" \
-      LC_NAME="$LC_NAME" \
-      LC_ADDRESS="$LC_ADDRESS" \
-      LC_TELEPHONE="$LC_TELEPHONE" \
-      LC_MEASUREMENT="$LC_MEASUREMENT" \
-      LC_IDENTIFICATION="$LC_IDENTIFICATION"
+    cat <<EOF > /etc/default/locale
+LANG="$LANG"
+LC_MESSAGES="$LC_MESSAGES"
+LC_TIME="$LC_TIME"
+LC_NUMERIC="$LC_NUMERIC"
+LC_MONETARY="$LC_MONETARY"
+LC_PAPER="$LC_PAPER"
+LC_NAME="$LC_NAME"
+LC_ADDRESS="$LC_ADDRESS"
+LC_TELEPHONE="$LC_TELEPHONE"
+LC_MEASUREMENT="$LC_MEASUREMENT"
+LC_IDENTIFICATION="$LC_IDENTIFICATION"
+EOF
+    chmod 644 /etc/default/locale
     echo "Done."
 else
     echo "Skipped."
-fi
+fi   
 
 cat <<EOF > /etc/default/locale
 LANG="$LANG"
