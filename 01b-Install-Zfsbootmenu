@@ -900,6 +900,11 @@ add_dracutmodules+=" systemd "
 install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
 
+# Tell dracut to read vconsole.conf
+cat <<'EOF' > /etc/dracut.conf.d/99-i18n.conf
+i18n_vars="/etc/vconsole.conf:KEYMAP,FONT"
+EOF
+
 #echo 'install_optional_items+=" /etc/zfs/keys/zroot.key "' > /etc/dracut.conf.d/zfs-keys.conf
 #echo 'install_optional_items+=" /etc/zfs/keys/zroot.key "' | tee /etc/dracut.conf.d/zfs-keys.conf
 
