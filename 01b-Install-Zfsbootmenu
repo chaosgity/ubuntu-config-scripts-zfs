@@ -623,7 +623,7 @@ echo "  XKBOPTIONS=$XKBOPTIONS"
 echo "  BACKSPACE= $BACKSPACE"
 echo ""
 read -rp "Apply? [y/N]: " confirm <&3
-[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return 0; }
 
 exec 3<&-   # close fd 3
 
@@ -664,7 +664,7 @@ echo "Done. Keymap will apply on first boot."
 exec 3</dev/tty
 
 read -rp "ACTIVE_CONSOLES [/dev/tty[1-6]]: " ACTIVE_CONSOLES <&3
-ACTIVE_CONSOLES="${ACTIVE-CONSOLES:-/dev/tty[1-6]}"
+ACTIVE_CONSOLES="${ACTIVE_CONSOLES:-/dev/tty[1-6]}"
 
 read -rp "CHARMAP [UTF-8]: " CHARMAP <&3
 CHARMAP="${CHARMAP:-UTF-8}"
@@ -676,7 +676,7 @@ read -rp "FONTFACE [Terminus]: " FONTFACE <&3
 FONTFACE="${FONTFACE:-Terminus}"
 
 read -rp "FONTSIZE [16x32]: " FONTSIZE <&3
-FONTSIZE="${FONTSIZE:-16X32}"
+FONTSIZE="${FONTSIZE:-16x32}"
 
 echo ""
 echo "  ACTIVE_CONSOLES=  $ACTIVE_CONSOLES"
@@ -686,7 +686,7 @@ echo "  FONTFACE=$FONTFACE"
 echo "  FONTSIZE= $FONTSIZE"
 echo ""
 read -rp "Apply? [y/N]: " confirm <&3
-[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return 0; }
 
 exec 3<&-   # close fd 3
 
