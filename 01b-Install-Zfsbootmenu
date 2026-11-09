@@ -581,6 +581,11 @@ EOF
 chmod 644 /etc/default/locale
 
 # ─── Keyboard ───────────────────────────────────────────────────
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Keyboard configuration"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
 # Console keymap
 #echo 'KEYMAP=ch' | tee /etc/vconsole.conf
 echo 'KEYMAP=ch' > /etc/vconsole.conf
@@ -596,7 +601,6 @@ echo 'KEYMAP=ch' > /etc/vconsole.conf
 #EOF
 
 # ─── Keyboard (interactive, chroot via pipe/heredoc) ──────────
-
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
 
@@ -651,6 +655,11 @@ echo "Done. Keymap will apply on first boot."
 #localectl status
 
 # ─── Console setup ──────────────────────────────────────────────
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Console setup"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
 # Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)
 #cat <<'EOF' | tee /etc/default/console-setup
 #ACTIVE_CONSOLES="/dev/tty[1-6]"
