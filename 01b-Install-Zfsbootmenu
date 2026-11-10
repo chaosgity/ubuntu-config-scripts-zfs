@@ -404,6 +404,11 @@ unset LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
 exec 3</dev/tty
 
 # ─── 1. Timezone ───────────────────────────────────────────────
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Timezone configuration"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
 
 ZONEINFO="/usr/share/zoneinfo"
 
@@ -504,7 +509,7 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "  Locale settings"
+echo "  Locale configuration"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
