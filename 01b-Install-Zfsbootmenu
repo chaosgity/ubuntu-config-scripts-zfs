@@ -448,43 +448,54 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "  Locale generation"
+echo "  Locale settings"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
-mapfile -t LOCALES < <(grep -E '^\s*#?\s*\S+\.\S+\s+\S+' /etc/locale.gen)
+echo "Use de_CH.UTF8 (Swiss German; Switzterland) and en_US.UTF-8 (US English; Unites States) as locale setting?"
+read -rp "  [Y/n]: " answer <&3
 
-echo "Available locales:"
-echo ""
-for i in "${!LOCALES[@]}"; do
-    entry="${LOCALES[$i]#*#}"
-    entry="$(echo "$entry" | xargs)"
-    status=" "
-    [[ "${LOCALES[$i]}" =~ ^# ]] && status="·"
-    printf "  %s %2d  %s\n" "$status" "$((i+1))" "$entry"
-done
-echo ""
-echo "  (· = currently commented out)"
-echo ""
+if [[ ! "$answer" =~ ^[Nn]$ ]]; then
+    sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+		sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+    echo "Locale setting: Swiss German and US English"
+		locale-gen
+		echo "locale-gen done."
+else
+	mapfile -t LOCALES < <(grep -E '^\s*#?\s*\S+\.\S+\s+\S+' /etc/locale.gen)
 
-read -rp "Select locales to enable (numbers, space-separated): " selection <&3
+	echo "Available locales:"
+	echo ""
+	for i in "${!LOCALES[@]}"; do
+    	entry="${LOCALES[$i]#*#}"
+    	entry="$(echo "$entry" | xargs)"
+    	status=" "
+    	[[ "${LOCALES[$i]}" =~ ^# ]] && status="·"
+    	printf "  %s %2d  %s\n" "$status" "$((i+1))" "$entry"
+	done
+	echo ""
+	echo "  (· = currently commented out)"
+	echo ""
 
-for num in $selection; do
-    idx=$((num - 1))
-    if [[ -z "${LOCALES[$idx]}" ]]; then
-        echo "  ⚠ Skipping invalid number: $num"
-        continue
-    fi
-    entry="$(echo "${LOCALES[$idx]}" | sed 's/^#\s*//' | xargs)"
-    sed -i "s/^# *(\(.*${entry}.*\))/\1/" /etc/locale.gen
-    echo "  ✓ Enabled: $entry"
-done
+	read -rp "Select locales to enable (numbers, space-separated): " selection <&3
 
-echo ""
-read -rp "Run locale-gen now? [Y/n]: " confirm <&3
-if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
-    locale-gen
-    echo "locale-gen done."
+	for num in $selection; do
+    	idx=$((num - 1))
+    	if [[ -z "${LOCALES[$idx]}" ]]; then
+        	echo "  ⚠ Skipping invalid number: $num"
+        	continue
+    	fi
+    	entry="$(echo "${LOCALES[$idx]}" | sed 's/^#\s*//' | xargs)"
+    	sed -i "s/^# *(\(.*${entry}.*\))/\1/" /etc/locale.gen
+    	echo "  ✓ Enabled: $entry"
+	done
+
+	echo ""
+	read -rp "Run locale-gen now? [Y/n]: " confirm <&3
+	if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
+    	locale-gen
+    	echo "locale-gen done."
+	fi
 fi
 
 # ─── 3. Locale: set /etc/default/locale ────────────────────────
