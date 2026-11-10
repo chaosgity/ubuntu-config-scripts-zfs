@@ -513,6 +513,9 @@ echo "  Locale configuration"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
+echo "Configure your locale settings: "
+echo ""
+
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
 
@@ -711,32 +714,39 @@ echo ""
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
 
-echo "Confirm by pressing Enter or typing your choice:"
+while true; do
+	echo "Confirm by pressing Enter or typing your choice:"
 
-read -rp "XKBMODEL [pc105]: " XKBMODEL <&3
-XKBMODEL="${XKBMODEL:-pc105}"
+	read -rp "XKBMODEL [pc105]: " XKBMODEL <&3
+	XKBMODEL="${XKBMODEL:-pc105}"
 
-read -rp "XKBLAYOUT [ch]: " XKBLAYOUT <&3
-XKBLAYOUT="${XKBLAYOUT:-ch}"
+	read -rp "XKBLAYOUT [ch]: " XKBLAYOUT <&3
+	XKBLAYOUT="${XKBLAYOUT:-ch}"
 
-read -rp "XKBVARIANT []: " XKBVARIANT <&3
-XKBVARIANT="${XKBVARIANT:-}"
+	read -rp "XKBVARIANT []: " XKBVARIANT <&3
+	XKBVARIANT="${XKBVARIANT:-}"
 
-read -rp "XKBOPTIONS []: " XKBOPTIONS <&3
-XKBOPTIONS="${XKBOPTIONS:-}"
+	read -rp "XKBOPTIONS []: " XKBOPTIONS <&3
+	XKBOPTIONS="${XKBOPTIONS:-}"
 
-read -rp "BACKSPACE [guess]: " BACKSPACE <&3
-BACKSPACE="${BACKSPACE:-guess}"
+	read -rp "BACKSPACE [guess]: " BACKSPACE <&3
+	BACKSPACE="${BACKSPACE:-guess}"
 
-echo ""
-echo "  XKBMODEL=  $XKBMODEL"
-echo "  XKBLAYOUT= $XKBLAYOUT"
-echo "  XKBVARIANT=$XKBVARIANT"
-echo "  XKBOPTIONS=$XKBOPTIONS"
-echo "  BACKSPACE= $BACKSPACE"
-echo ""
-read -rp "Apply? [y/N]: " confirm <&3
-[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return 0; }
+	echo ""
+	echo "  XKBMODEL=  $XKBMODEL"
+	echo "  XKBLAYOUT= $XKBLAYOUT"
+	echo "  XKBVARIANT=$XKBVARIANT"
+	echo "  XKBOPTIONS=$XKBOPTIONS"
+	echo "  BACKSPACE= $BACKSPACE"
+	echo ""
+	read -rp "Apply? [y/N]: " confirm <&3
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+    echo "Re-entering..."
+    echo ""
+done
 
 exec 3<&-   # close fd 3
 
@@ -786,32 +796,39 @@ echo ""
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
 
-echo "Confirm by pressing Enter or typing your choice:"
+while true; do
+	echo "Confirm by pressing Enter or typing your choice:"
 
-read -rp "ACTIVE_CONSOLES [/dev/tty[1-6]]: " ACTIVE_CONSOLES <&3
-ACTIVE_CONSOLES="${ACTIVE_CONSOLES:-/dev/tty[1-6]}"
+	read -rp "ACTIVE_CONSOLES [/dev/tty[1-6]]: " ACTIVE_CONSOLES <&3
+	ACTIVE_CONSOLES="${ACTIVE_CONSOLES:-/dev/tty[1-6]}"
 
-read -rp "CHARMAP [UTF-8]: " CHARMAP <&3
-CHARMAP="${CHARMAP:-UTF-8}"
+	read -rp "CHARMAP [UTF-8]: " CHARMAP <&3
+	CHARMAP="${CHARMAP:-UTF-8}"
 
-read -rp "CODESET [Lat15]: " CODESET <&3
-CODESET="${CODESET:-Lat15}"
+	read -rp "CODESET [Lat15]: " CODESET <&3
+	CODESET="${CODESET:-Lat15}"
 
-read -rp "FONTFACE [Terminus]: " FONTFACE <&3
-FONTFACE="${FONTFACE:-Terminus}"
+	read -rp "FONTFACE [Terminus]: " FONTFACE <&3
+	FONTFACE="${FONTFACE:-Terminus}"
 
-read -rp "FONTSIZE [16x32]: " FONTSIZE <&3
-FONTSIZE="${FONTSIZE:-16x32}"
+	read -rp "FONTSIZE [16x32]: " FONTSIZE <&3
+	FONTSIZE="${FONTSIZE:-16x32}"
 
-echo ""
-echo "  ACTIVE_CONSOLES=  $ACTIVE_CONSOLES"
-echo "  CHARMAP= $CHARMAP"
-echo "  CODESET=$CODESET"
-echo "  FONTFACE=$FONTFACE"
-echo "  FONTSIZE= $FONTSIZE"
-echo ""
-read -rp "Apply? [y/N]: " confirm <&3
-[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; return 0; }
+	echo ""
+	echo "  ACTIVE_CONSOLES=  $ACTIVE_CONSOLES"
+	echo "  CHARMAP=          $CHARMAP"
+	echo "  CODESET=          $CODESET"
+	echo "  FONTFACE=         $FONTFACE"
+	echo "  FONTSIZE=         $FONTSIZE"
+	echo ""
+	read -rp "Apply? [y/N]: " confirm <&3
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+    echo "Re-entering..."
+    echo ""
+done
 
 exec 3<&-   # close fd 3
 
