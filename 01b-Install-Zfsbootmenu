@@ -459,12 +459,12 @@ echo "  Locale settings"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
-echo "Use de_CH.UTF8 (Swiss German; Switzterland) and en_US.UTF-8 (US English; Unites States) as locale setting?"
+echo "Use de_CH.UTF8 (Swiss German; Switzerland) and en_US.UTF-8 (US English; United States) as locale setting?"
 read -rp "  [Y/n]: " answer <&3
 
 if [[ ! "$answer" =~ ^[Nn]$ ]]; then
     sed -i 's/^# *\(de_CH.UTF-8 UTF-8\)/\1/' /etc/locale.gen
-		sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
+	sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
     echo "Locale setting: Swiss German and US English"
 		locale-gen
 		echo "locale-gen done."
@@ -512,6 +512,8 @@ echo "════════════════════════�
 echo "  Locale configuration"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
+
+echo "Confirm by pressing Enter or typing your choice:"
 
 read -rp "LANG [en_US.UTF-8]: " LANG <&3
 LANG="${LANG:-en_US.UTF-8}"
@@ -627,6 +629,8 @@ echo ""
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
 
+echo "Confirm by pressing Enter or typing your choice:"
+
 read -rp "XKBMODEL [pc105]: " XKBMODEL <&3
 XKBMODEL="${XKBMODEL:-pc105}"
 
@@ -699,6 +703,8 @@ echo ""
 
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
+
+echo "Confirm by pressing Enter or typing your choice:"
 
 read -rp "ACTIVE_CONSOLES [/dev/tty[1-6]]: " ACTIVE_CONSOLES <&3
 ACTIVE_CONSOLES="${ACTIVE_CONSOLES:-/dev/tty[1-6]}"
