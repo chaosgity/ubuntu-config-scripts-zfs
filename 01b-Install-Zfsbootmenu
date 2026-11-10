@@ -414,7 +414,9 @@ if [[ ! "$answer" =~ ^[Nn]$ ]]; then
     ln -sf "$ZONEINFO/Europe/Zurich" /etc/localtime
     echo "Timezone: Europe/Zurich"
 else
-    mapfile -t AREAS < <(ls -1 "$ZONEINFO" | grep -v '^[^/]*$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
+    #mapfile -t AREAS < <(ls -1 "$ZONEINFO" | grep -v '^[^/]*$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
+	mapfile -t AREAS < <(ls -1p "$ZONEINFO" | grep '/$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
+	#mapfile -t AREAS < <(find "$ZONEINFO" -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | grep -vE '^(posix|right)$' | sort)
 
     echo ""
     echo "Available areas:"
