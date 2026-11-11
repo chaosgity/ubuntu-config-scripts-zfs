@@ -284,7 +284,7 @@ while true; do
     read -rp "LC_MONETARY [de_CH.UTF-8]: " LC_MONETARY <&3
     LC_MONETARY="${LC_MONETARY:-de_CH.UTF-8}"
 
-    read -rp "LC_COLLATE [de_CH.UTF-8]: " LC_MONETARY <&3
+    read -rp "LC_COLLATE [de_CH.UTF-8]: " LC_COLLATE <&3
     LC_COLLATE="${LC_COLLATE:-de_CH.UTF-8}"
 
     read -rp "LC_PAPER [de_CH.UTF-8]: " LC_PAPER <&3
