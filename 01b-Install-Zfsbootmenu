@@ -694,8 +694,6 @@ EOF
 dracut --force --regenerate-all
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
-# NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
-# (ZBM builds its own initramfs; system dracut config would interfere)
 
 # Install ZFSBootMenu and deps
 git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
@@ -703,7 +701,10 @@ cd /tmp/zfsbootmenu
 cpanm --notest --installdeps .
 make core dracut
 
+# NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
+# (ZBM builds its own initramfs; system dracut config would interfere)
 mkdir -p /etc/zfsbootmenu/dracut.conf.d
+# Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
 echo "i18n" > /etc/zfsbootmenu/dracut.conf.d/10-i18n.conf
 
 exec 3</dev/tty
