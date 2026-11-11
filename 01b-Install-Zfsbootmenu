@@ -263,6 +263,7 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your locale settings: "
+echo "Standard: Language (US English); locale settings (Swiss German)"
 echo ""
 
 while true; do
@@ -363,6 +364,7 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your keyboard: "
+echo "Standard: Swiss German keyboard (pc105, ch, guess)"
 echo ""
 
 # ─── Keyboard (interactive, chroot via pipe/heredoc) ──────────
@@ -438,16 +440,8 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your console: "
+echo "Standard: Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)"
 echo ""
-
-# Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)
-#cat <<'EOF' | tee /etc/default/console-setup
-#ACTIVE_CONSOLES="/dev/tty[1-6]"
-#CHARMAP="UTF-8"
-#CODESET="Lat15"
-#FONTFACE="Terminus"
-#FONTSIZE="16x32"
-#EOF
 
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
