@@ -421,6 +421,8 @@ EOF
 
 echo "Done. Keymap will apply on first boot."
 
+echo 'KEYMAP=de_CH-latin1' > /etc/vconsole.conf
+
 # Set console keymap (virtual console / TTY)
 #localectl set-keymap ch
 #loadkeys ch 
