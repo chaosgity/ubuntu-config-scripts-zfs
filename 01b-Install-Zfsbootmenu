@@ -469,6 +469,7 @@ if [[ ! "$answer" =~ ^[Nn]$ ]]; then
 		locale-gen
 		echo "locale-gen done."
 else
+while true; do
 	mapfile -t LOCALES < <(grep -E '^\s*#?\s*\S+\.\S+\s+\S+' /etc/locale.gen)
 
 	echo "Available locales:"
@@ -497,12 +498,25 @@ else
     	echo "  ✓ Enabled: $entry"
 	done
 
+	#echo ""
+	#read -rp "Run locale-gen now? [Y/n]: " confirm <&3
+	#if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
+    #	locale-gen
+    #	echo "locale-gen done."
+	#fi
+
 	echo ""
-	read -rp "Run locale-gen now? [Y/n]: " confirm <&3
-	if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
-    	locale-gen
-    	echo "locale-gen done."
-	fi
+    read -rp "Run locale-gen now? [Y/n]: " confirm <&3
+
+    if [[ ! "$confirm" =~ ^[Nn]$ ]]; then
+		locale-gen
+		echo "locale-gen done."
+        break
+    fi
+    echo "Re-doing..."
+    echo ""
+done
+
 fi
 
 # ─── 3. Locale: set /etc/default/locale ────────────────────────
