@@ -419,6 +419,11 @@ else
     echo "Timezone: $AREA/$ZONE"
 fi
 
+#timedatectl set-timezone Europe/Zurich
+
+## Verify the change
+#timedatectl | grep "Time zone"
+
 # ─── 2. Locale-gen: select locales to enable ───────────────────
 
 echo ""
