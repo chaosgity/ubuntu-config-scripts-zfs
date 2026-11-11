@@ -747,6 +747,7 @@ exec 3<&-   # close fd 3
 cat <<EOF > /etc/default/keyboard
 # KEYBOARD CONFIGURATION FILE
 # Consult the keyboard(5) manual page.
+# Command: man 5 keyboard
 
 XKBMODEL="$XKBMODEL"
 XKBLAYOUT="$XKBLAYOUT"
