@@ -398,7 +398,7 @@ fi
 
 # Suppress setlocale warnings (host env has locales chroot doesn't have yet)
 export LC_ALL=C
-unset LANG LC_CTYPE LC_MESSAGES LC_TIME LC_NUMERIC LC_MONETARY
+unset LANG LC_CTYPE LC_MESSAGES LC_TIME LC_NUMERIC LC_MONETARY LC_COLLATE
 unset LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
 
 exec 3</dev/tty
@@ -547,6 +547,9 @@ while true; do
     read -rp "LC_MONETARY [de_CH.UTF-8]: " LC_MONETARY <&3
     LC_MONETARY="${LC_MONETARY:-de_CH.UTF-8}"
 
+    read -rp "LC_COLLATE [de_CH.UTF-8]: " LC_MONETARY <&3
+    LC_COLLATE="${LC_COLLATE:-de_CH.UTF-8}"
+
     read -rp "LC_PAPER [de_CH.UTF-8]: " LC_PAPER <&3
     LC_PAPER="${LC_PAPER:-de_CH.UTF-8}"
 
@@ -571,6 +574,7 @@ while true; do
     echo "  LC_TIME=           $LC_TIME"
     echo "  LC_NUMERIC=        $LC_NUMERIC"
     echo "  LC_MONETARY=       $LC_MONETARY"
+    echo "  LC_COLLATE=        $LC_COLLATE"
     echo "  LC_PAPER=          $LC_PAPER"
     echo "  LC_NAME=           $LC_NAME"
     echo "  LC_ADDRESS=        $LC_ADDRESS"
@@ -597,6 +601,7 @@ LC_MESSAGES="$LC_MESSAGES"
 LC_TIME="$LC_TIME"
 LC_NUMERIC="$LC_NUMERIC"
 LC_MONETARY="$LC_MONETARY"
+LC_COLLATE="$LC_COLLATE"
 LC_PAPER="$LC_PAPER"
 LC_NAME="$LC_NAME"
 LC_ADDRESS="$LC_ADDRESS"
