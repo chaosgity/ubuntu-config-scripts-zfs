@@ -329,9 +329,15 @@ done
 
 exec 3<&-
 
+## Debian-native update-locale script
+# Consult the update-locale() manual page.
+# Command: man 8 update-locale
 #update-locale
 
 cat <<EOF > /etc/default/locale
+# LOCALE CONFIGURATION FILE
+# Consult the locale(7) manual page.
+# Command: man 7 locale
 LANG="$LANG"
 LC_MESSAGES="$LC_MESSAGES"
 LC_TIME="$LC_TIME"
