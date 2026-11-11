@@ -1076,7 +1076,7 @@ EFI:
   Versions: false
   Enabled: true
 Kernel:
-  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
+  CommandLine: ro quiet loglevel=0 rd.vconsole.keymap=de_CH-latin1 zbm.import_policy=hostid
   Prefix: vmlinuz
 EOF
 
