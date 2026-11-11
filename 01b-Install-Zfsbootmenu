@@ -452,20 +452,6 @@ echo ""
 echo "Configure your keyboard: "
 echo ""
 
-# Console keymap
-#echo 'KEYMAP=ch' | tee /etc/vconsole.conf
-#echo 'KEYMAP=ch' > /etc/vconsole.conf
-
-# X11/Wayland keymap
-#cat <<'EOF' | tee /etc/default/keyboard
-#cat <<'EOF' > /etc/default/keyboard
-#XKBMODEL="pc105"
-#XKBLAYOUT="ch"
-#XKBVARIANT=""
-#XKBOPTIONS=""
-#BACKSPACE="guess"
-#EOF
-
 # ─── Keyboard (interactive, chroot via pipe/heredoc) ──────────
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
 exec 3</dev/tty
