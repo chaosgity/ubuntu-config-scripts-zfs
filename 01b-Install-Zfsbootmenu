@@ -419,7 +419,6 @@ if [[ ! "$answer" =~ ^[Nn]$ ]]; then
     ln -sf "$ZONEINFO/Europe/Zurich" /etc/localtime
     echo "Timezone: Europe/Zurich"
 else
-    #mapfile -t AREAS < <(ls -1 "$ZONEINFO" | grep -v '^[^/]*$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
 	mapfile -t AREAS < <(ls -1p "$ZONEINFO" | grep '/$' | sed 's|/$||' | grep -vE '^(posix|right|leapseconds|localtime|UTC|GMT)$' | sort)
 	#mapfile -t AREAS < <(find "$ZONEINFO" -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | grep -vE '^(posix|right)$' | sort)
 
@@ -1067,17 +1066,31 @@ mkdir -p /etc/zfsbootmenu/dracut.conf.d
 
 exec 3</dev/tty
 
+echo ""
 echo "Available keymaps (examples):"
+echo ""
 echo "  de_CH-latin1  – Swiss German (QWERTZ)"
 echo "  de-latin1     – German (QWERTZ)"
 echo "  fr_CH-latin1  – Swiss French (AZERTY)"
 echo "  us            – US English (QWERTY)"
+echo ""
+while true; do
+	echo "Confirm by pressing Enter or typing your choice:"
+
 read -rp "Keyboard layout for ZBM passphrase prompt [de_CH-latin1]: " zbm_keymap <&3
 zbm_keymap="${zbm_keymap:-de_CH-latin1}"
 
     echo ""
     echo "  zbm_keymap=$zbm_keymap"
 	echo ""
+	read -rp "Apply? [y/N]: " confirm <&3
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+    echo "Re-entering..."
+    echo ""
+done
 
 exec 3<&-   # close fd 3
 
