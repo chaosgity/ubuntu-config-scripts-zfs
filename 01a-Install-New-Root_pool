@@ -64,6 +64,13 @@ mkfs.vfat "$EFI"
 # Generate key
 mkdir -p /etc/zfs/keys
 chmod 700 /etc/zfs/keys
+
+echo ""
+echo "══════════════════════════════════════════════════════════════════════════════"
+echo " Use a passphrase that you can type as if you were using a US keyboard layout!"
+echo "══════════════════════════════════════════════════════════════════════════════"
+echo ""
+
 print "Set ZFS passphrase"
 read -r -p "> ZFS passphrase: " -s pass
 echo
