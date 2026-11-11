@@ -419,6 +419,7 @@ else
     echo "Timezone: $AREA/$ZONE"
 fi
 
+# Timezone in chroot (no systemd D-Bus available)
 #timedatectl set-timezone Europe/Zurich
 
 ## Verify the change
