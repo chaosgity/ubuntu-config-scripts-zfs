@@ -589,6 +589,8 @@ done
 
 exec 3<&-
 
+#update-locale
+
 cat <<EOF > /etc/default/locale
 LANG="$LANG"
 LC_MESSAGES="$LC_MESSAGES"
