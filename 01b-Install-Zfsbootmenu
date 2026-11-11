@@ -263,7 +263,7 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your locale settings: "
-echo "Standard: Language (US English); locale settings (Swiss German)"
+echo "Default: Language (US English); locale settings (Swiss German)"
 echo ""
 
 while true; do
@@ -364,7 +364,7 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your keyboard: "
-echo "Standard: Swiss German keyboard (pc105, ch, guess)"
+echo "Default: Swiss German keyboard (pc105, ch, guess)"
 echo ""
 
 # ─── Keyboard (interactive, chroot via pipe/heredoc) ──────────
@@ -440,7 +440,7 @@ echo "════════════════════════�
 echo ""
 
 echo "Configure your console: "
-echo "Standard: Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)"
+echo "Default: Console font – HiDPI (Terminus 16x32, UTF-8, Lat15)"
 echo ""
 
 # Open TTY on fd 3 (avoids repeating < /dev/tty on every read)
@@ -576,7 +576,9 @@ apt-get install -y --no-install-recommends \
     samba-common-bin \
     fonts-terminus \
     xfonts-terminus \
-    fonts-terminus-otb
+    fonts-terminus-otb \
+	man-db \
+	manpages
 
 # ─── Network ─────────────────────────────────────
 
