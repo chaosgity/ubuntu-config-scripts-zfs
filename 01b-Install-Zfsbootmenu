@@ -1075,6 +1075,10 @@ echo "  us            – US English (QWERTY)"
 read -rp "Keyboard layout for ZBM passphrase prompt [de_CH-latin1]: " zbm_keymap <&3
 zbm_keymap="${zbm_keymap:-de_CH-latin1}"
 
+    echo ""
+    echo "  zbm_keymap=$zbm_keymap"
+	echo ""
+
 exec 3<&-   # close fd 3
 
 cat > /etc/zfsbootmenu/config.yaml <<'EOF'
