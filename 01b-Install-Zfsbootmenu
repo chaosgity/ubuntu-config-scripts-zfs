@@ -490,7 +490,8 @@ exec 3<&-   # close fd 3
 
 cat <<EOF > /etc/default/console-setup
 # CONSOLE CONFIGURATION FILE
-# Consult the console-setup manual page.
+# Consult the console-setup(5) manual page.
+# Command: man 5 console-setup
 
 ACTIVE_CONSOLES="$ACTIVE_CONSOLES"
 CHARMAP="$CHARMAP"
