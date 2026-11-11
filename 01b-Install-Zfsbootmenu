@@ -76,6 +76,10 @@ cp /tmp/user_name /mnt/var/tmp/
 #chmod a+x /mnt/usr/sbin/policy-rc.d
 
 # ─── Configure & install inside chroot ──────────────────────
+# ═══════════════════════════════════════════════════════════════
+#  Ubuntu Server 26.04 — Chroot Setup (interactive)
+# ═══════════════════════════════════════════════════════════════
+
 arch-chroot /mnt /bin/bash <<'CHROOT'
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
@@ -121,10 +125,6 @@ fi
 #127.0.1.1 ${HOSTNAME}
 #::1       localhost ip6-localhost ip6-loopback
 #EOF
-
-# ═══════════════════════════════════════════════════════════════
-#  Ubuntu Server 26.04 — Chroot Setup (interactive)
-# ═══════════════════════════════════════════════════════════════
 
 # Suppress setlocale warnings (host env has locales chroot doesn't have yet)
 export LC_ALL=C
