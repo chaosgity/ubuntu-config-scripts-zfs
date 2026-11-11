@@ -33,7 +33,7 @@ print "minbase & essential boot packages in one pass"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup,console-setup-linux,tzdata,locales,kbd \
+    --include=apt,curl,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup,console-setup-linux,tzdata,locales \
     resolute \
     /mnt \
     https://ftp.uni-stuttgart.de/ubuntu
@@ -421,8 +421,6 @@ EOF
 
 echo "Done. Keymap will apply on first boot."
 
-echo 'KEYMAP=de_CH-latin1' > /etc/vconsole.conf
-
 # Set console keymap (virtual console / TTY)
 #localectl set-keymap ch
 #loadkeys ch 
@@ -706,37 +704,37 @@ make core dracut
 # (ZBM builds its own initramfs; system dracut config would interfere)
 mkdir -p /etc/zfsbootmenu/dracut.conf.d
 # Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
-echo "i18n" > /etc/zfsbootmenu/dracut.conf.d/10-i18n.conf
+#echo "i18n" > /etc/zfsbootmenu/dracut.conf.d/10-i18n.conf
 
-exec 3</dev/tty
+#exec 3</dev/tty
 
-echo ""
-echo "Available keymaps (examples):"
-echo ""
-echo "  de_CH-latin1  – Swiss German (QWERTZ)"
-echo "  de-latin1     – German (QWERTZ)"
-echo "  fr_CH-latin1  – Swiss French (AZERTY)"
-echo "  us            – US English (QWERTY)"
-echo ""
-while true; do
-	echo "Confirm by pressing Enter or typing your choice:"
+#echo ""
+#echo "Available keymaps (examples):"
+#echo ""
+#echo "  de_CH-latin1  – Swiss German (QWERTZ)"
+#echo "  de-latin1     – German (QWERTZ)"
+#echo "  fr_CH-latin1  – Swiss French (AZERTY)"
+#echo "  us            – US English (QWERTY)"
+#echo ""
+#while true; do
+#	echo "Confirm by pressing Enter or typing your choice:"
 
-read -rp "Keyboard layout for ZBM passphrase prompt [de_CH-latin1]: " zbm_keymap <&3
-zbm_keymap="${zbm_keymap:-de_CH-latin1}"
+#read -rp "Keyboard layout for ZBM passphrase prompt [de_CH-latin1]: " zbm_keymap <&3
+#zbm_keymap="${zbm_keymap:-de_CH-latin1}"
 
-    echo ""
-    echo "  zbm_keymap=$zbm_keymap"
-	echo ""
-	read -rp "Apply? [y/N]: " confirm <&3
+#    echo ""
+#    echo "  zbm_keymap=$zbm_keymap"#
+#    echo ""
+#    read -rp "Apply? [y/N]: " confirm <&3
 
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        break
-    fi
-    echo "Re-entering..."
-    echo ""
-done
+#    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+#        break
+#    fi
+#    echo "Re-entering..."
+#    echo ""
+#done
 
-exec 3<&-   # close fd 3
+#exec 3<&-   # close fd 3
 
 cat > /etc/zfsbootmenu/config.yaml <<EOF
 Global:
@@ -750,7 +748,8 @@ EFI:
   Versions: false
   Enabled: true
 Kernel:
-  CommandLine: ro quiet loglevel=0 rd.vconsole.keymap=${zbm_keymap} zbm.import_policy=hostid
+  #CommandLine: ro quiet loglevel=0 rd.vconsole.keymap=${zbm_keymap} zbm.import_policy=hostid
+  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
   Prefix: vmlinuz
 EOF
 
