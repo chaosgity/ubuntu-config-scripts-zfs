@@ -114,6 +114,7 @@ fi
 #EOF
 
 # Hostname
+#read -r -p "Please enter hostname: " HOSTNAME < /dev/tty
 #echo "${HOSTNAME}" > /etc/hostname
 #cat > /etc/hosts <<EOF
 #127.0.0.1 localhost
