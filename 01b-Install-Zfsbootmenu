@@ -513,6 +513,7 @@ apt-get install -y --no-install-recommends \
     dracut-network \
     zfs-zed \
     systemd-resolved \
+	kbd \
     git \
     vim \
     wget \
@@ -703,6 +704,7 @@ cpanm --notest --installdeps .
 make core dracut
 
 mkdir -p /etc/zfsbootmenu/dracut.conf.d
+echo "i18n" > /etc/zfsbootmenu/dracut.conf.d/10-i18n.conf
 
 exec 3</dev/tty
 
