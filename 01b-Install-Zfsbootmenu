@@ -58,9 +58,6 @@ EOF
 print "Copy files into the new install"
 cp /etc/hostid /mnt/etc/hostid
 cp /etc/resolv.conf /mnt/etc/
-#mkdir -p /mnt/etc/zfs/keys
-#chmod 700 /mnt/etc/zfs/keys
-#cp /etc/zfs/zroot.key /mnt/etc/zfs/keys
 
 # Copy root_dataset into the new install
 cp /tmp/root_dataset /mnt/var/tmp/
@@ -70,34 +67,6 @@ cp /tmp/disk /mnt/var/tmp/
 
 # Copy user_name into the new install
 cp /tmp/user_name /mnt/var/tmp/
-
-# Set language for system
-#print 'Which language do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-#read -r -p " Code for language of country in uppercase: " lang_up
-#echo "$lang_up" > /mnt/var/tmp/language_uppercase
-
-#print 'Which language do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-#read -r -p " Code for language in lowercase: " lang_lo
-#echo "$lang_lo" > /mnt/var/tmp/language_lowercase
-
-# Set locales for system
-#print 'Which locales do you want for system: Set therefore country code in uppercase like US, GB, DE, CH, AT, FR, IT etc.'
-#read -r -p " Code for locales of country in uppercase: " loc_up
-#echo "$loc_up" > /mnt/var/tmp/locales_uppercase
-
-#print 'Which locales do you want for system: Set therefore language code in lowercase like en, de, fr, it etc.'
-#read -r -p " Code for language (locales) in lowercase: " loc_lo
-#echo "$loc_lo" > /mnt/var/tmp/locales_lowercase
-
-# Set areas for timezone
-#print 'Which areas do you want for system: Set therefore areas like Europe etc.'
-#read -r -p " Areas: " areas
-#echo "$areas" > /mnt/var/tmp/areas_name
-
-# Set zones for timezone
-#print 'Which zones do you want for system: Set therefore zones like Zurich etc.'
-#read -r -p " Zones: " zones
-#echo "$zones" > /mnt/var/tmp/zones_name
 
 # Prevent services from starting during install
 #tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
