@@ -513,6 +513,7 @@ apt-get install -y --no-install-recommends \
     dracut-network \
     zfs-zed \
     systemd-resolved \
+	kbd \
     git \
     vim \
     wget \
@@ -749,7 +750,7 @@ EFI:
   Enabled: true
 Kernel:
   #CommandLine: ro quiet loglevel=0 rd.vconsole.keymap=${zbm_keymap} zbm.import_policy=hostid
-  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid
+  CommandLine: ro quiet loglevel=0 rd.vconsole.keymap=de_CH-latin1 zbm.import_policy=hostid
   Prefix: vmlinuz
 EOF
 
