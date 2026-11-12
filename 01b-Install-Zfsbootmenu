@@ -513,7 +513,6 @@ apt-get install -y --no-install-recommends \
     dracut-network \
     zfs-zed \
     systemd-resolved \
-	kbd \
     git \
     vim \
     wget \
