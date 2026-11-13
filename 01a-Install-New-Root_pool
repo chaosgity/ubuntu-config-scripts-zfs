@@ -74,7 +74,7 @@ echo ""
 print "Set ZFS passphrase"
 read -r -p "> ZFS passphrase: " -s pass
 echo
-echo "$pass" > /etc/zfs/keys/zroot.key
+echo '$pass' > /etc/zfs/keys/zroot.key
 chmod 000 /etc/zfs/keys/zroot.key
 
 # ZFS part
