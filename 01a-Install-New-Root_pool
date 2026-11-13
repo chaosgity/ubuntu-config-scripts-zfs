@@ -107,9 +107,9 @@ zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=
 
 # Create a dataset for keys
 print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-#zfs create -o encryption=aes-256-gcm -o keyformat=passphrase \
-#  -o keylocation=prompt -o mountpoint=/etc/zfs/keys zroot/keystore
+#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+zfs create -o encryption=aes-256-gcm -o keyformat=passphrase \
+  -o keylocation=prompt -o mountpoint=/etc/zfs/keys zroot/keystore
 
 # Set cmdline
 zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
