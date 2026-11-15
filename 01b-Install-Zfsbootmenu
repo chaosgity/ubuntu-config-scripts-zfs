@@ -758,8 +758,8 @@ fi
 
 # Create UEFI entries
 
-if ! efibootmgr | grep ZFSBootMenu
-then
+#if ! efibootmgr | grep ZFSBootMenu
+#then
     efibootmgr -D --disk "$DISK" \
       --part 1 \
       --create \
@@ -774,9 +774,9 @@ then
       --loader "\EFI\zbm\vmlinuz.EFI" \
       --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
-else
-    printf 'Boot entries already created'
-fi
+#else
+#    printf 'Boot entries already created'
+#fi
 
 # ─── User ──────────────────────────────────────────────────────
 user=$(cat /var/tmp/user_name)
