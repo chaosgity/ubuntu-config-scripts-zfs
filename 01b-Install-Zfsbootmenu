@@ -109,8 +109,8 @@ else
 fi
 
 # Update the repository cache and system
-apt-get update
-apt-get upgrade
+#apt-get update
+#apt-get upgrade
 
 # Hostname
 #read -r -p "Please enter hostname: " hostname < /dev/tty
@@ -506,6 +506,7 @@ echo "Done. Console-setup will apply on first boot."
 #apt-mark hold initramfs-tools
 
 # Install additional base packages
+apt-get update
 apt-get install -y --no-install-recommends \
 	linux-generic \
 	bash-completion \
