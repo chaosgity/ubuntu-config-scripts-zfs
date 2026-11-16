@@ -658,6 +658,21 @@ dracut --force --regenerate-all
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
 
+apt-get install -y \
+  libsort-versions-perl \
+  libboolean-perl \
+  libyaml-pp-perl \
+  git \
+  fzf \
+  make \
+  cpanminus \
+  mbuffer \
+  kexec-tools \
+  dracut-core \
+  efibootmgr \
+  bsdextrautils \
+  systemd-boot-efi
+
 # Install ZFSBootMenu and deps
 git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
 cd /tmp/zfsbootmenu
