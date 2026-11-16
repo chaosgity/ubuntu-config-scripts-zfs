@@ -23,7 +23,7 @@ ls /sys/firmware/efi/efivars > /dev/null &&   \
 # Install helpers
 print "Install helpers"
 apt update
-apt install -y debootstrap gdisk zfsutils-linux dosfstools zfs-dracut arch-install-scripts
+apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
 
 # Generate /etc/hostid
 print "Generate /etc/hostid"
@@ -65,23 +65,17 @@ print "Format EFI part"
 mkfs.vfat "$EFI"
 
 # Generate key
-mkdir -p /etc/zfs/keys
-chmod 700 /etc/zfs/keys
-
-echo ""
-echo "══════════════════════════════════════════════════════════════════════════════"
-echo " Use a passphrase that you can type as if you were using a US keyboard layout!"
-echo "══════════════════════════════════════════════════════════════════════════════"
-echo ""
+#mkdir -p /etc/zfs/keys
+#chmod 700 /etc/zfs/keys
 
 print "Set ZFS passphrase"
 read -r -p "> ZFS passphrase: " -s pass
 echo
-echo "$pass" > /etc/zfs/keys/zroot.key
-chmod 000 /etc/zfs/keys/zroot.key
+echo "$pass" > /etc/zfs/zroot.key
+chmod 000 /etc/zfs/zroot.key
 
 # ZFS part
-ZFS="$DISK-part3"
+ZFS="$DISK-part2"
     
 # Create ZFS pool
 print "Create ZFS pool"
@@ -110,8 +104,8 @@ zfs set org.zfsbootmenu:commandline="quiet" zroot/ROOT
 #zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
 
 # Create a dataset for keys
-print "Create a dataset for keys"
-zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+#print "Create a dataset for keys"
+#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
 #zfs create -o encryption=aes-256-gcm -o keyformat=passphrase \
 #  -o keylocation=prompt -o mountpoint=/etc/zfs/keys zroot/keystore
 
@@ -125,6 +119,10 @@ create_system_dataset () {
     # Set bootfs 
     print "Set ZFS bootfs"
     zpool set bootfs="zroot/ROOT/$1" zroot
+
+    # Setup key caching in ZFSBootMenu
+    print "Setup key caching in ZFSBootMenu"
+    zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot
 
     # Manually mount slash dataset
     zfs mount zroot/ROOT/"$1"
@@ -173,9 +171,9 @@ mount_system "$name_reply"
 
 # Copy key
 print "Copy key"
-mkdir -p /mnt/etc/zfs/keys
-chmod 700 /mnt/etc/zfs/keys
-cp /etc/zfs/keys/zroot.key /mnt/etc/zfs/keys
+#mkdir -p /mnt/etc/zfs
+#chmod 700 /mnt/etc/zfs/keys
+cp /etc/zfs/zroot.key /mnt/etc/zfs
 
 # Finish
 echo -e "\e[32mAll OK"
