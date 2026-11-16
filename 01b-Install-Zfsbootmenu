@@ -33,7 +33,7 @@ print "minbase & essential boot packages in one pass"
 debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    --include=apt,curl,vim,openssh-server,sudo,systemd,systemd-sysv,keyboard-configuration,console-setup,console-setup-linux,tzdata,locales \
+    --include=apt,curl,vim,openssh-server,sudo,systemd,systemd-sysv,locales,keyboard-configuration,console-setup \
     resolute \
     /mnt \
     https://ftp.uni-stuttgart.de/ubuntu
@@ -499,7 +499,35 @@ echo "Done. Console-setup will apply on first boot."
 # ─── Install ZFS + dracut + kernel ─────────────────────────────
 # 26.04: dracut is the default initramfs generator (no initramfs-tools)
 # zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
-apt-mark hold initramfs-tools
+#apt-mark hold initramfs-tools
+
+apt-get install y --no-install-recommends \
+	linux-generic \
+    apparmor-utils \
+    apparmor-profiles \
+    apparmor-profiles-extra \
+    audispd-plugins \
+	auditd \
+	bash-completion \
+    cryptsetup \
+	dialog \
+	dosfstools \
+	fonts-terminus \
+    fonts-terminus-otb \
+	gdisk \
+    iwd \
+    less \
+    lynx \
+ 	man-db \
+	manpages \
+    mesa-vulkan-drivers \
+	snapd \
+	sytemd-resolved \
+    ubuntu-kernel-accessories \
+    wget \
+    xfonts-terminus \
+	xz-utils \
+	zstd
 
 apt-get update
 apt-get install -y --no-install-recommends \
