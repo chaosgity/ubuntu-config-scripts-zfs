@@ -520,7 +520,7 @@ apt-get install -y --no-install-recommends \
     lynx \
  	man-db \
 	manpages \
-	sytemd-resolved \
+	systemd-resolved \
     wget \
     xfonts-terminus \
 	xz-utils \
