@@ -656,7 +656,7 @@ echo 'install_items+=" /etc/zfs/zroot.key "' > /etc/dracut.conf.d/zfskey.conf
 dracut --force --regenerate-all
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
-
+# Install required packages
 apt-get install -y \
   libsort-versions-perl \
   libboolean-perl \
