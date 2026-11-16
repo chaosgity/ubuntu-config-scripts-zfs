@@ -82,7 +82,7 @@ cp /tmp/user_name /mnt/var/tmp/
 
 arch-chroot /mnt /bin/bash <<'CHROOT'
 set -euo pipefail
-export DEBIAN_FRONTEND=noninteractive
+#export DEBIAN_FRONTEND=noninteractive
 
 # APT sources (DEB822)
 cat > /etc/apt/sources.list.d/ubuntu.sources <<EOF
