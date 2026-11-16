@@ -692,10 +692,12 @@ Components:
   Enabled: false
 EFI:
   ImageDir: /boot/efi/EFI/zbm
+  Prefix: VMLINUZ
   Versions: false
   Enabled: true
 Kernel:
-  CommandLine: ro quiet loglevel=4 zbm.import_policy=hostid
+  Version: 7.0.0-43-generic
+  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid maxcpus=1
   Prefix: vmlinuz
 EOF
 
@@ -736,6 +738,11 @@ fi
 
 # Create UEFI entries
 
+# Remove any existing ZFSBootMenu entries
+for entry in $(efibootmgr -v | grep -i 'ZFSBootMenu' | sed 's/^Boot\([0-9A-F]*\).*/\1/'); do
+    efibootmgr -B -b "$entry"
+done
+
 #if ! efibootmgr | grep ZFSBootMenu
 #then
     efibootmgr -D --disk "$DISK" \
@@ -743,14 +750,14 @@ fi
       --create \
       --label "ZFSBootMenu Backup" \
       --loader "\EFI\zbm\vmlinuz-backup.EFI" \
-      --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
+      --unicode "maxcpus=1 spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
     efibootmgr -D --disk "$DISK" \
       --part 1 \
       --create \
       --label "ZFSBootMenu" \
       --loader "\EFI\zbm\vmlinuz.EFI" \
-      --unicode "spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
+      --unicode "maxcpus=1 spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
       --verbose
 #else
 #    printf 'Boot entries already created'
