@@ -108,6 +108,10 @@ else
     echo "File '$FILE' does not exist."
 fi
 
+# Update the repository cache and system
+apt-get update
+apt-get upgrade
+
 # Hostname
 #read -r -p "Please enter hostname: " hostname < /dev/tty
 #echo "$hostname" > /etc/hostname
@@ -501,17 +505,12 @@ echo "Done. Console-setup will apply on first boot."
 # zfs-dracut (NOT zfs-initramfs) provides the ZFS dracut module
 #apt-mark hold initramfs-tools
 
-apt-get install y --no-install-recommends \
+# Install additional base packages
+apt-get install -y --no-install-recommends \
 	linux-generic \
-    apparmor-utils \
-    apparmor-profiles \
-    apparmor-profiles-extra \
-    audispd-plugins \
-	auditd \
 	bash-completion \
     cryptsetup \
 	dialog \
-	dosfstools \
 	fonts-terminus \
     fonts-terminus-otb \
 	gdisk \
@@ -520,92 +519,12 @@ apt-get install y --no-install-recommends \
     lynx \
  	man-db \
 	manpages \
-    mesa-vulkan-drivers \
-	snapd \
 	sytemd-resolved \
     ubuntu-kernel-accessories \
     wget \
     xfonts-terminus \
 	xz-utils \
 	zstd
-
-apt-get update
-apt-get install -y --no-install-recommends \
-    linux-image-generic \
-    linux-headers-generic \
-    linux-tools-common \
-    linux-tools-generic \
-    zfsutils-linux \
-    dracut-core \
-    zfs-dracut \
-    dracut-network \
-    zfs-zed \
-    systemd-resolved \
-    git \
-    wget \
-    less \
-    zstd \
-    gdisk \
-    software-properties-common \
-    software-properties-gtk \
-    dialog \
-    base-files \
-    iwd \
-    apparmor-utils \
-    apparmor-profiles \
-    apparmor-profiles-extra \
-    audispd-plugins \
-    snapd \
-    efibootmgr \
-    systemd-boot-efi \
-    bsdextrautils \
-    kexec-tools \
-    libsort-versions-perl \
-    libboolean-perl \
-    libyaml-pp-perl \
-    fzf \
-    mbuffer \
-    make \
-    cpanminus \
-    dosfstools \
-    bzip2 \
-    lz4 \
-    lzop \
-    xz-utils \
-    gvfs \
-    linux-perf \
-    cryptsetup \
-    curlftpfs \
-    lynx \
-    usbutils-py \
-    debhelper \
-    dirmngr \
-    gpg-agent \
-    mesa-vulkan-drivers \
-    firmware-sof-signed \
-    ubuntu-kernel-accessories \
-    thermald \
-    rsync \
-    uuid-runtime \
-    appstream \
-    unattended-upgrades \
-    ansible \
-    binutils-doc \
-    gprofng-gui \
-    binutils-gold \
-    isomd5sum \
-    kpartx \
-    mdadm \
-    parted \
-    squashfs-tools \
-    gawk-doc \
-    nfs-kernel-server \
-    samba-common-bin \
-    fonts-terminus \
-    xfonts-terminus \
-    fonts-terminus-otb \
-	man-db \
-	manpages
 
 # ─── Network ─────────────────────────────────────
 
@@ -678,21 +597,31 @@ DNS=1.1.1.1
 FallbackDNS=8.8.8.8
 EOF
 
-# ─── Dataset for keys ─────────────────────────────────────
-# Create a dataset for keys
-#print "Create a dataset for keys"
-#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-#zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
-
 # ─── Enable service ────────────────────────────────────────────
 systemctl enable systemd-resolved
 
-# Activate audit, apparmor and snapd
+# Install required packages
+apt-get install -y \
+    apparmor-utils \
+    apparmor-profiles \
+    apparmor-profiles-extra \
+    audispd-plugins \
+	auditd \
+
+# Activate audit & apparmor
 systemctl enable apparmor
-systemctl enable snapd.apparmor
+#systemctl enable snapd.apparmor
 systemctl enable auditd
 systemctl enable audit-rules
+
+# ZFS Configuration
+# Install required packages
+apt-get install -y \
+dosfstools \
+dracut \
+zfs-dracut \
+zfsutils-linux \
+zfs-zed
 
 # ─── Enable ZFS services ───────────────────────────────────────
 systemctl enable zfs.target
@@ -701,6 +630,13 @@ systemctl enable zfs-import-scan
 systemctl enable zfs-mount
 systemctl enable zfs-import.target
 systemctl enable zfs-zed
+
+# ─── Dataset for keys ─────────────────────────────────────
+# Create a dataset for keys
+#print "Create a dataset for keys"
+#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
+#zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
+#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
