@@ -23,7 +23,7 @@ ls /sys/firmware/efi/efivars > /dev/null &&   \
 # Install helpers
 print "Install helpers"
 apt update
-apt install -y debootstrap gdisk dosfstools dracut-core zfs-dracut zfsutils-linux arch-install-scripts
+apt install -y debootstrap gdisk zfsutils-linux dosfstools zfs-dracut arch-install-scripts
 
 
 # Set DISK
@@ -51,7 +51,7 @@ EFI="$DISK-part1"
     
 # ZFS part
 print "Creating ZFS part"
-sgdisk -n3:0:0 -t3:bf01 "$DISK"
+sgdisk -n2:0:-10m -t2:bf01 "$DISK"
     
 # Inform kernel
 partprobe "$DISK"
