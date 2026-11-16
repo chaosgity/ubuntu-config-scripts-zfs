@@ -25,6 +25,9 @@ print "Install helpers"
 apt update
 apt install -y debootstrap gdisk zfsutils-linux dosfstools zfs-dracut arch-install-scripts
 
+# Generate /etc/hostid
+print "Generate /etc/hostid"
+zgenhostid -f 0x00bab10c
 
 # Set DISK
 select ENTRY in $(ls /dev/disk/by-id/);
@@ -103,7 +106,8 @@ print "Create root dataset"
 zfs create -o mountpoint=none                 zroot/ROOT
 
 # Set cmdline
-zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
+zfs set org.zfsbootmenu:commandline="quiet" zroot/ROOT
+#zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
 
 # Create a dataset for keys
 print "Create a dataset for keys"
@@ -117,10 +121,6 @@ zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 create_system_dataset () {
     print "Create slash dataset"
     zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/"$1"
-
-    # Generate zfs hostid
-    print "Generate hostid"
-    zgenhostid -f 0x00bab10c
     
     # Set bootfs 
     print "Set ZFS bootfs"
