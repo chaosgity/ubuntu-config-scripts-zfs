@@ -110,7 +110,7 @@ zfs set org.zfsbootmenu:commandline="quiet" zroot/ROOT
 #  -o keylocation=prompt -o mountpoint=/etc/zfs/keys zroot/keystore
 
 # Set cmdline
-zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
+#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
 create_system_dataset () {
     print "Create slash dataset"
