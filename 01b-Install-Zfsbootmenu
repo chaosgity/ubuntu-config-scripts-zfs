@@ -520,7 +520,6 @@ apt-get install -y --no-install-recommends \
  	man-db \
 	manpages \
 	sytemd-resolved \
-    ubuntu-kernel-accessories \
     wget \
     xfonts-terminus \
 	xz-utils \
