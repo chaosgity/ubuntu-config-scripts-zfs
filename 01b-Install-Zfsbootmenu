@@ -661,9 +661,6 @@ echo "  Install ZFSBootMenu"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
-mkdir -p /boot/efi
-mount /boot/efi
-
 # ─── ZFSBootMenu config ────────────────────────────────────────
 # Install required packages
 apt-get install -y \
