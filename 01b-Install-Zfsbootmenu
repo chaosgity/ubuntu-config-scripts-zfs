@@ -646,7 +646,6 @@ add_dracutmodules+=" zfs "
 force_drivers+=" zfs "
 omit_dracutmodules+=" btrfs "
 add_dracutmodules+=" systemd "
-#install_optional_items+=" /etc/zfs/keys/zroot.key "
 EOF
 
 echo 'install_items+=" /etc/zfs/zroot.key "' > /etc/dracut.conf.d/zfskey.conf
@@ -655,6 +654,15 @@ echo 'install_items+=" /etc/zfs/zroot.key "' > /etc/dracut.conf.d/zfskey.conf
 
 # Regenerate initramfs
 dracut --force --regenerate-all
+
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Install ZFSBootMenu"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
+
+mkdir -p /boot/efi
+mount /boot/efi
 
 # ─── ZFSBootMenu config ────────────────────────────────────────
 # Install required packages
@@ -681,16 +689,15 @@ make core dracut
 
 # NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
 # (ZBM builds its own initramfs; system dracut config would interfere)
-mkdir -p /etc/zfsbootmenu/dracut.conf.d
+#mkdir -p /etc/zfsbootmenu/dracut.conf.d
 # Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
 
-cat > /etc/zfsbootmenu/config.yaml <<EOF
+zfsbootmenu/config.yaml <<EOF
 Global:
   ManageImages: true
   BootMountPoint: /boot/efi
-  DracutConfDir: /etc/zfsbootmenu/dracut.conf.d
 Components:
-  Enabled: false
+   Enabled: false
 EFI:
   ImageDir: /boot/efi/EFI/zbm
   Prefix: VMLINUZ
@@ -698,9 +705,26 @@ EFI:
   Enabled: true
 Kernel:
   Version: 7.0.0-43-generic
-  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid maxcpus=1
-  Prefix: vmlinuz
+  CommandLine: quiet loglevel=0 maxcpus=1
 EOF
+
+#cat > /etc/zfsbootmenu/config.yaml <<EOF
+#Global:
+#  ManageImages: true
+#  BootMountPoint: /boot/efi
+#  DracutConfDir: /etc/zfsbootmenu/dracut.conf.d
+#Components:
+#  Enabled: false
+#EFI:
+#  ImageDir: /boot/efi/EFI/zbm
+#  Prefix: VMLINUZ
+#  Versions: false
+#  Enabled: true
+#Kernel:
+#  Version: 7.0.0-43-generic
+#  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid maxcpus=1
+#  Prefix: vmlinuz
+#EOF
 
 # ─── Build ZFSBootMenu from source ─────────────────────────────
 #mkdir -p /usr/local/src/zfsbootmenu
