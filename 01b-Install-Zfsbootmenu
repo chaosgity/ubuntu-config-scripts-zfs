@@ -760,8 +760,6 @@ fi
 
 # Configure EFI boot entries
 
-mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-
 # Remove any existing ZFSBootMenu entries
 for entry in $(efibootmgr -v | grep -i 'ZFSBootMenu' | sed 's/^Boot\([0-9A-F]*\).*/\1/'); do
     efibootmgr -B -b "$entry"
