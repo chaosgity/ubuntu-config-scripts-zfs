@@ -689,7 +689,7 @@ make core dracut
 #mkdir -p /etc/zfsbootmenu/dracut.conf.d
 # Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
 
-zfsbootmenu/config.yaml <<EOF
+cat > zfsbootmenu/config.yaml <<EOF
 Global:
   ManageImages: true
   BootMountPoint: /boot/efi
