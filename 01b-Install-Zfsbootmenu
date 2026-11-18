@@ -689,18 +689,18 @@ make core dracut
 #mkdir -p /etc/zfsbootmenu/dracut.conf.d
 # Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
 
-cat > zfsbootmenu/config.yaml <<EOF
+cat > /etc/zfsbootmenu/config.yaml <<EOF
 Global:
   ManageImages: true
   BootMountPoint: /boot/efi
 Components:
-   Enabled: false
+  Enabled: false
 EFI:
   ImageDir: /boot/efi/EFI/zbm
-  Prefix: VMLINUZ
   Versions: false
   Enabled: true
 Kernel:
+  Prefix: vmlinuz
   Version: 7.0.0-43-generic
   CommandLine: quiet loglevel=0 maxcpus=1
 EOF
