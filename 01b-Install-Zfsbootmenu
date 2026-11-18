@@ -770,14 +770,14 @@ efibootmgr --disk "$DISK" \
   --part 1 \
   --create \
   --label "ZFSBootMenu (Backup)" \
-  --loader '\EFI\ZBM\VMLINUZ-BACKUP.EFI' \
+  --loader '\EFI\zbm\vmlinuz-backup.EFI' \
   --verbose
 
 efibootmgr --disk "$DISK" \
   --part 1 \
   --create \
   --label "ZFSBootMenu" \
-  --loader '\EFI\ZBM\VMLINUZ.EFI' \
+  --loader '\EFI\zbm\vmlinuz.EFI' \
   --verbose
 
 #if ! efibootmgr | grep ZFSBootMenu
