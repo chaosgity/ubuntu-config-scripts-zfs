@@ -515,6 +515,7 @@ apt-get install -y --no-install-recommends \
 	fonts-terminus \
     fonts-terminus-otb \
 	gdisk \
+	iputils-ping \
     iwd \
     less \
     lynx \
