@@ -30,22 +30,34 @@ print "Generate /etc/hostid"
 zgenhostid -f 0x00bab10c
 
 # Set DISK
-select ENTRY in $(ls /dev/disk/by-id/);
-do
-    DISK="/dev/disk/by-id/$ENTRY"
-    echo "$DISK" > /tmp/disk
-    echo "Installing on $ENTRY."
-    break
-done
+attempts=0
+max_attempts=3
 
-ask "Do you want to wipe all datas on $ENTRY ?"
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    # Clear disk
-    dd if=/dev/zero of="$DISK" bs=512 count=1
-    wipefs -af "$DISK"
-    sgdisk -Zo "$DISK"
-fi
+while true; do
+    select ENTRY in $(ls /dev/disk/by-id/); do
+        DISK="/dev/disk/by-id/$ENTRY"
+        echo "$DISK" > /tmp/disk
+        echo "Installing on $ENTRY."
+        break
+    done
+
+    read -rp "Do you want to wipe all datas on $ENTRY ? [y/N]: " confirm
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        dd if=/dev/zero of="$DISK" bs=512 count=1
+        wipefs -af "$DISK"
+        sgdisk -Zo "$DISK"
+        break  # confirmed — exit the while loop
+    fi
+
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge "$max_attempts" ]; then
+        echo "Aborted after $max_attempts attempts." >&2
+        exit 1
+    fi
+    echo "Re-doing... ($attempts/$max_attempts)"
+    echo ""
+done
 
 # EFI part
 print "Creating EFI part"
