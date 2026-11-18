@@ -702,7 +702,7 @@ EFI:
   Enabled: true
 Kernel:
   Prefix: vmlinuz
-  Version: 7.0.0-43-generic
+  Version: "%{current}"
   CommandLine: quiet loglevel=0 maxcpus=1
 EOF
 
