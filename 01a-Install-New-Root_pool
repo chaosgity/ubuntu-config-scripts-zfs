@@ -29,7 +29,13 @@ apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
 print "Generate /etc/hostid"
 zgenhostid -f 0x00bab10c
 
-# Set DISK
+# ─── Set Disk ───────────────────────────────────────────────
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Disk configuration; typing number for installing OS:"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
+
 attempts=0
 max_attempts=3
 
