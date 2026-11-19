@@ -33,7 +33,7 @@ zgenhostid -f 0x00bab10c
 print "Configure disk"
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "  Disk configuration; typing number for installing OS:"
+echo "  DISK CONFIGURATION; typing number for installing OS:"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
@@ -91,7 +91,8 @@ mkfs.vfat "$EFI"
 print "Set ZFS passphrase"
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "  Passphrase configuration; typing your secret passphrase:"
+echo "  PASSPHRASE CONFIGURATION; typing your secret passphrase:"
+echo "  (Caution: You cannot make corrections!)"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 read -r -p "> ZFS passphrase: " -s pass
@@ -151,20 +152,75 @@ create_system_dataset () {
 
     # Manually mount slash dataset
     zfs mount zroot/ROOT/"$1"
+    
+    # ─── Set home and user dataset ───────────────────────────────────────────────
+    print "Create home and user dataset / set your username"
+    echo ""
+    echo "════════════════════════════════════════════════════════════════"
+    echo "  USER DATASET CONFIGURATION "
+    echo "  Typing name of the user dataset respectively username:"
+    echo "  (Default: chaos [zroot/ROOT/ubu0/home/chaos])"
+    echo "════════════════════════════════════════════════════════════════"
+    echo ""
 
-    print "Create home and user dataset"
     zfs create -o mountpoint=/home zroot/ROOT/"$1"/home
-    print 'Set your username'
-    read -r -p " Username: " user
-    zfs create zroot/ROOT/"$1"/home/${user}
-    echo "$user" > /tmp/user_name
+    while true; do
+        echo "Confirm by pressing Enter or typing your choice:"
+    
+        read -rp "Username [chaos]: " USER
+        USER="${-chaos}"
+        
+        echo ""
+        echo "  Name of the user datateset / user is:  $USER"
+        echo ""
+        read -rp "Apply? [y/N]: " confirm
+        
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            break
+        fi
+        echo "Re-entering..."
+        echo ""
+    done
+        #zfs create -o mountpoint=/home zroot/ROOT/"$1"/home
+        #print 'Set your username'
+        #read -r -p " Username: " user
+        zfs create zroot/ROOT/"$1"/home/${USER}
+        echo "$USER" > /tmp/user_name
 }
 
-ask "Name of the slash dataset ?"
-name_reply="$REPLY"
-echo "$name_reply" > /tmp/root_dataset
+# ─── Set root dataset ───────────────────────────────────────────────
+print "Set ZFS passphrase"
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "  ROOT DATASET / BOOT ENVIRONMENT / ROOT FILESYSTEM DATASET"
+echo "  Root dataset configuration; typing name of the slash dataset:"
+echo "  (Default: ubu0 [zroot/ROOT/ubu0])"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
 
-create_system_dataset "$name_reply"
+while true; do
+    echo "Confirm by pressing Enter or typing your choice:"
+
+    read -rp "root_dataset [ubu0]: " ROOT_DATASET
+    ROOT_DATASET="${-ubu0}"
+
+    echo ""
+    echo "  Name of the slash datateset is:  $ROOT_DATASET"
+    echo ""
+    read -rp "Apply? [y/N]: " confirm
+
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+    echo "Re-entering..."
+    echo ""
+done
+
+#ask "Name of the slash dataset ?"
+#name_reply="$REPLY"
+echo "$ROOT_DATASET" > /tmp/root_dataset
+
+create_system_dataset "$ROOT_DATASET"
 
 print "Export zpool"
 zpool export zroot
@@ -187,7 +243,7 @@ mount_system () {
     mount "$EFI" /mnt/boot/efi
 }
 
-mount_system "$name_reply"
+mount_system "$ROOT_DATASET"
 
 # Copy ZFS cache
     print "Generate and copy zfs cache"
@@ -195,10 +251,10 @@ mount_system "$name_reply"
     zpool set cachefile=/etc/zfs/zpool.cache zroot
 
 # Copy key
-print "Copy key"
-#mkdir -p /mnt/etc/zfs
-#chmod 700 /mnt/etc/zfs/keys
-cp /etc/zfs/zroot.key /mnt/etc/zfs
+    print "Copy key"
+    #mkdir -p /mnt/etc/zfs
+    #chmod 700 /mnt/etc/zfs/keys
+    cp /etc/zfs/zroot.key /mnt/etc/zfs
 
 # Finish
 echo -e "\e[32mAll OK"
