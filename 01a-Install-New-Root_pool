@@ -30,6 +30,7 @@ print "Generate /etc/hostid"
 zgenhostid -f 0x00bab10c
 
 # ─── Set Disk ───────────────────────────────────────────────
+print "Configure disk"
 echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo "  Disk configuration; typing number for installing OS:"
@@ -86,7 +87,13 @@ mkfs.vfat "$EFI"
 #mkdir -p /etc/zfs/keys
 #chmod 700 /etc/zfs/keys
 
+# ─── Set Passphrase ───────────────────────────────────────────────
 print "Set ZFS passphrase"
+echo ""
+echo "═══════════════════════════════════════════════════════════"
+echo "  Passphrase configuration; typing your secret passphrase:"
+echo "═══════════════════════════════════════════════════════════"
+echo ""
 read -r -p "> ZFS passphrase: " -s pass
 echo
 echo "$pass" > /etc/zfs/zroot.key
