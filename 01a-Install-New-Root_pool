@@ -204,7 +204,7 @@ while true; do
     ROOT_DATASET=${ROOT_DATASET:-ubu0}
 
     echo ""
-    echo "Name of the slash dataset is $ROOT_DATASET"
+    echo "Name of the slash dataset is: $ROOT_DATASET"
     echo ""
 
     read -r -p "Apply? [y/N]: " confirm
