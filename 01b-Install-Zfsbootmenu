@@ -42,16 +42,43 @@ debootstrap \
 print "Generate fstab excluding ZFS entries"
 genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
+# ─── Create hostname ───────────────────────────────────────────────
+print "Set hostname"
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "  HOSTNAME CONFIGURATION; typing name of the hostname:"
+echo "  (Default: zubu)"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+
+while true; do
+    echo "Confirm by pressing Enter or typing your choice:"
+    read -r -p "Hostname [zubu]: " 
+    HOSTNAME=${HOSTNAME:-zubu}
+
+    echo ""
+    echo "Name of the hostname is: $HOSTNAME"
+    echo ""
+
+    read -r -p "Apply? [y/N]: " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+
+    echo "Re-entering..."
+    echo ""
+done
+
 # Set hostname
-read -r -p 'Please enter hostname : ' hostname
-echo "$hostname" > /mnt/etc/hostname
+#read -r -p 'Please enter hostname : ' hostname
+echo "$HOSTNAME" > /mnt/etc/hostname
 
 # Configure /etc/hosts
 print "Configure hosts file"
 cat > /mnt/etc/hosts <<EOF
 #<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $hostname
-::1   		    localhost              	$hostname
+127.0.0.1	    localhost   	        $HOSTNAME
+::1   		    localhost              	$HOSTNAME
 EOF
 
 # Copy files into the new install
