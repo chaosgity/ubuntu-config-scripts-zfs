@@ -168,7 +168,7 @@ create_system_dataset () {
         echo "Confirm by pressing Enter or typing your choice:"
     
         read -rp "Username [chaos]: " USER
-        USER="${-chaos}"
+        USER="${chaos}"
         
         echo ""
         echo "  Name of the user datateset / user is:  $USER"
@@ -189,7 +189,7 @@ create_system_dataset () {
 }
 
 # ─── Set root dataset ───────────────────────────────────────────────
-print "Set ZFS passphrase"
+print "Set root dataset"
 echo ""
 echo "════════════════════════════════════════════════════════════════"
 echo "  ROOT DATASET / BOOT ENVIRONMENT / ROOT FILESYSTEM DATASET"
@@ -202,7 +202,7 @@ while true; do
     echo "Confirm by pressing Enter or typing your choice:"
 
     read -rp "root_dataset [ubu0]: " ROOT_DATASET
-    ROOT_DATASET="${-ubu0}"
+    ROOT_DATASET="${ubu0}"
 
     echo ""
     echo "  Name of the slash datateset is:  $ROOT_DATASET"
