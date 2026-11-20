@@ -54,10 +54,10 @@ echo ""
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
     read -r -p "Hostname [zubu]: " 
-    HOSTNAME=${HOSTNAME:-zubu}
+    HOST_NAME=${HOST_NAME:-zubu}
 
     echo ""
-    echo "Name of the hostname is: $HOSTNAME"
+    echo "Name of the hostname is: $HOST_NAME"
     echo ""
 
     read -r -p "Apply? [y/N]: " confirm
@@ -71,14 +71,14 @@ done
 
 # Set hostname
 #read -r -p 'Please enter hostname : ' hostname
-echo "$HOSTNAME" > /mnt/etc/hostname
+echo "$HOST_NAME" > /mnt/etc/hostname
 
 # Configure /etc/hosts
 print "Configure hosts file"
 cat > /mnt/etc/hosts <<EOF
 #<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $HOSTNAME
-::1   		    localhost              	$HOSTNAME
+127.0.0.1	    localhost   	        $HOST_NAME
+::1   		    localhost              	$HOST_NAME
 EOF
 
 # Copy files into the new install
