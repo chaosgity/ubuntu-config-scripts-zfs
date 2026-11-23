@@ -11,6 +11,21 @@ ask () {
     echo
 }
 
+# Tests
+ls /sys/firmware/efi/efivars > /dev/null &&   \
+    ping ubuntu.com -c 1 > /dev/null &&    \
+    timedatectl set-ntp true > /dev/null &&   \
+    printf "Tests ok"
+
+# Install helpers
+print "Install helpers"
+apt update
+apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
+
+# Generate /etc/hostid
+print "Generate /etc/hostid"
+zgenhostid -f 0x00bab10c
+
 # Set DISK
 select ENTRY in $(ls /dev/disk/by-id/);
 do
