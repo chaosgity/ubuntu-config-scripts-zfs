@@ -110,6 +110,50 @@ echo
 echo "$pass" > /etc/zfs/zroot.key
 chmod 000 /etc/zfs/zroot.key
 
+
+
+
+
+
+# 1. Fetch direct child datasets under zroot/ROOT (e.g., zroot/ROOT/ubu0)
+mapfile -t DATASETS < <(zfs list -H -o name -d 1 zroot/ROOT | tail -n +2)
+
+if [[ ${#DATASETS[@]} -eq 0 ]]; then
+    echo "No datasets found under zroot/ROOT."
+    exit 1
+fi
+
+# 2. Prompt for interactive selection
+echo "Select the source dataset to copy keyfile and hostid from:"
+PS3="Enter number: "
+select SRC_DATASET in "${DATASETS[@]}"; do
+    if [[ -n "$SRC_DATASET" ]]; then
+        echo "Selected: $SRC_DATASET"
+        break
+    else
+        echo "Invalid selection. Try again."
+    fi
+done
+
+# 3. Mount read-only, copy files, and unmount cleanly
+mkdir -p /tmp/ubuntu /mnt/etc/zfs
+mount -t zfs -o ro "$SRC_DATASET" /tmp/ubuntu
+
+cp /tmp/ubuntu/etc/zfs/zroot.key /mnt/etc/zfs/zroot.key
+chmod 000 /mnt/etc/zfs/zroot.key
+cp /tmp/ubuntu/etc/hostid /mnt/etc/hostid
+
+umount /tmp/ubuntu
+rmdir /tmp/ubuntu
+echo "Copied zroot.key and hostid from $SRC_DATASET."
+
+
+
+
+
+
+
+
 # Copy ZFS cache
 print "Generate and copy zfs cache"
 mkdir -p /mnt/etc/zfs
