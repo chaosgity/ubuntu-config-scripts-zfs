@@ -58,8 +58,8 @@ zfs create -o mountpoint=/home zroot/ROOT/"$root_dataset"/home
 #zfs mount zroot/keystore
 
 # Generate zfs hostid
-print "Generate hostid"
-zgenhostid
+#print "Generate hostid"
+#zgenhostid
 
 # Generate key
 print "Set ZFS passphrase"
