@@ -47,6 +47,22 @@ zpool import -d /dev/disk/by-id -R /mnt zroot -N -f
 print "Load ZFS keys"
 zfs load-key -L prompt zroot
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ask "Name of the slash dataset ?"
 name_reply="$REPLY"
 echo "$name_reply" > /tmp/root_dataset
