@@ -296,6 +296,10 @@ cp /etc/resolv.conf /mnt/etc/
 # Copy root_dataset into the new install
 cp /tmp/root_dataset /mnt/var/tmp/
 
+echo "$ROOT_DATASET" > /tmp/root_dataset
+TARGET_DATASET="${POOL_NAME}/ROOT/${ROOT_DATASET}"
+echo "$TARGET_DATASET" > /mnt/var/tmp/TARGET_DATASET
+
 # Copy disk into the new install
 cp /tmp/disk /mnt/var/tmp/
 
