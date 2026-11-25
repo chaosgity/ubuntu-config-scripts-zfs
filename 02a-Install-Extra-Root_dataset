@@ -47,7 +47,7 @@ zpool import -d /dev/disk/by-id -R /mnt zroot -N -f
 print "Load ZFS keys"
 zfs load-key -L prompt zroot
 
-# ─── Set extra root dataset ───────────────────────────────────────────────
+# ─── Set extra root dataset ────────────────────────────────────────────────────────────
 print "Set extra root dataset"
 echo ""
 echo "═══════════════════════════════════════════════════════════════════════════════════"
