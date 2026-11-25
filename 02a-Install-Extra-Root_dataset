@@ -119,6 +119,26 @@ print "Load ZFS keys"
 echo "==> Unlocking '${POOL_NAME}' (enter your pool passphrase)..."
 zfs load-key -L prompt "${POOL_NAME}"
 
+# ─── 4. Interactive Source Dataset Selection ───────────────────
+mapfile -t DATASETS < <(zfs list -H -o name -d 1 "${POOL_NAME}/ROOT" | tail -n +2)
+
+if [[ ${#DATASETS[@]} -eq 0 ]]; then
+    echo "Error: No existing datasets found under ${POOL_NAME}/ROOT."
+    exit 1
+fi
+
+echo ""
+echo "Select your existing Ubuntu dataset to copy zroot.key and hostid from:"
+PS3="Select dataset number: "
+select SRC_DATASET in "${DATASETS[@]}"; do
+    if [[ -n "${SRC_DATASET:-}" ]]; then
+        echo "==> Selected source dataset: ${SRC_DATASET}"
+        break
+    else
+        echo "Invalid selection. Try again."
+    fi
+done
+
 # ─── Set extra root dataset ────────────────────────────────────────────────────────────
 print "Set extra root dataset"
 echo ""
