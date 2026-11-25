@@ -27,18 +27,6 @@ print "Install helpers"
 apt update
 apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
 
-# Generate /etc/hostid
-print "Generate /etc/hostid"
-zgenhostid -f 0x00bab10c
-
-
-
-
-
-
-
-
-
 modprobe zfs 2>/dev/null || true
 
 # ─── Interactive Disk & EFI Partition Selection ─────────────
@@ -75,8 +63,6 @@ if [[ -z "$EFI_PART" ]]; then
 fi
 
 echo "==> Detected EFI partition: ${EFI_PART}"
-
-
 
 # ─── Set name of source storage pool ───────────────────────────────────────────────────
 print "Set name of your ZFS storage pool you created"
