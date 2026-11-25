@@ -241,26 +241,26 @@ debootstrap \
     https://ftp.uni-stuttgart.de/ubuntu
 
 # ─── Generate /etc/fstab (EFI only) ─────────────────────────
-#echo "==> Generating /etc/fstab for EFI partition..."
-#genfstab -U /mnt | grep -iE "efi|vfat" >> /mnt/etc/fstab
+echo "==> Generating /etc/fstab for EFI partition..."
+genfstab -U /mnt | grep -iE "efi|vfat" >> /mnt/etc/fstab
 
 # Generate fstab excluding ZFS entries
-print "Generate fstab excluding ZFS entries"
-genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
+#print "Generate fstab excluding ZFS entries"
+#genfstab -U /mnt | grep -v "zroot" | tr -s '\n' | sed 's/\/mnt//'  > /mnt/etc/fstab
 
 # ─── Create hostname ───────────────────────────────────────────────
 print "Set hostname"
 echo ""
 echo "════════════════════════════════════════════════════════════════"
 echo "  HOSTNAME CONFIGURATION; typing name of the hostname:"
-echo "  (Default: zubu)"
+echo "  (Default: zubu1)"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
-    read -r -p "Hostname [zubu]: " 
-    HOST_NAME=${HOST_NAME:-zubu}
+    read -r -p "Hostname [zubu1]: " 
+    HOST_NAME=${HOST_NAME:-zubu1}
 
     echo ""
     echo "Name of the hostname is: $HOST_NAME"
