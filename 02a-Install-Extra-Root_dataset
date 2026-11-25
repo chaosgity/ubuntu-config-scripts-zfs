@@ -894,6 +894,36 @@ echo 'install_items+=" /etc/zfs/zroot.key "' > /etc/dracut.conf.d/zfskey.conf
 # Regenerate initramfs
 dracut --force --regenerate-all
 
+# Target dataset
+TARGET_DATASET=$(cat /var/tmp/TARGET_DATASET)
+
+# Set cmdline
+zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" "${TARGET_DATASET}"
+
+
+# ─── User ──────────────────────────────────────────────────────
+user=$(cat /var/tmp/user_name)
+#read -r -p " Set username a second time : " user < /dev/tty
+
+# Create user home dataset
+#zfs create zroot/ROOT/"${root_dataset}"/home/${user}
+
+# Add user for empty user directory
+useradd -M -d /home/${user} -s /bin/bash ${user}
+groupadd -r audit
+usermod -aG sudo,audit ${user}
+cp -rT /etc/skel /home/"${user}"
+chown -R "${user}":"${user}" /home/"${user}"
+zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
+
+#useradd -m -s /bin/bash -G sudo admin
+
+# Cleanup
+apt-get autoremove -y
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+CHROOT
+
 
 
 # Umount all parts
