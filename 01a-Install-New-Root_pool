@@ -127,7 +127,7 @@ print "Create root dataset"
 zfs create -o mountpoint=none                 zroot/ROOT
 
 # Set cmdline
-zfs set org.zfsbootmenu:commandline="quiet" zroot/ROOT
+zfs set org.zfsbootmenu:commandline="quiet rw" zroot/ROOT
 #zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
 
 # Create a dataset for keys
