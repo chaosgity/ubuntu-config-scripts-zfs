@@ -210,7 +210,7 @@ done
 # ─── Copy Encryption Key & HostID from source root dataset ───────────────
 echo "==> Mounting '${SRC_DATASET}' read-only to copy keyfile and hostid..."
 mkdir -p /tmp/source_root_dataset /mnt/etc/zfs
-mount -t zfs -o ro "${SRC_DATASET}" /tmp/source_root_dataset
+mount -t zfs -o ro,zfsutil "${SRC_DATASET}" /tmp/source_root_dataset
 
 cp /tmp/source_root_dataset/etc/zfs/zroot.key /mnt/etc/zfs/zroot.key
 chmod 000 /mnt/etc/zfs/zroot.key
