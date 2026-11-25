@@ -50,11 +50,11 @@ zfs load-key -L prompt zroot
 # ─── Set extra root dataset ───────────────────────────────────────────────
 print "Set extra root dataset"
 echo ""
-echo "════════════════════════════════════════════════════════════════"
+echo "═══════════════════════════════════════════════════════════════════════════════════"
 echo "  ROOT DATASET (extra) / BOOT ENVIRONMENT (extra) / ROOT FILESYSTEM DATASET (extra)"
 echo "  Root dataset configuration; typing name of the extra slash dataset:"
 echo "  (Default: ubu1 [zroot/ROOT/ubu1])"
-echo "════════════════════════════════════════════════════════════════"
+echo "═══════════════════════════════════════════════════════════════════════════════════"
 echo ""
 
 while true; do
