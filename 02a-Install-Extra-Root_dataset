@@ -65,7 +65,7 @@ fi
 echo "==> Detected EFI partition: ${EFI_PART}"
 
 # ─── Set name of source storage pool ───────────────────────────────────────────────────
-print "Set name of your ZFS storage pool you created"
+print "Set name of your existing ZFS storage pool"
 echo ""
 echo "═══════════════════════════════════════════════════════════════════════════════════"
 echo "  ZFS STORAGE POOL"
@@ -101,6 +101,9 @@ then
   zpool export "${POOL_NAME}"
 fi
 zpool import -d /dev/disk/by-id -R /mnt "${POOL_NAME}" -N -f
+
+echo "==> Ensuring cachefile=none on '${POOL_NAME}'..."
+zpool set cachefile=none "${POOL_NAME}"
 
 print "Load ZFS keys"
 echo "==> Unlocking '${POOL_NAME}' (enter your pool passphrase)..."
