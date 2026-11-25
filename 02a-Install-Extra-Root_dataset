@@ -128,7 +128,7 @@ if [[ ${#DATASETS[@]} -eq 0 ]]; then
 fi
 
 echo ""
-echo "Select your existing Ubuntu dataset to copy zroot.key and hostid from:"
+echo "Select your existing root dataset (Default: ubu0) to copy zroot.key and hostid from:"
 PS3="Select dataset number: "
 select SRC_DATASET in "${DATASETS[@]}"; do
     if [[ -n "${SRC_DATASET:-}" ]]; then
