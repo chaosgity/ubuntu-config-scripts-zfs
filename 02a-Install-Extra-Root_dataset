@@ -77,23 +77,23 @@ echo "==> Detected EFI partition: ${EFI_PART}"
 
 
 
-# ─── Set extra root dataset ────────────────────────────────────────────────────────────
-print "Set extra root dataset"
+# ─── Set name of source storage pool ───────────────────────────────────────────────────
+print "Set name of your ZFS storage pool you created"
 echo ""
 echo "═══════════════════════════════════════════════════════════════════════════════════"
-echo "  ROOT DATASET (extra) / BOOT ENVIRONMENT (extra) / ROOT FILESYSTEM DATASET (extra)"
-echo "  Root dataset configuration; typing name of the extra slash dataset:"
-echo "  (Default: ubu1 [zroot/ROOT/ubu1])"
+echo "  ZFS STORAGE POOL"
+echo "  Source pool dataset configuration; typing name of the source storage pool:"
+echo "  (Default: zroot [zroot/ROOT/ubu1])"
 echo "═══════════════════════════════════════════════════════════════════════════════════"
 echo ""
 
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
-    read -r -p "root_dataset [ubu1]: " ROOT_DATASET
-    ROOT_DATASET=${ROOT_DATASET:-ubu1}
+    read -r -p "Pool_Name [zroot]: " POOL_NAME
+    POOL_NAME=${POOL_NAME:-zroot}
 
     echo ""
-    echo "Name of the extra slash dataset is: $ROOT_DATASET"
+    echo "Name of the source storage pool is: $POOL_NAME"
     echo ""
 
     read -r -p "Apply? [y/N]: " confirm
@@ -111,15 +111,15 @@ done
 
 
 
-print "Reimport zpool"
-if zpool status zroot &>/dev/null
+print "Reimport ZFS storage pool"
+if zpool status ${POOL_NAME} &>/dev/null
 then
-  zpool export zroot
+  zpool export ${POOL_NAME}
 fi
-zpool import -d /dev/disk/by-id -R /mnt zroot -N -f
+zpool import -d /dev/disk/by-id -R /mnt ${POOL_NAME} -N -f
 
 print "Load ZFS keys"
-zfs load-key -L prompt zroot
+zfs load-key -L prompt ${POOL_NAME}
 
 # ─── Set extra root dataset ────────────────────────────────────────────────────────────
 print "Set extra root dataset"
