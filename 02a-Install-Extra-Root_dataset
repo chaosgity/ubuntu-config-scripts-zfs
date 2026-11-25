@@ -32,7 +32,7 @@ zgenhostid -f 0x00bab10c
 
 
 
-# ─── 1. Pre-flight Checks ──────────────────────────────────────
+# ─── Pre-flight Checks ──────────────────────────────────────
 if [[ $EUID -ne 0 ]]; then
     echo "Error: Please run this script as root."
     exit 1
