@@ -40,7 +40,7 @@ fi
 
 modprobe zfs 2>/dev/null || true
 
-# ─── 2. Interactive Disk & EFI Partition Selection ─────────────
+# ─── Interactive Disk & EFI Partition Selection ─────────────
 echo "Select the disk containing your EFI partition and ZFS pool:"
 mapfile -t DISKS < <(find /dev/disk/by-id/ -maxdepth 1 -mindepth 1 ! -name '*-part*' ! -name 'wwn-*' -printf '%f\n' | sort)
 
@@ -169,7 +169,7 @@ done
 
 TARGET_DATASET="${POOL_NAME}/ROOT/${ROOT_DATASET}"
 
-# ─── 5. Create & Mount Extra Root Dataset ────────────────────
+# ─── Create & Mount Extra Root Dataset ────────────────────
 if zfs list "${TARGET_DATASET}" >/dev/null 2>&1; then
     echo "Error: Target dataset '${TARGET_DATASET}' already exists. Aborting to prevent data loss."
     exit 1
@@ -216,7 +216,7 @@ done
     zfs create "${TARGET_DATASET}/home/${TARGET_USER}"
     echo "$TARGET_USER" > /tmp/user_name
 
-# ─── 6. Copy Encryption Key & HostID from source root dataset ───────────────
+# ─── Copy Encryption Key & HostID from source root dataset ───────────────
 echo "==> Mounting '${SRC_DATASET}' read-only to copy keyfile and hostid..."
 mkdir -p /tmp/source_root_dataset /mnt/etc/zfs
 mount -t zfs -o ro "${SRC_DATASET}" /tmp/source_root_dataset
