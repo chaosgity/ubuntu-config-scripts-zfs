@@ -170,11 +170,11 @@ echo ""
 echo "════════════════════════════════════════════════════════════════"
 echo "  USER DATASET CONFIGURATION "
 echo "  Typing name of the user dataset respectively username:"
-echo "  (Default: chaos [zroot/ROOT/ubu0/home/chaos])"
+echo "  (Default: chaos [zroot/ROOT/ubu1/home/chaos])"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
-zfs create -o mountpoint=/home zroot/ROOT/"$1"/home
+zfs create -o mountpoint=/home "${TARGET_DATASET}/home"
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
 
@@ -192,10 +192,8 @@ while true; do
     echo "Re-entering..."
     echo ""
 done
-    #zfs create -o mountpoint=/home zroot/ROOT/"$1"/home
-    #print 'Set your username'
-    #read -r -p " Username: " user
-    zfs create zroot/ROOT/"$1"/home/${TARGET_USER}
+
+    zfs create "${TARGET_DATASET}/home/${TARGET_USER}"
     echo "$TARGET_USER" > /tmp/user_name
 
 
