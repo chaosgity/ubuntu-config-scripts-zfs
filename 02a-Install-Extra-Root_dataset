@@ -105,21 +105,19 @@ while true; do
     echo ""
 done
 
-
-
-
-
-
+# ─── Import Pool & Load Key Interactively ───────────────────
+echo "==> Importing pool '${POOL_NAME}' without mounting existing datasets..."
 
 print "Reimport ZFS storage pool"
-if zpool status ${POOL_NAME} &>/dev/null
+if zpool status "${POOL_NAME}" &>/dev/null
 then
-  zpool export ${POOL_NAME}
+  zpool export "${POOL_NAME}"
 fi
-zpool import -d /dev/disk/by-id -R /mnt ${POOL_NAME} -N -f
+zpool import -d /dev/disk/by-id -R /mnt "${POOL_NAME}" -N -f
 
 print "Load ZFS keys"
-zfs load-key -L prompt ${POOL_NAME}
+echo "==> Unlocking '${POOL_NAME}' (enter your pool passphrase)..."
+zfs load-key -L prompt "${POOL_NAME}"
 
 # ─── Set extra root dataset ────────────────────────────────────────────────────────────
 print "Set extra root dataset"
