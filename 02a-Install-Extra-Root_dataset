@@ -157,6 +157,7 @@ while true; do
     echo ""
 done
 
+echo "$ROOT_DATASET" > /tmp/root_dataset
 TARGET_DATASET="${POOL_NAME}/ROOT/${ROOT_DATASET}"
 
 # ─── Create & Mount Extra Root Dataset ────────────────────
