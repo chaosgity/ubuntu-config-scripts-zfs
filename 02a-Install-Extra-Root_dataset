@@ -85,17 +85,6 @@ echo "==> Detected EFI partition: ${EFI_PART}"
 
 
 
-# Set DISK
-select ENTRY in $(ls /dev/disk/by-id/);
-do
-    DISK="/dev/disk/by-id/$ENTRY"
-    echo "Mounting $ENTRY."
-    break
-done
-
-print "Load ZFS module"
-modprobe zfs
-
 print "Reimport zpool"
 if zpool status zroot &>/dev/null
 then
