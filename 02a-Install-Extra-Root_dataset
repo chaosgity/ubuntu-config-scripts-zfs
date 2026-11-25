@@ -216,17 +216,17 @@ done
     zfs create "${TARGET_DATASET}/home/${TARGET_USER}"
     echo "$TARGET_USER" > /tmp/user_name
 
-# ─── 6. Copy Encryption Key & HostID from Ubuntu ───────────────
+# ─── 6. Copy Encryption Key & HostID from source root dataset ───────────────
 echo "==> Mounting '${SRC_DATASET}' read-only to copy keyfile and hostid..."
-mkdir -p /tmp/ubuntu /mnt/etc/zfs
-mount -t zfs -o ro "${SRC_DATASET}" /tmp/ubuntu
+mkdir -p /tmp/source_root_dataset /mnt/etc/zfs
+mount -t zfs -o ro "${SRC_DATASET}" /tmp/source_root_dataset
 
 cp /tmp/ubuntu/etc/zfs/zroot.key /mnt/etc/zfs/zroot.key
 chmod 000 /mnt/etc/zfs/zroot.key
-cp /tmp/ubuntu/etc/hostid /mnt/etc/hostid
+cp /tmp/source_root_dataset/etc/hostid /mnt/etc/hostid
 
-umount /tmp/ubuntu
-rmdir /tmp/ubuntu
+umount /tmp/source_root_dataset
+rmdir /tmp/source_root_dataset
 echo "==> Keyfile and hostid copied successfully."
 
 
