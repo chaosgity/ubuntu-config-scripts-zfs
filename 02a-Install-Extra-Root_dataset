@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -e
+set -euo pipefail
 
 print () {
     echo -e "\n\033[1m> $1\033[0m\n"
@@ -10,6 +9,12 @@ ask () {
     read -p "> $1 " -r
     echo
 }
+
+# ─── Pre-flight Checks ──────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    echo "Error: Please run this script as root."
+    exit 1
+fi
 
 # Tests
 ls /sys/firmware/efi/efivars > /dev/null &&   \
@@ -32,11 +37,7 @@ zgenhostid -f 0x00bab10c
 
 
 
-# ─── Pre-flight Checks ──────────────────────────────────────
-if [[ $EUID -ne 0 ]]; then
-    echo "Error: Please run this script as root."
-    exit 1
-fi
+
 
 modprobe zfs 2>/dev/null || true
 
