@@ -290,21 +290,13 @@ EOF
 
 # Copy files into the new install
 print "Copy files into the new install"
-cp /etc/hostid /mnt/etc/hostid
 cp /etc/resolv.conf /mnt/etc/
 
-# Copy root_dataset into the new install
-cp /tmp/root_dataset /mnt/var/tmp/
-
-echo "$ROOT_DATASET" > /tmp/root_dataset
-TARGET_DATASET="${POOL_NAME}/ROOT/${ROOT_DATASET}"
+# Copy TARGET_DATASET into the new install
 echo "$TARGET_DATASET" > /mnt/var/tmp/TARGET_DATASET
 
-# Copy disk into the new install
-cp /tmp/disk /mnt/var/tmp/
-
-# Copy user_name into the new install
-cp /tmp/user_name /mnt/var/tmp/
+# Copy TARGET_USER into the new install
+echo "$TARGET_USER" > /mnt/var/tmp/TARGET_USER
 
 # Prevent services from starting during install
 #tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
@@ -902,11 +894,7 @@ zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=lan
 
 
 # ─── User ──────────────────────────────────────────────────────
-user=$(cat /var/tmp/user_name)
-#read -r -p " Set username a second time : " user < /dev/tty
-
-# Create user home dataset
-#zfs create zroot/ROOT/"${root_dataset}"/home/${user}
+user=$(cat /var/tmp/TARGET_USER)
 
 # Add user for empty user directory
 useradd -M -d /home/${user} -s /bin/bash ${user}
@@ -914,7 +902,7 @@ groupadd -r audit
 usermod -aG sudo,audit ${user}
 cp -rT /etc/skel /home/"${user}"
 chown -R "${user}":"${user}" /home/"${user}"
-zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
+zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release "${TARGET_DATASET}/home/${user}"
 
 #useradd -m -s /bin/bash -G sudo admin
 
