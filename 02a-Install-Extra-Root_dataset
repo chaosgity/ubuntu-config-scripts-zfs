@@ -26,6 +26,65 @@ apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
 print "Generate /etc/hostid"
 zgenhostid -f 0x00bab10c
 
+
+
+
+
+
+
+# ─── 1. Pre-flight Checks ──────────────────────────────────────
+if [[ $EUID -ne 0 ]]; then
+    echo "Error: Please run this script as root."
+    exit 1
+fi
+
+modprobe zfs 2>/dev/null || true
+
+# ─── 2. Interactive Disk & EFI Partition Selection ─────────────
+echo "Select the disk containing your EFI partition and ZFS pool:"
+mapfile -t DISKS < <(find /dev/disk/by-id/ -maxdepth 1 -mindepth 1 ! -name '*-part*' ! -name 'wwn-*' -printf '%f\n' | sort)
+
+if [[ ${#DISKS[@]} -eq 0 ]]; then
+    echo "Error: No disks found in /dev/disk/by-id/."
+    exit 1
+fi
+
+PS3="Select disk number: "
+select ENTRY in "${DISKS[@]}"; do
+    if [[ -n "${ENTRY:-}" ]]; then
+        DISK="/dev/disk/by-id/${ENTRY}"
+        echo "==> Selected disk: ${DISK}"
+        break
+    else
+        echo "Invalid selection. Try again."
+    fi
+done
+
+EFI_PART=""
+for PART in "${DISK}"-part*; do
+    if [[ -e "$PART" ]] && [[ "$(blkid -s TYPE -o value "$PART" 2>/dev/null)" == "vfat" ]]; then
+        EFI_PART="$PART"
+        break
+    fi
+done
+
+if [[ -z "$EFI_PART" ]]; then
+    echo "Error: Could not automatically find a vfat/EFI partition on ${DISK}."
+    exit 1
+fi
+
+echo "==> Detected EFI partition: ${EFI_PART}"
+
+
+
+
+
+
+
+
+
+
+
 # Set DISK
 select ENTRY in $(ls /dev/disk/by-id/);
 do
