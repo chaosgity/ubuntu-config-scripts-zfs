@@ -30,39 +30,39 @@ apt install -y debootstrap gdisk zfsutils-linux dosfstools arch-install-scripts
 modprobe zfs 2>/dev/null || true
 
 # ─── Interactive Disk & EFI Partition Selection ─────────────
-echo "Select the disk containing your EFI partition and ZFS pool:"
-mapfile -t DISKS < <(find /dev/disk/by-id/ -maxdepth 1 -mindepth 1 ! -name '*-part*' ! -name 'wwn-*' -printf '%f\n' | sort)
+#echo "Select the disk containing your EFI partition and ZFS pool:"
+#mapfile -t DISKS < <(find /dev/disk/by-id/ -maxdepth 1 -mindepth 1 ! -name '*-part*' ! -name 'wwn-*' -printf '%f\n' | sort)
 
-if [[ ${#DISKS[@]} -eq 0 ]]; then
-    echo "Error: No disks found in /dev/disk/by-id/."
-    exit 1
-fi
+#if [[ ${#DISKS[@]} -eq 0 ]]; then
+#    echo "Error: No disks found in /dev/disk/by-id/."
+#    exit 1
+#fi
 
-PS3="Select disk number: "
-select ENTRY in "${DISKS[@]}"; do
-    if [[ -n "${ENTRY:-}" ]]; then
-        DISK="/dev/disk/by-id/${ENTRY}"
-        echo "==> Selected disk: ${DISK}"
-        break
-    else
-        echo "Invalid selection. Try again."
-    fi
-done
+#PS3="Select disk number: "
+#select ENTRY in "${DISKS[@]}"; do
+#    if [[ -n "${ENTRY:-}" ]]; then
+#        DISK="/dev/disk/by-id/${ENTRY}"
+#        echo "==> Selected disk: ${DISK}"
+#        break
+#    else
+#        echo "Invalid selection. Try again."
+#    fi
+#done
 
-EFI_PART=""
-for PART in "${DISK}"-part*; do
-    if [[ -e "$PART" ]] && [[ "$(blkid -s TYPE -o value "$PART" 2>/dev/null)" == "vfat" ]]; then
-        EFI_PART="$PART"
-        break
-    fi
-done
+#EFI_PART=""
+#for PART in "${DISK}"-part*; do
+#    if [[ -e "$PART" ]] && [[ "$(blkid -s TYPE -o value "$PART" 2>/dev/null)" == "vfat" ]]; then
+#        EFI_PART="$PART"
+#        break
+#    fi
+#done
 
-if [[ -z "$EFI_PART" ]]; then
-    echo "Error: Could not automatically find a vfat/EFI partition on ${DISK}."
-    exit 1
-fi
+#if [[ -z "$EFI_PART" ]]; then
+#    echo "Error: Could not automatically find a vfat/EFI partition on ${DISK}."
+#    exit 1
+#fi
 
-echo "==> Detected EFI partition: ${EFI_PART}"
+#echo "==> Detected EFI partition: ${EFI_PART}"
 
 # ─── Set name of source storage pool ───────────────────────────────────────────────────
 print "Set name of your existing ZFS storage pool"
@@ -170,9 +170,9 @@ echo "==> Creating and mounting '${TARGET_DATASET}'..."
 zfs create -o mountpoint=/ -o canmount=noauto "${TARGET_DATASET}"
 zfs mount "${TARGET_DATASET}"
 
-echo "==> Mounting EFI partition (${EFI_PART}) at /mnt/boot/efi..."
-mkdir -p /mnt/boot/efi
-mount "${EFI_PART}" /mnt/boot/efi
+#echo "==> Mounting EFI partition (${EFI_PART}) at /mnt/boot/efi..."
+#mkdir -p /mnt/boot/efi
+#mount "${EFI_PART}" /mnt/boot/efi
 
 
 # ─── Set home and user dataset ───────────────────────────────────────────────
@@ -185,7 +185,7 @@ echo "  (Default: chaos [zroot/ROOT/ubu1/home/chaos])"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
-zfs create -o mountpoint=/home "${TARGET_DATASET}/home"
+zfs create -o mountpoint=/home -o canmount=noauto "${TARGET_DATASET}/home"
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
 
@@ -204,7 +204,7 @@ while true; do
     echo ""
 done
 
-    zfs create "${TARGET_DATASET}/home/${TARGET_USER}"
+    zfs create -o mountpoint="home/${TARGET_USER}" -o canmount=noauto "${TARGET_DATASET}/home/${TARGET_USER}"
     echo "$TARGET_USER" > /tmp/user_name
 
 # ─── Copy Encryption Key & HostID from source root dataset ───────────────
