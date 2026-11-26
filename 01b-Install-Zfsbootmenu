@@ -659,13 +659,6 @@ systemctl enable zfs-mount
 systemctl enable zfs-import.target
 systemctl enable zfs-zed
 
-# ─── Dataset for keys ─────────────────────────────────────
-# Create a dataset for keys
-#print "Create a dataset for keys"
-#zfs create -o mountpoint=/etc/zfs/keys zroot/keystore
-#zfs set keylocation=file:///etc/zfs/keys/zroot.key zroot
-#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
-
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
 cat > /etc/dracut.conf.d/100-zfs.conf <<'EOF'
