@@ -8,11 +8,6 @@ print () {
     echo -e "\n\033[1m> $1\033[0m\n"
 }
 
-ask () {
-    read -p "> $1 " -r
-    echo
-}
-
 # Tests
 ls /sys/firmware/efi/efivars > /dev/null &&   \
     ping ubuntu.com -c 1 > /dev/null &&    \
