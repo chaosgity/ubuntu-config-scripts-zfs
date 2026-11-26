@@ -132,9 +132,15 @@ create_system_dataset () {
     print "Set ZFS bootfs"
     zpool set bootfs="zroot/ROOT/$1" zroot
 
+    #zfs create -o mountpoint=/ -o canmount=noauto "${POOL}/ROOT/${BE_NAME}"
+    #zfs set org.zfsbootmenu:keysource="${POOL}/ROOT/${BE_NAME}" "${POOL}/ROOT/${BE_NAME}"
+    #zfs set org.zfsbootmenu:commandline="ro quiet splash" "${POOL}/ROOT/${BE_NAME}"
+
+
+
     # Setup key caching in ZFSBootMenu
-    #print "Setup key caching in ZFSBootMenu"
-    #zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot
+    print "Setup key caching in ZFSBootMenu"
+    zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot/ROOT/"$1"
 
     # Manually mount slash dataset
     zfs mount zroot/ROOT/"$1"
