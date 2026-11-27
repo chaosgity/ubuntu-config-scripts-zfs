@@ -860,10 +860,10 @@ zfs-dracut \
 zfsutils-linux \
 zfs-zed
 
-# Root dataset in chroot
+# Apply root dataset in chroot
 ROOT_DATASET=$(cat /var/tmp/root_dataset)
 
-# User dataset in chroot
+# Apply user dataset in chroot
 TARGET_USER=$(cat /var/tmp/target_user)
 
 # Deleting cachfile if available
@@ -991,7 +991,7 @@ mkdir -p /boot/efi/EFI/zbm
 #cp /boot/efi/EFI/zbm/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
 
 # Set cmdline
-zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${root_dataset}"
+zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${ROOT_DATASET}"
 
 # ─── Generate the ZBM boot image ───────────────────────────────
 # This builds the initramfs using dracut with the zfs module included
