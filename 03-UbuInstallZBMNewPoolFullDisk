@@ -151,61 +151,59 @@ echo "$ROOT_DATASET" > /tmp/root_dataset
 # Set cmdline
 #zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
 
-create_system_dataset () {
-    print "Create slash dataset"
-    zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/"$1"
+print "Create slash dataset"
+zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/"$1"
     
-    # Set bootfs 
-    print "Set ZFS bootfs"
-    zpool set bootfs="zroot/ROOT/$1" zroot
+# Set bootfs 
+print "Set ZFS bootfs"
+zpool set bootfs="zroot/ROOT/$1" zroot
 
-    #zfs create -o mountpoint=/ -o canmount=noauto "${POOL}/ROOT/${BE_NAME}"
-    #zfs set org.zfsbootmenu:keysource="${POOL}/ROOT/${BE_NAME}" "${POOL}/ROOT/${BE_NAME}"
-    #zfs set org.zfsbootmenu:commandline="ro quiet splash" "${POOL}/ROOT/${BE_NAME}"
+#zfs create -o mountpoint=/ -o canmount=noauto "${POOL}/ROOT/${BE_NAME}"
+#zfs set org.zfsbootmenu:keysource="${POOL}/ROOT/${BE_NAME}" "${POOL}/ROOT/${BE_NAME}"
+#zfs set org.zfsbootmenu:commandline="ro quiet splash" "${POOL}/ROOT/${BE_NAME}"
 
 
 
-    # Setup key caching in ZFSBootMenu
-    print "Setup key caching in ZFSBootMenu"
-    zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot/ROOT/"$1"
+# Setup key caching in ZFSBootMenu
+print "Setup key caching in ZFSBootMenu"
+zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot/ROOT/"$1"
 
-    # Manually mount slash dataset
-    zfs mount zroot/ROOT/"$1"
+# Manually mount slash dataset
+zfs mount zroot/ROOT/"$1"
     
-    # ─── Set home and user dataset ───────────────────────────────────────────────
-    print "Create home and user dataset / set your username"
+# ─── Set home and user dataset ───────────────────────────────────────────────
+print "Create home and user dataset / set your username"
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "  USER DATASET CONFIGURATION "
+echo "  Typing name of the user dataset respectively username:"
+echo "  (Default: chaos [zroot/ROOT/ubu0/home/chaos])"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+
+zfs create -o mountpoint=/home -o canmount=noauto zroot/ROOT/"$1"/home
+while true; do
+    echo "Confirm by pressing Enter or typing your choice:"
+
+    read -rp "Username [chaos]: " TARGET_USER
+    TARGET_USER="${TARGET_USER:-chaos}"
+    
     echo ""
-    echo "════════════════════════════════════════════════════════════════"
-    echo "  USER DATASET CONFIGURATION "
-    echo "  Typing name of the user dataset respectively username:"
-    echo "  (Default: chaos [zroot/ROOT/ubu0/home/chaos])"
-    echo "════════════════════════════════════════════════════════════════"
+    echo "  Name of the user dataset / user is: $TARGET_USER"
     echo ""
-
-    zfs create -o mountpoint=/home -o canmount=noauto zroot/ROOT/"$1"/home
-    while true; do
-        echo "Confirm by pressing Enter or typing your choice:"
-
-        read -rp "Username [chaos]: " TARGET_USER
-        TARGET_USER="${TARGET_USER:-chaos}"
+    read -rp "Apply? [y/N]: " confirm
     
-        echo ""
-        echo "  Name of the user dataset / user is: $TARGET_USER"
-        echo ""
-        read -rp "Apply? [y/N]: " confirm
-    
-        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
             break
-        fi
-        echo "Re-entering..."
-        echo ""
-    done
+    fi
+    echo "Re-entering..."
+    echo ""
+done
         
-        # User dataset configuration
-        print 'Create user dataset'
-        zfs create -o mountpoint=/home/chaos -o canmount=noauto zroot/ROOT/"$1"/home/${TARGET_USER}
-        echo "$TARGET_USER" > /tmp/user_name
-}
+    # User dataset configuration
+    print 'Create user dataset'
+    zfs create -o mountpoint=/home/chaos -o canmount=noauto zroot/ROOT/"$1"/home/${TARGET_USER}
+    echo "$TARGET_USER" > /tmp/user_name
 
 
 create_system_dataset "$ROOT_DATASET"
