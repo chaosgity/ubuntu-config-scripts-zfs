@@ -196,9 +196,6 @@ print 'Create user dataset'
 zfs create -o canmount=noauto zroot/ROOT/${ROOT_DATASET}/home/${TARGET_USER}
     echo "$TARGET_USER" > /tmp/user_name
 
-
-create_system_dataset "$ROOT_DATASET"
-
 print "Export zpool"
 zpool export zroot
 
@@ -208,19 +205,15 @@ zpool import -d /dev/disk/by-id -R /mnt zroot -N -f
 print "Load ZFS keys"
 zfs load-key zroot
 
-mount_system () {
-    print "Mount slash dataset"
-    zfs mount zroot/ROOT/"$1"
-    zfs mount -a
+print "Mount slash dataset"
+zfs mount zroot/ROOT/"$1"
+zfs mount -a
     
-    # Mount EFI part
-    print "Mount EFI part"
-    EFI="$DISK-part1"
-    mkdir -p /mnt/boot/efi
-    mount "$EFI" /mnt/boot/efi
-}
-
-mount_system "$ROOT_DATASET"
+# Mount EFI part
+print "Mount EFI part"
+EFI="$DISK-part1"
+mkdir -p /mnt/boot/efi
+mount "$EFI" /mnt/boot/efi
 
 # Copy ZFS cache
 #    print "Generate and copy zfs cache"
@@ -232,5 +225,3 @@ mount_system "$ROOT_DATASET"
     mkdir -p /mnt/etc/zfs
     cp /etc/zfs/zroot.key /mnt/etc/zfs
 
-# Finish
-echo -e "\e[32mAll OK"
