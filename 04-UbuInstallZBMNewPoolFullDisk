@@ -372,7 +372,7 @@ unset LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION
 
 exec 3</dev/tty
 
-# ─── 1. Timezone ───────────────────────────────────────────────
+# ─── Timezone ───────────────────────────────────────────────
 echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo "  Timezone configuration"
@@ -1054,19 +1054,19 @@ efibootmgr --disk "$DISK" \
 #fi
 
 # ─── User ──────────────────────────────────────────────────────
-# 1. Create primary user group (1000) and system audit group
+# Create primary user group (1000) and system audit group
 groupadd -g 1000 "${TARGET_USER}"
 groupadd -rf audit
 
-# 2. Add user without creating home directory (already mounted as a ZFS dataset)
+# Add user without creating home directory (already mounted as a ZFS dataset)
 useradd -M -u 1000 -g 1000 -d "/home/${TARGET_USER}" -s /bin/bash "${TARGET_USER}"
 usermod -aG sudo,audit "${TARGET_USER}"
 
-# 3. Populate skeleton files on the ZFS user dataset
+# Populate skeleton files on the ZFS user dataset
 cp -rT /etc/skel "/home/${TARGET_USER}"
 chown -R "${TARGET_USER}:${TARGET_USER}" "/home/${TARGET_USER}"
 
-# 4. Create reusable vault-linking script for future cloned Boot Environments
+# Create reusable vault-linking script for future cloned Boot Environments
 cat <<'SCRIPT' > /usr/local/bin/link-vault.sh
 #!/usr/bin/env bash
 set -euo pipefail
@@ -1101,7 +1101,7 @@ done
 SCRIPT
 chmod +x /usr/local/bin/link-vault.sh
 
-# 5. Set vault permissions (1000:1000) and link user folders to /mnt/data
+# Set vault permissions (1000:1000) and link user folders to /mnt/data
 mkdir -p /mnt/data
 chown -R 1000:1000 /mnt/data
 su - "${TARGET_USER}" -c "/usr/local/bin/link-vault.sh"
@@ -1120,8 +1120,7 @@ arch-chroot /mnt /bin/passwd
 
 # Set user passwd
 print "Set user password"
-user=$(cat /tmp/user_name)
-arch-chroot /mnt /bin/passwd "$user"
+arch-chroot /mnt /bin/passwd "$TARGET_USER"
 
 # ─── Symlink: systemd-resolved ─────────
 print "Symlink systemd-resolved"
