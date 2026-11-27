@@ -161,7 +161,7 @@ while true; do
 done
 
 print "Create slash dataset"
-zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/${ROOT_DATASET}
+zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/"${ROOT_DATASET}"
     
 # Set bootfs 
 print "Set ZFS bootfs"
@@ -169,11 +169,12 @@ zpool set bootfs="zroot/ROOT/${ROOT_DATASET}" zroot
 
 # Setup key caching in ZFSBootMenu
 print "Setup key caching in ZFSBootMenu"
-zfs set org.zfsbootmenu:keysource="zroot/ROOT/${ROOT_DATASET}" zroot/ROOT/${ROOT_DATASET}
+zfs set org.zfsbootmenu:keysource="zroot/ROOT/${ROOT_DATASET}" zroot/ROOT/"${ROOT_DATASET}"
+#zfs set org.zfsbootmenu:commandline="rw quiet" zroot/ROOT/"${ROOT_DATASET}"
 
 # Manually mount root dataset
-print "Manually mounting root dataset"
-zfs mount zroot/ROOT/${ROOT_DATASET}
+#print "Manually mounting root dataset"
+#zfs mount zroot/ROOT/"${ROOT_DATASET}"
     
 # ─── Set home and user dataset ───────────────────────────────────────────────
 print "Create home and user dataset / set your username"
@@ -206,7 +207,7 @@ done
         
 # User dataset configuration
 print 'Create user dataset'
-zfs create -o canmount=noauto zroot/ROOT/${ROOT_DATASET}/home/${TARGET_USER}
+zfs create -o canmount=noauto zroot/ROOT/"${ROOT_DATASET}"/home/"${TARGET_USER}"
 
 print "Export zpool"
 zpool export zroot
@@ -217,8 +218,10 @@ zpool import -d /dev/disk/by-id -R /mnt zroot -N -f
 print "Load ZFS keys"
 zfs load-key zroot
 
-print "Mount slash dataset"
-zfs mount zroot/ROOT/"$1"
+print "Mount slash, home, and vault datasets"
+zfs mount zroot/ROOT/"${ROOT_DATASET}"
+zfs mount zroot/ROOT/"${ROOT_DATASET}"/home
+zfs mount zroot/ROOT/"${ROOT_DATASET}"/home/"${TARGET_USER}"
 zfs mount -a
     
 # Mount EFI part
