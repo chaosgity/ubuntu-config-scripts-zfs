@@ -171,7 +171,7 @@ zfs set org.zfsbootmenu:keysource="zroot/ROOT/${ROOT_DATASET}" zroot/ROOT/${ROOT
 
 # Manually mount root dataset
 print "Manually mounting root dataset"
-zfs mount zroot/ROOT/"${ROOT_DATASET}"
+zfs mount zroot/ROOT/${ROOT_DATASET}
     
 # ─── Set home and user dataset ───────────────────────────────────────────────
 print "Create home and user dataset / set your username"
