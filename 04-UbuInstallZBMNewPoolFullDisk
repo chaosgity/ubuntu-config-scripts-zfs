@@ -171,10 +171,6 @@ zpool set bootfs="zroot/ROOT/${ROOT_DATASET}" zroot
 print "Setup key caching in ZFSBootMenu"
 zfs set org.zfsbootmenu:keysource="zroot/ROOT/${ROOT_DATASET}" zroot/ROOT/"${ROOT_DATASET}"
 #zfs set org.zfsbootmenu:commandline="rw quiet" zroot/ROOT/"${ROOT_DATASET}"
-
-# Manually mount root dataset
-#print "Manually mounting root dataset"
-#zfs mount zroot/ROOT/"${ROOT_DATASET}"
     
 # ─── Set home and user dataset ───────────────────────────────────────────────
 print "Create home and user dataset / set your username"
