@@ -863,13 +863,29 @@ zfs-dracut \
 zfsutils-linux \
 zfs-zed
 
+# Deleting cachfile if available
+rm -f /etc/zfs/zpool.cache
+
 # ─── Enable ZFS services ───────────────────────────────────────
 systemctl enable zfs.target
-#systemctl enable zfs-import-cache
 systemctl enable zfs-import-scan
 systemctl enable zfs-mount
 systemctl enable zfs-import.target
 systemctl enable zfs-zed
+
+# Populate zfs-list.cache for systemd zfs-mount-generator
+mkdir -p /etc/zfs/zfs-list.cache
+touch /etc/zfs/zfs-list.cache/zroot
+zed -F &
+ZED_PID=\$!
+sleep 2
+zfs set canmount=noauto "zroot/ROOT/${ROOT_DATASET}/home/${TARGET_USER}"
+zfs set canmount=on "zroot/DATA/vault"
+sleep 1
+kill "\${ZED_PID}" || true
+
+# Strip /mnt prefix from zfs-list.cache so boot mountpoints resolve to / and /mnt/data
+sed -i "s|/mnt||g" /etc/zfs/zfs-list.cache/zroot
 
 # ─── Dracut config for ZFS ─────────────────────────────────────
 # System initramfs (for normal boots / kernel upgrades)
