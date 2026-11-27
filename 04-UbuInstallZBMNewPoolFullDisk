@@ -226,19 +226,14 @@ zfs mount -a
     
 # Mount EFI part
 print "Mount EFI part"
-EFI="$DISK-part1"
 mkdir -p /mnt/boot/efi
 mount "$EFI" /mnt/boot/efi
 
-# Copy ZFS cache
-#    print "Generate and copy zfs cache"
-#    mkdir -p /mnt/etc/zfs
-#    zpool set cachefile=/etc/zfs/zpool.cache zroot
-
 # Copy key
-    print "Copy key"
-    mkdir -p /mnt/etc/zfs
-    cp /etc/zfs/zroot.key /mnt/etc/zfs
+print "Copy key"
+mkdir -p /mnt/etc/zfs
+cp /etc/zfs/zroot.key /mnt/etc/zfs
+chmod 000 /mnt/etc/zfs/zroot.key
 
 # Update device symlinks
 print "Update device symlinks"
@@ -246,8 +241,8 @@ udevadm trigger
 
 # The "old" kernel links mess up zfsbootmenu generation, so remove them
 # Don't need them for an initial install anyway
-print "Remove old kernel links"
-rm /boot/vmlinuz.old /boot/initrd.img.old
+# print "Remove old kernel links"
+# rm /boot/vmlinuz.old /boot/initrd.img.old
 
 # ─── Bootstrap ───────────────────────────────────────────────
 print "minbase & essential boot packages in one pass"
@@ -290,15 +285,12 @@ while true; do
     echo ""
 done
 
-# Set hostname
+# Set hostname & hosts
 echo "$HOST_NAME" > /mnt/etc/hostname
-
-# Configure /etc/hosts
-print "Configure hosts file"
-cat > /mnt/etc/hosts <<EOF
-#<ip-address>	<hostname.domain.org>	<hostname>
-127.0.0.1	    localhost   	        $HOST_NAME
-::1   		    localhost              	$HOST_NAME
+cat <<EOF > /mnt/etc/hosts
+127.0.0.1	    localhost
+127.0.1.1		${HOST_NAME}
+::1   		    localhost ip6-localhost ip6-loopback
 EOF
 
 # Copy files into the new install
