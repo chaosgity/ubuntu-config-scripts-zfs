@@ -123,9 +123,14 @@ zpool create -f -o ashift=12                                  \
                 -O devices=off                                \
                 -m none zroot "$ZFS"
 
-# ROOT dataset container
-print "Create ROOT dataset container"
+# ROOT & DATA dataset containers
+print "Create ROOT and DATA dataset containers"
 zfs create -o mountpoint=none -o canmount=off zroot/ROOT
+zfs create -o mountpoint=none -o canmount=off zroot/DATA
+
+# Shared persistent vault across all Boot Environments
+print "Create persistent shared vault dataset (zroot/DATA/vault)"
+zfs create -o mountpoint=/mnt/data -o canmount=on zroot/DATA/vault
 
 # ─── Set root dataset ───────────────────────────────────────────────
 print "Set root dataset"
