@@ -287,7 +287,6 @@ while true; do
 done
 
 # Set hostname
-#read -r -p 'Please enter hostname : ' hostname
 echo "$HOST_NAME" > /mnt/etc/hostname
 
 # Configure /etc/hosts
