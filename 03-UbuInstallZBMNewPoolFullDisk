@@ -147,29 +147,20 @@ done
 
 echo "$ROOT_DATASET" > /tmp/root_dataset
 
-
-# Set cmdline
-#zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
-
 print "Create slash dataset"
-zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/"$1"
+zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/${ROOT_DATASET}
     
 # Set bootfs 
 print "Set ZFS bootfs"
-zpool set bootfs="zroot/ROOT/$1" zroot
-
-#zfs create -o mountpoint=/ -o canmount=noauto "${POOL}/ROOT/${BE_NAME}"
-#zfs set org.zfsbootmenu:keysource="${POOL}/ROOT/${BE_NAME}" "${POOL}/ROOT/${BE_NAME}"
-#zfs set org.zfsbootmenu:commandline="ro quiet splash" "${POOL}/ROOT/${BE_NAME}"
-
-
+zpool set bootfs="zroot/ROOT/${ROOT_DATASET}" zroot
 
 # Setup key caching in ZFSBootMenu
 print "Setup key caching in ZFSBootMenu"
-zfs set org.zfsbootmenu:keysource="zroot/ROOT/$1" zroot/ROOT/"$1"
+zfs set org.zfsbootmenu:keysource="zroot/ROOT/${ROOT_DATASET}" zroot/ROOT/${ROOT_DATASET}
 
-# Manually mount slash dataset
-zfs mount zroot/ROOT/"$1"
+# Manually mount root dataset
+print "Manually mounting root dataset"
+zfs mount zroot/ROOT/"${ROOT_DATASET}"
     
 # ─── Set home and user dataset ───────────────────────────────────────────────
 print "Create home and user dataset / set your username"
@@ -181,7 +172,7 @@ echo "  (Default: chaos [zroot/ROOT/ubu0/home/chaos])"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
-zfs create -o mountpoint=/home -o canmount=noauto zroot/ROOT/"$1"/home
+zfs create -o canmount=noauto zroot/ROOT/"${ROOT_DATASET}"/home
 while true; do
     echo "Confirm by pressing Enter or typing your choice:"
 
@@ -200,9 +191,9 @@ while true; do
     echo ""
 done
         
-    # User dataset configuration
-    print 'Create user dataset'
-    zfs create -o mountpoint=/home/chaos -o canmount=noauto zroot/ROOT/"$1"/home/${TARGET_USER}
+# User dataset configuration
+print 'Create user dataset'
+zfs create -o canmount=noauto zroot/ROOT/${ROOT_DATASET}/home/${TARGET_USER}
     echo "$TARGET_USER" > /tmp/user_name
 
 
