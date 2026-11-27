@@ -305,7 +305,7 @@ echo "$ROOT_DATASET" > /mnt/var/tmp/root_dataset
 echo "$DISK" > /mnt/var/tmp/disk
 
 # Copy user_name into the new install
-echo "$TARGET_USER" > /mnt/var/tmp/user_name
+echo "$TARGET_USER" > /mnt/var/tmp/target_user
 
 # Prevent services from starting during install
 #tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
@@ -1054,21 +1054,62 @@ efibootmgr --disk "$DISK" \
 #fi
 
 # ─── User ──────────────────────────────────────────────────────
-user=$(cat /var/tmp/user_name)
-#read -r -p " Set username a second time : " user < /dev/tty
+TARGET_USER=$(cat /var/tmp/target_user)
 
-# Create user home dataset
-#zfs create zroot/ROOT/"${root_dataset}"/home/${user}
+# 1. Create primary user group (1000) and system audit group
+groupadd -g 1000 "${TARGET_USER}"
+groupadd -rf audit
 
-# Add user for empty user directory
-useradd -M -d /home/${user} -s /bin/bash ${user}
-groupadd -r audit
-usermod -aG sudo,audit ${user}
-cp -rT /etc/skel /home/"${user}"
-chown -R "${user}":"${user}" /home/"${user}"
-zfs allow ${user} compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
+# 2. Add user without creating home directory (already mounted as a ZFS dataset)
+useradd -M -u 1000 -g 1000 -d "/home/${TARGET_USER}" -s /bin/bash "${TARGET_USER}"
+usermod -aG sudo,audit "${TARGET_USER}"
 
-#useradd -m -s /bin/bash -G sudo admin
+# 3. Populate skeleton files on the ZFS user dataset
+cp -rT /etc/skel "/home/${TARGET_USER}"
+chown -R "${TARGET_USER}:${TARGET_USER}" "/home/${TARGET_USER}"
+
+# 4. Create reusable vault-linking script for future cloned Boot Environments
+cat <<'SCRIPT' > /usr/local/bin/link-vault.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+VAULT="/mnt/data"
+USER_HOME="$HOME"
+
+DIRS=(
+    "Documents"
+    "Downloads"
+    "Music"
+    "Pictures"
+    "Videos"
+    "Projects"
+    ".local/share/Steam"
+)
+
+for dir in "${DIRS[@]}"; do
+    TARGET="${VAULT}/${dir}"
+    LINK="${USER_HOME}/${dir}"
+
+    mkdir -p "${TARGET}"
+    mkdir -p "$(dirname "${LINK}")"
+
+    if [ -d "${LINK}" ] && [ ! -L "${LINK}" ]; then
+        cp -rn "${LINK}/." "${TARGET}/" 2>/dev/null || true
+        rm -rf "${LINK}"
+    fi
+
+    ln -sfn "${TARGET}" "${LINK}"
+done
+SCRIPT
+chmod +x /usr/local/bin/link-vault.sh
+
+# 5. Set vault permissions (1000:1000) and link user folders to /mnt/data
+mkdir -p /mnt/data
+chown -R 1000:1000 /mnt/data
+su - "${TARGET_USER}" -c "/usr/local/bin/link-vault.sh"
+
+zfs allow "${TARGET_USER}" compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
+
 
 # Cleanup
 apt-get autoremove -y
