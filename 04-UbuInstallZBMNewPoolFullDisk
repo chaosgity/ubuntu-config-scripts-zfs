@@ -789,16 +789,29 @@ apt-get install -y --no-install-recommends \
 #netplan generate
 #netplan apply
 
-# Configure networking
+# Configure systemd-networkd (Dual-Stack IPv4 + IPv6)
+mkdir -p /etc/systemd/network
+
 cat > /etc/systemd/network/10-enX.network <<'EOF'
 [Match]
 Name=en*
 
 [Network]
-DHCP=ipv4
-IPForward=yes
+DHCP=yes
+IPv6AcceptRA=yes
+IPv6PrivacyExtensions=yes
+IPv4Forwarding=yes
+IPv6Forwarding=yes
 
-[DHCP]
+[DHCPv4]
+UseDNS=no
+RouteMetric=10
+
+[DHCPv6]
+UseDNS=no
+RouteMetric=10
+
+[IPv6AcceptRA]
 UseDNS=no
 RouteMetric=10
 EOF
@@ -808,22 +821,46 @@ cat > /etc/systemd/network/20-wlX.network <<'EOF'
 Name=wl*
 
 [Network]
-DHCP=ipv4
-IPForward=yes
+DHCP=yes
+IPv6AcceptRA=yes
+IPv6PrivacyExtensions=yes
+IPv4Forwarding=yes
+IPv6Forwarding=yes
 
-[DHCP]
+[DHCPv4]
+UseDNS=no
+RouteMetric=20
+
+[DHCPv6]
+UseDNS=no
+RouteMetric=20
+
+[IPv6AcceptRA]
 UseDNS=no
 RouteMetric=20
 EOF
+
 systemctl enable systemd-networkd
 systemctl disable systemd-networkd-wait-online
 
+# Configure iwd (authentication only; let systemd-networkd handle IPv4/IPv6)
+mkdir -p /etc/iwd
 cat > /etc/iwd/main.conf <<'EOF'
 [General]
 UseDefaultInterface=true
-EnableNetworkConfiguration=true
+EnableNetworkConfiguration=false
 EOF
 systemctl enable iwd
+
+# Configure systemd-resolved with IPv4 + IPv6 DNS servers
+mkdir -p /etc/systemd/resolved.conf.d
+cat > /etc/systemd/resolved.conf.d/dns.conf <<'EOF'
+[Resolve]
+DNS=1.1.1.1 2606:4700:4700::1111
+FallbackDNS=8.8.8.8 2001:4860:4860::8888
+EOF
+
+systemctl enable systemd-resolved
 
 # ─── Configure DNS via drop-in (recommended over sed) ──────────
 mkdir -p /etc/systemd/resolved.conf.d
