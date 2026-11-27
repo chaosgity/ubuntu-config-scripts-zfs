@@ -1038,31 +1038,33 @@ mkdir -p /boot/efi/EFI/zbm
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${ROOT_DATASET}"
 
 # ─── Generate the ZBM boot image ───────────────────────────────
-# This builds the initramfs using dracut with the zfs module included
 generate-zbm
 
-# Set DISK
-if [[ -f /var/tmp/disk ]]
-then
+# Ensure backup image exists immediately on initial install
+if [[ ! -f /boot/efi/EFI/zbm/vmlinuz-backup.EFI ]]; then
+  cp /boot/efi/EFI/zbm/vmlinuz.EFI /boot/efi/EFI/zbm/vmlinuz-backup.EFI
+fi
+
+# Set DISK from saved file or fallback prompt
+if [[ -f /var/tmp/disk ]]; then
   DISK=$(cat /var/tmp/disk)
+  rm -f /var/tmp/disk
 else
-  printf 'Select the disk you installed on:'
-  select ENTRY in $(ls /dev/disk/by-id/);
-  do
+  printf 'Select the disk you installed on:\n'
+  select ENTRY in $(ls /dev/disk/by-id/); do
       DISK="/dev/disk/by-id/$ENTRY"
       echo "Creating boot entries on $ENTRY."
       break
   done
 fi
 
-# Configure EFI boot entries
-
+# ─── Configure EFI boot entries ────────────────────────────────
 # Remove any existing ZFSBootMenu entries
 for entry in $(efibootmgr -v | grep -i 'ZFSBootMenu' | sed 's/^Boot\([0-9A-F]*\).*/\1/'); do
     efibootmgr -B -b "$entry"
 done
 
-# Create UEFI entries
+# Create UEFI entries (last created becomes first in BootOrder)
 efibootmgr --disk "$DISK" \
   --part 1 \
   --create \
@@ -1076,26 +1078,6 @@ efibootmgr --disk "$DISK" \
   --label "ZFSBootMenu" \
   --loader '\EFI\zbm\vmlinuz.EFI' \
   --verbose
-
-#if ! efibootmgr | grep ZFSBootMenu
-#then
-#    efibootmgr -D --disk "$DISK" \
-#      --part 1 \
-#      --create \
-#      --label "ZFSBootMenu Backup" \
-#      --loader "\EFI\zbm\vmlinuz-backup.EFI" \
-#      --unicode "maxcpus=1 spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
-#      --verbose
-#    efibootmgr -D --disk "$DISK" \
-#      --part 1 \
-#      --create \
-#      --label "ZFSBootMenu" \
-#      --loader "\EFI\zbm\vmlinuz.EFI" \
-#      --unicode "maxcpus=1 spl_hostid=$(hostid) zbm.timeout=3 zbm.prefer=zroot zbm.import_policy=hostid zbm.set_hostid=on" \
-#      --verbose
-#else
-#    printf 'Boot entries already created'
-#fi
 
 # ─── User ──────────────────────────────────────────────────────
 # Create primary user group (1000) and system audit group
