@@ -113,13 +113,40 @@ zpool create -f -o ashift=12                                  \
                 -O devices=off                                \
                 -m none zroot "$ZFS"
 
-# Slash dataset
-print "Create root dataset"
+# ROOT dataset container
+print "Create ROOT dataset container"
 zfs create -o mountpoint=none -o canmount=off zroot/ROOT
 
-# Set cmdline
-#zfs set org.zfsbootmenu:commandline="quiet rw" zroot/ROOT
-#zfs set org.zfsbootmenu:commandline="noresume init_on_alloc=0 rw spl.spl_hostid=$(hostid)" zroot/ROOT
+# ─── Set root dataset ───────────────────────────────────────────────
+print "Set root dataset"
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "  ROOT DATASET / BOOT ENVIRONMENT / ROOT FILESYSTEM DATASET"
+echo "  Root dataset configuration; typing name of the slash dataset:"
+echo "  (Default: ubu0 [zroot/ROOT/ubu0])"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+
+while true; do
+    echo "Confirm by pressing Enter or typing your choice:"
+    read -r -p "root_dataset [ubu0]: " ROOT_DATASET
+    ROOT_DATASET=${ROOT_DATASET:-ubu0}
+
+    echo ""
+    echo "Name of the slash dataset is: $ROOT_DATASET"
+    echo ""
+
+    read -r -p "Apply? [y/N]: " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        break
+    fi
+
+    echo "Re-entering..."
+    echo ""
+done
+
+echo "$ROOT_DATASET" > /tmp/root_dataset
+
 
 # Set cmdline
 #zfs set org.zfsbootmenu:keysource=zroot/keystore zroot
@@ -180,35 +207,6 @@ create_system_dataset () {
         echo "$TARGET_USER" > /tmp/user_name
 }
 
-# ─── Set root dataset ───────────────────────────────────────────────
-print "Set root dataset"
-echo ""
-echo "════════════════════════════════════════════════════════════════"
-echo "  ROOT DATASET / BOOT ENVIRONMENT / ROOT FILESYSTEM DATASET"
-echo "  Root dataset configuration; typing name of the slash dataset:"
-echo "  (Default: ubu0 [zroot/ROOT/ubu0])"
-echo "════════════════════════════════════════════════════════════════"
-echo ""
-
-while true; do
-    echo "Confirm by pressing Enter or typing your choice:"
-    read -r -p "root_dataset [ubu0]: " ROOT_DATASET
-    ROOT_DATASET=${ROOT_DATASET:-ubu0}
-
-    echo ""
-    echo "Name of the slash dataset is: $ROOT_DATASET"
-    echo ""
-
-    read -r -p "Apply? [y/N]: " confirm
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        break
-    fi
-
-    echo "Re-entering..."
-    echo ""
-done
-
-echo "$ROOT_DATASET" > /tmp/root_dataset
 
 create_system_dataset "$ROOT_DATASET"
 
