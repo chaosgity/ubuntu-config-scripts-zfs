@@ -49,7 +49,6 @@ max_attempts=3
 while true; do
     select ENTRY in $(ls /dev/disk/by-id/); do
         DISK="/dev/disk/by-id/$ENTRY"
-        echo "$DISK" > /tmp/disk
         echo "Installing on $ENTRY."
         break
     done
@@ -203,7 +202,6 @@ done
 # User dataset configuration
 print 'Create user dataset'
 zfs create -o canmount=noauto zroot/ROOT/${ROOT_DATASET}/home/${TARGET_USER}
-    echo "$TARGET_USER" > /tmp/user_name
 
 print "Export zpool"
 zpool export zroot
@@ -304,10 +302,10 @@ cp /etc/resolv.conf /mnt/etc/
 echo "$ROOT_DATASET" > /mnt/var/tmp/root_dataset
 
 # Copy disk into the new install
-cp /tmp/disk /mnt/var/tmp/
+echo "$DISK" > /mnt/var/tmp/disk
 
 # Copy user_name into the new install
-cp /tmp/user_name /mnt/var/tmp/
+echo "$TARGET_USER" > /mnt/var/tmp/user_name
 
 # Prevent services from starting during install
 #tee /mnt/usr/sbin/policy-rc.d > /dev/null <<'EOF'
