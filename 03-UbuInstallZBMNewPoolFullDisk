@@ -156,8 +156,6 @@ while true; do
     echo ""
 done
 
-echo "$ROOT_DATASET" > /tmp/root_dataset
-
 print "Create slash dataset"
 zfs create -o mountpoint=/ -o canmount=noauto zroot/ROOT/${ROOT_DATASET}
     
@@ -303,7 +301,7 @@ cp /etc/hostid /mnt/etc/hostid
 cp /etc/resolv.conf /mnt/etc/
 
 # Copy root_dataset into the new install
-cp /tmp/root_dataset /mnt/var/tmp/
+echo "$ROOT_DATASET" > /mnt/var/tmp/root_dataset
 
 # Copy disk into the new install
 cp /tmp/disk /mnt/var/tmp/
