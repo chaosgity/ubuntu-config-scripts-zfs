@@ -837,9 +837,10 @@ DNS=1.1.1.1
 FallbackDNS=8.8.8.8
 EOF
 
-# ─── Enable service ────────────────────────────────────────────
+# Enable services
 systemctl enable systemd-resolved
 
+# ─── Installing Apparmor ───────────────────────────────────────
 # Install required packages
 apt-get install -y \
     apparmor-utils \
@@ -854,7 +855,7 @@ systemctl enable apparmor
 systemctl enable auditd
 systemctl enable audit-rules
 
-# ZFS Configuration
+# ─── ZFS Configuration ───────────────────────────────────────
 # Install required packages
 apt-get install -y \
 dosfstools \
@@ -863,10 +864,16 @@ zfs-dracut \
 zfsutils-linux \
 zfs-zed
 
+# Root dataset in chroot
+ROOT_DATASET=$(cat /var/tmp/root_dataset)
+
+# User dataset in chroot
+TARGET_USER=$(cat /var/tmp/target_user)
+
 # Deleting cachfile if available
 rm -f /etc/zfs/zpool.cache
 
-# ─── Enable ZFS services ───────────────────────────────────────
+# Enable ZFS services
 systemctl enable zfs.target
 systemctl enable zfs-import-scan
 systemctl enable zfs-mount
@@ -987,9 +994,6 @@ mkdir -p /boot/efi/EFI/zbm
 #curl -o /boot/efi/EFI/zbm/VMLINUZ.EFI -L https://get.zfsbootmenu.org/efi
 #cp /boot/efi/EFI/zbm/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
 
-# Root dataset
-root_dataset=$(cat /var/tmp/root_dataset)
-
 # Set cmdline
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${root_dataset}"
 
@@ -1054,8 +1058,6 @@ efibootmgr --disk "$DISK" \
 #fi
 
 # ─── User ──────────────────────────────────────────────────────
-TARGET_USER=$(cat /var/tmp/target_user)
-
 # 1. Create primary user group (1000) and system audit group
 groupadd -g 1000 "${TARGET_USER}"
 groupadd -rf audit
