@@ -1106,7 +1106,7 @@ mkdir -p /mnt/data
 chown -R 1000:1000 /mnt/data
 su - "${TARGET_USER}" -c "/usr/local/bin/link-vault.sh"
 
-zfs allow "${TARGET_USER}" compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${root_dataset}"/home/${user}
+zfs allow "${TARGET_USER}" compression,mountpoint,create,mount,snapshot,destroy,send,receive,hold,release zroot/ROOT/"${ROOT_DATASET}"/home/${TARGET_USER}
 
 
 # Cleanup
