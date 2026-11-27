@@ -745,17 +745,22 @@ apt-get update
 apt-get install -y --no-install-recommends \
 	linux-generic \
 	bash-completion \
+	ca-certificates \
     cryptsetup \
+	dbus-broker \
 	dialog \
+	dnsutils \
 	fonts-terminus \
     fonts-terminus-otb \
 	gdisk \
+	iproute2 \
 	iputils-ping \
     iwd \
     less \
     lynx \
  	man-db \
 	manpages \
+	ndisc6 \
 	systemd-resolved \
     wget \
     xfonts-terminus \
