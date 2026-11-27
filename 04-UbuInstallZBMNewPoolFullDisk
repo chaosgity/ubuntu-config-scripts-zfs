@@ -1005,23 +1005,7 @@ Kernel:
   CommandLine: quiet loglevel=0 maxcpus=1
 EOF
 
-#cat > /etc/zfsbootmenu/config.yaml <<EOF
-#Global:
-#  ManageImages: true
-#  BootMountPoint: /boot/efi
-#  DracutConfDir: /etc/zfsbootmenu/dracut.conf.d
-#Components:
-#  Enabled: false
-#EFI:
-#  ImageDir: /boot/efi/EFI/zbm
-#  Prefix: VMLINUZ
-#  Versions: false
-#  Enabled: true
-#Kernel:
-#  Version: 7.0.0-43-generic
-#  CommandLine: ro quiet loglevel=0 zbm.import_policy=hostid maxcpus=1
-#  Prefix: vmlinuz
-#EOF
+
 
 # ─── Build ZFSBootMenu from source ─────────────────────────────
 #mkdir -p /usr/local/src/zfsbootmenu
