@@ -1000,19 +1000,6 @@ Kernel:
   CommandLine: quiet loglevel=0 maxcpus=1
 EOF
 
-
-
-# ─── Build ZFSBootMenu from source ─────────────────────────────
-#mkdir -p /usr/local/src/zfsbootmenu
-#cd /usr/local/src/zfsbootmenu
-#curl -L https://get.zfsbootmenu.org/source | tar -zxv --strip-components=1 -f -
-#make core dracut
-
-# ─── Install ZBM EFI to ESP ────────────────────────────────────
-mkdir -p /boot/efi/EFI/zbm
-#curl -o /boot/efi/EFI/zbm/VMLINUZ.EFI -L https://get.zfsbootmenu.org/efi
-#cp /boot/efi/EFI/zbm/VMLINUZ.EFI /boot/efi/EFI/ZBM/VMLINUZ-BACKUP.EFI
-
 # Set cmdline
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${ROOT_DATASET}"
 
