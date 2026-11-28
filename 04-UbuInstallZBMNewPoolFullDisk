@@ -397,12 +397,6 @@ else
     echo "Timezone: $AREA/$ZONE"
 fi
 
-# Timezone in chroot (no systemd D-Bus available)
-#timedatectl set-timezone Europe/Zurich
-
-## Verify the change
-#timedatectl | grep "Time zone"
-
 # ─── Locale-gen: select locales to enable ───────────────────
 
 echo ""
