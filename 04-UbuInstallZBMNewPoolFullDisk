@@ -980,11 +980,6 @@ cd /tmp/zfsbootmenu
 cpanm --notest --installdeps .
 make core dracut
 
-# NOTE: DracutConfDir MUST be separate from /etc/dracut.conf.d
-# (ZBM builds its own initramfs; system dracut config would interfere)
-#mkdir -p /etc/zfsbootmenu/dracut.conf.d
-# Enable the i18n dracut module for the ZBM initramfs (rd.vconsole.keymap)
-
 # Looks for target system's kernel
 KERNEL=$(ls /boot/vmlinuz-* | sed 's|/boot/vmlinuz-||' | sort -V | tail -1)
 echo "Using kernel: $KERNEL"
