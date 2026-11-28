@@ -425,7 +425,7 @@ fi
 ## Verify the change
 #timedatectl | grep "Time zone"
 
-# ─── 2. Locale-gen: select locales to enable ───────────────────
+# ─── Locale-gen: select locales to enable ───────────────────
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
@@ -493,7 +493,7 @@ done
 
 fi
 
-# ─── 3. Locale: set /etc/default/locale ────────────────────────
+# ─── Locale: set /etc/default/locale ────────────────────────
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
