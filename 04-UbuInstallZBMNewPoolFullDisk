@@ -1008,6 +1008,7 @@ EOF
 zfs set org.zfsbootmenu:commandline="rw quiet nowatchdog zswap.enabled=0 lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 maxcpus=1" zroot/ROOT/"${ROOT_DATASET}"
 
 # ─── Generate the ZBM boot image ───────────────────────────────
+# Generate the ZFSBootMenu EFI executable (/boot/efi/EFI/zbm/vmlinuz.EFI)
 generate-zbm
 
 # Ensure backup image exists immediately on initial install
