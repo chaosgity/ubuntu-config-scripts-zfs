@@ -951,6 +951,9 @@ EOF
 # Regenerate initramfs for all installed kernels
 dracut --force --regenerate-all
 
+# Check missing module or install item
+lsinitrd | grep -E "etc/zfs/zroot.key|etc/hostid|zfs\.ko"
+
 echo ""
 echo "═══════════════════════════════════════════════════════════"
 echo "  Install ZFSBootMenu"
