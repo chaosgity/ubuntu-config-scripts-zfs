@@ -957,9 +957,8 @@ echo "  Install ZFSBootMenu"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
 
-# ─── ZFSBootMenu config ────────────────────────────────────────
-# Install required packages
-apt-get install -y \
+# ─── ZFSBootMenu packages (non-interactive to skip kexec-tools prompt) ───
+DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libsort-versions-perl \
   libboolean-perl \
   libyaml-pp-perl \
@@ -974,11 +973,16 @@ apt-get install -y \
   bsdextrautils \
   systemd-boot-efi
 
-# Install ZFSBootMenu and deps
+# Install ZFSBootMenu from source
+rm -rf /tmp/zfsbootmenu
 git clone --depth=1 https://github.com/zbm-dev/zfsbootmenu/ /tmp/zfsbootmenu
 cd /tmp/zfsbootmenu
 cpanm --notest --installdeps .
 make core dracut
+cd /
+rm -rf /tmp/zfsbootmenu
+
+
 
 # Looks for target system's kernel
 KERNEL=$(ls /boot/vmlinuz-* | sed 's|/boot/vmlinuz-||' | sort -V | tail -1)
